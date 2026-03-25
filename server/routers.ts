@@ -14,18 +14,21 @@ import { signaturesRouter } from "./routers/signatures";
 import { pricingRouter } from "./routers/pricing";
 import { documentsRouter } from "./routers/documents";
 import { notificationsRouter } from "./routers/notifications";
+import { localAuthRouter } from "./routers/auth";
 
 export const appRouter = router({
   system: systemRouter,
 
-  auth: router({
-    me: publicProcedure.query((opts) => opts.ctx.user),
-    logout: publicProcedure.mutation(({ ctx }) => {
-      const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return { success: true } as const;
-    }),
-  }),
+  /**
+   * auth — Authentication and session management.
+   *
+   * Public:  login, register, validateInvite, me
+   * Protected: logout, changePassword, mustChangePassword, hasLocalCredential
+   * Admin:   createInvite, listInvites, resetPassword, unlockAccount,
+   *          updateUserRole, listUsersWithCredentials
+   * Manager: auditLog (own entries only)
+   */
+  auth: localAuthRouter,
 
   // ─────────────────────────────────────────────
   // CORE MODULES

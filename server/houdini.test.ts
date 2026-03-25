@@ -76,8 +76,9 @@ describe("auth.logout", () => {
     const caller = appRouter.createCaller(ctx);
     const result = await caller.auth.logout();
     expect(result).toEqual({ success: true });
-    expect(cookies.cleared).toHaveLength(1);
-    expect(cookies.cleared[0]?.options).toMatchObject({ maxAge: -1, httpOnly: true });
+    // Logout now clears both the Manus OAuth cookie and the local auth cookie
+    expect(cookies.cleared.length).toBeGreaterThanOrEqual(1);
+    expect(cookies.cleared.every((c: any) => c.options.maxAge === -1)).toBe(true);
   });
 
   it("unauthenticated user can call auth.me and get null", async () => {

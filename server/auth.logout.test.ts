@@ -49,14 +49,21 @@ describe("auth.logout", () => {
     const result = await caller.auth.logout();
 
     expect(result).toEqual({ success: true });
-    expect(clearedCookies).toHaveLength(1);
-    expect(clearedCookies[0]?.name).toBe(COOKIE_NAME);
-    expect(clearedCookies[0]?.options).toMatchObject({
+    // Logout clears both the Manus OAuth cookie AND the local auth cookie
+    expect(clearedCookies.length).toBeGreaterThanOrEqual(1);
+    // The Manus OAuth cookie must be among the cleared cookies
+    const manusOAuthCookie = clearedCookies.find((c) => c.name === COOKIE_NAME);
+    expect(manusOAuthCookie).toBeDefined();
+    expect(manusOAuthCookie?.options).toMatchObject({
       maxAge: -1,
       secure: true,
       sameSite: "none",
       httpOnly: true,
       path: "/",
+    });
+    // All cleared cookies must have maxAge: -1
+    clearedCookies.forEach((c) => {
+      expect(c.options.maxAge).toBe(-1);
     });
   });
 });

@@ -346,3 +346,88 @@ export const notifications = mysqlTable("notifications", {
 
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
+
+// ─────────────────────────────────────────────
+// LOCAL CREDENTIALS  (email + bcrypt password)
+// ─────────────────────────────────────────────
+export const localCredentials = mysqlTable("localCredentials", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId")
+    .notNull()
+    .unique()
+    .references(() => users.id),
+  /** Normalised lowercase email used as login identifier */
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  /** bcrypt hash (cost factor 12) */
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  /** Require password change on next login (e.g. after admin reset) */
+  mustChangePassword: boolean("mustChangePassword").default(false).notNull(),
+  /** Incremented on each failed login; reset on success */
+  failedAttempts: int("failedAttempts").default(0).notNull(),
+  /** Locked until this timestamp after too many failures */
+  lockedUntil: timestamp("lockedUntil"),
+  lastPasswordChangedAt: timestamp("lastPasswordChangedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type LocalCredential = typeof localCredentials.$inferSelect;
+export type InsertLocalCredential = typeof localCredentials.$inferInsert;
+
+// ─────────────────────────────────────────────
+// AUTH AUDIT LOG
+// ─────────────────────────────────────────────
+export const authAuditLog = mysqlTable("authAuditLog", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").references(() => users.id),
+  /** Action performed */
+  action: mysqlEnum("action", [
+    "login_success",
+    "login_failed",
+    "logout",
+    "register",
+    "password_changed",
+    "password_reset_requested",
+    "role_changed",
+    "account_locked",
+    "account_unlocked",
+    "invite_created",
+    "invite_accepted",
+  ]).notNull(),
+  /** Email used in the attempt (useful for failed logins where userId may be unknown) */
+  email: varchar("email", { length: 320 }),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: varchar("userAgent", { length: 512 }),
+  /** Extra context (e.g. previous role → new role for role_changed) */
+  metadata: text("metadata"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type AuthAuditLog = typeof authAuditLog.$inferSelect;
+export type InsertAuthAuditLog = typeof authAuditLog.$inferInsert;
+
+// ─────────────────────────────────────────────
+// INVITE TOKENS  (admin-generated, single-use)
+// ─────────────────────────────────────────────
+export const inviteTokens = mysqlTable("inviteTokens", {
+  id: int("id").autoincrement().primaryKey(),
+  /** The signed token sent in the invite link */
+  token: varchar("token", { length: 128 }).notNull().unique(),
+  /** Pre-assigned email for the invitee */
+  email: varchar("email", { length: 320 }).notNull(),
+  /** Pre-assigned role */
+  role: mysqlEnum("role", ["admin", "manager", "technician"]).notNull(),
+  /** Optional pre-assigned department */
+  departmentId: int("departmentId").references(() => departments.id),
+  /** Who created the invite */
+  createdById: int("createdById")
+    .notNull()
+    .references(() => users.id),
+  /** When the invite expires */
+  expiresAt: timestamp("expiresAt").notNull(),
+  /** Whether the invite has been used */
+  usedAt: timestamp("usedAt"),
+  /** Which user accepted the invite */
+  acceptedByUserId: int("acceptedByUserId").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type InviteToken = typeof inviteTokens.$inferSelect;
+export type InsertInviteToken = typeof inviteTokens.$inferInsert;

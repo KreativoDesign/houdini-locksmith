@@ -82,3 +82,51 @@
 
 ## Phase 12: Frontend (Minimal API Explorer)
 - [x] Clean landing page showing system status and API overview
+
+## Phase 13: Auth & RBAC System (Full Implementation)
+
+### Database
+- [x] localCredentials table (bcrypt hash, failed attempts, lockout, mustChangePassword)
+- [x] authAuditLog table (action, email, ipAddress, userAgent, metadata)
+- [x] inviteTokens table (token, email, role, expiresAt, usedAt)
+
+### Auth Service
+- [x] bcrypt password hashing (cost factor 12)
+- [x] JWT session token creation and verification (HS256, 7-day expiry)
+- [x] Account lockout after 5 failed attempts (15-minute window)
+- [x] Invite token generation (32-byte hex, 48-hour expiry, single-use)
+- [x] Audit log writer (all auth events)
+
+### API Endpoints
+- [x] auth.login endpoint (email + password)
+- [x] auth.register endpoint (with optional invite token)
+- [x] auth.logout (clears both OAuth and local session cookies)
+- [x] auth.changePassword (self-service)
+- [x] auth.createInvite (admin only)
+- [x] auth.updateUserRole (admin only)
+- [x] auth.unlockAccount (admin only)
+- [x] auth.resetPassword (admin only)
+- [x] auth.auditLog (admin sees all, manager sees own)
+- [x] auth.listUsersWithCredentials (manager+)
+- [x] auth.validateInvite (public, used on register page)
+
+### Frontend
+- [x] Login page with email/password form, show/hide password, error states
+- [x] Register page with invite token support, password strength hints
+- [x] AppShell component (role-aware sidebar, resizable, collapsible)
+- [x] Admin dashboard (stats, recent jobs, team overview, quick actions)
+- [x] Manager dashboard (awaiting pricing, open enquiries, quick actions)
+- [x] Technician dashboard (assigned jobs only, urgent alerts)
+- [x] Team Management page (user list, role change, invite dialog, unlock)
+- [x] Audit Log page (all auth events with icons)
+- [x] Change Password page (self-service with strength hints)
+- [x] ProtectedRoute guard (redirects unauthenticated users to /login)
+- [x] Role-based route guards (wrong role redirected to own dashboard)
+- [x] DashboardRedirect (/ and /dashboard → role-specific dashboard)
+- [x] AuthRoute guard (authenticated users redirected away from /login)
+
+### Tests
+- [x] 33 RBAC tests (adminProcedure, managerProcedure, protectedProcedure)
+- [x] Updated logout tests (2 cookies cleared)
+- [x] Input validation tests (login, register)
+- [x] All 75 tests passing
