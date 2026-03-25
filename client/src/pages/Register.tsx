@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, UserPlus } from "lucide-react";
+import { Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, UserPlus, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 function getInviteTokenFromUrl(): string | null {
@@ -37,6 +36,13 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Check if this is the first user (no users in DB yet) — determines if setup mode
+  const firstUserQuery = trpc.auth.isFirstUser.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  const isFirstUser = firstUserQuery.data === true;
+
   // Validate invite token if present
   const inviteQuery = trpc.auth.validateInvite.useQuery(
     { token: inviteToken ?? "", email: email || "placeholder@example.com" },
@@ -46,10 +52,9 @@ export default function Register() {
     }
   );
 
-  // Pre-fill email from invite if available
+  // Pre-fill email from invite URL param if available
   useEffect(() => {
-    if (inviteToken && !email) {
-      // Try to extract email from URL params
+    if (inviteToken) {
       const params = new URLSearchParams(window.location.search);
       const preEmail = params.get("email");
       if (preEmail) setEmail(decodeURIComponent(preEmail));
@@ -79,6 +84,8 @@ export default function Register() {
     if (!name.trim()) { setError("Full name is required"); return; }
     if (!email.trim() || !email.includes("@")) { setError("A valid email address is required"); return; }
     if (password.length < 8) { setError("Password must be at least 8 characters"); return; }
+    if (!/[a-zA-Z]/.test(password)) { setError("Password must contain at least one letter"); return; }
+    if (!/[0-9]/.test(password)) { setError("Password must contain at least one number"); return; }
     if (password !== confirmPassword) { setError("Passwords do not match"); return; }
 
     registerMutation.mutate({
@@ -94,7 +101,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel */}
+      {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-sidebar flex-col justify-between p-12">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
@@ -107,29 +114,58 @@ export default function Register() {
         </div>
 
         <div className="space-y-6">
-          <h1 className="text-4xl font-bold text-sidebar-foreground leading-tight">
-            Join the team.<br />
-            <span className="text-primary">Get to work.</span>
-          </h1>
-          <p className="text-sidebar-foreground/70 text-lg leading-relaxed">
-            Create your account to access the Houdini operations platform.
-            Your role and department will be pre-configured by your administrator.
-          </p>
-
-          <div className="bg-sidebar-accent rounded-xl p-5 space-y-3">
-            <p className="text-sm font-semibold text-sidebar-foreground">Account security</p>
-            {[
-              "Passwords are bcrypt-hashed (cost 12)",
-              "Sessions expire after 7 days",
-              "Account locks after 5 failed attempts",
-              "All logins are audit-logged",
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                <span className="text-sm text-sidebar-foreground/70">{item}</span>
+          {isFirstUser ? (
+            <>
+              <h1 className="text-4xl font-bold text-sidebar-foreground leading-tight">
+                Welcome to Houdini.<br />
+                <span className="text-primary">Let's get you set up.</span>
+              </h1>
+              <p className="text-sidebar-foreground/70 text-lg leading-relaxed">
+                You're the first person to register. Your account will automatically be created as
+                the system <strong className="text-primary">Administrator</strong> with full access
+                to all modules.
+              </p>
+              <div className="bg-sidebar-accent rounded-xl p-5 space-y-3">
+                <p className="text-sm font-semibold text-sidebar-foreground">As Admin you can:</p>
+                {[
+                  "Invite Managers and Technicians",
+                  "Manage all departments and job cards",
+                  "Approve pricing and view audit logs",
+                  "Configure the entire system",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-sm text-sidebar-foreground/70">{item}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-4xl font-bold text-sidebar-foreground leading-tight">
+                Join the team.<br />
+                <span className="text-primary">Get to work.</span>
+              </h1>
+              <p className="text-sidebar-foreground/70 text-lg leading-relaxed">
+                Create your account to access the Houdini operations platform.
+                Your role and department will be pre-configured by your administrator.
+              </p>
+              <div className="bg-sidebar-accent rounded-xl p-5 space-y-3">
+                <p className="text-sm font-semibold text-sidebar-foreground">Account security</p>
+                {[
+                  "Passwords are bcrypt-hashed (cost 12)",
+                  "Sessions expire after 7 days",
+                  "Account locks after 5 failed attempts",
+                  "All logins are audit-logged",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-sm text-sidebar-foreground/70">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <p className="text-sidebar-foreground/40 text-sm">
@@ -137,7 +173,7 @@ export default function Register() {
         </p>
       </div>
 
-      {/* Right panel */}
+      {/* Right panel — form */}
       <div className="flex-1 flex items-center justify-center p-6 bg-background">
         <div className="w-full max-w-md space-y-7">
           {/* Mobile logo */}
@@ -150,18 +186,39 @@ export default function Register() {
 
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <UserPlus className="w-5 h-5 text-primary" />
-              <h2 className="text-2xl font-bold text-foreground">Create your account</h2>
+              {isFirstUser ? (
+                <Shield className="w-5 h-5 text-primary" />
+              ) : (
+                <UserPlus className="w-5 h-5 text-primary" />
+              )}
+              <h2 className="text-2xl font-bold text-foreground">
+                {isFirstUser ? "Create admin account" : "Create your account"}
+              </h2>
             </div>
             <p className="text-muted-foreground text-sm">
-              {inviteToken
-                ? "You've been invited to join Houdini. Complete the form below."
-                : "Register with an invite link from your administrator."}
+              {isFirstUser
+                ? "You're the first user — you'll be set up as Administrator."
+                : inviteToken
+                  ? "You've been invited to join Houdini. Complete the form below."
+                  : "Register with an invite link from your administrator."}
             </p>
           </div>
 
+          {/* First-user admin notice */}
+          {isFirstUser && (
+            <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4">
+              <Shield className="w-5 h-5 text-primary shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-foreground">First-time setup</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  This account will be created with <strong>Administrator</strong> role automatically.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Invite status banner */}
-          {inviteToken && inviteRole && inviteValid && (
+          {!isFirstUser && inviteToken && inviteRole && inviteValid && (
             <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4">
               <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
               <div>
@@ -176,7 +233,7 @@ export default function Register() {
             </div>
           )}
 
-          {inviteToken && inviteQuery.data && !inviteValid && (
+          {!isFirstUser && inviteToken && inviteQuery.data && !inviteValid && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
@@ -283,13 +340,15 @@ export default function Register() {
             <Button
               type="submit"
               className="w-full h-11 text-base font-medium"
-              disabled={registerMutation.isPending}
+              disabled={registerMutation.isPending || firstUserQuery.isLoading}
             >
               {registerMutation.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Creating account…
                 </>
+              ) : isFirstUser ? (
+                "Create admin account"
               ) : (
                 "Create account"
               )}

@@ -155,6 +155,14 @@ export const localAuthRouter = router({
       }
     }),
 
+  /** Check if there are no users in the system yet (first-run setup) */
+  isFirstUser: publicProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return false;
+    const [row] = await db.select({ id: users.id }).from(users).limit(1);
+    return !row;
+  }),
+
   /** Validate an invite token (used on the registration page to pre-fill email/role) */
   validateInvite: publicProcedure
     .input(

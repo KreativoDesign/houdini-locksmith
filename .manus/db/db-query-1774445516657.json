@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE localCredentials SET failedAttempts = 0, lockedUntil = NULL WHERE userId = 60003;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute UPDATE localCredentials SET failedAttempts = 0, lockedUntil = NULL WHERE userId = 60003;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 64
+}

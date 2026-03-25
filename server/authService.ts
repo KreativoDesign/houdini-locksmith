@@ -192,8 +192,18 @@ export async function registerUser(input: RegisterInput): Promise<AuthResult> {
   let role: "admin" | "manager" | "technician" = "technician";
   let departmentId: number | undefined = input.departmentId;
 
-  // If an invite token is provided, validate it and extract role/dept
-  if (input.inviteToken) {
+  // First-user bootstrap: if no users exist yet, make this user the admin
+  const [userCountRow] = await db
+    .select({ count: users.id })
+    .from(users)
+    .limit(1);
+  const isFirstUser = !userCountRow;
+
+  if (isFirstUser) {
+    // First user is always admin regardless of invite or role input
+    role = "admin";
+  } else if (input.inviteToken) {
+    // If an invite token is provided, validate it and extract role/dept
     const invite = await validateInviteToken(input.inviteToken, email);
     role = invite.role;
     if (invite.departmentId) departmentId = invite.departmentId;

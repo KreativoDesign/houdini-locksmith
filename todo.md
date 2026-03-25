@@ -130,3 +130,6 @@
 - [x] Updated logout tests (2 cookies cleared)
 - [x] Input validation tests (login, register)
 - [x] All 75 tests passing
+
+## Bug Fixes
+- [x] Fix login/registration flow — context.ts now reads local auth cookie (app_session_id) alongside Manus OAuth cookie; first-user bootstrap ensures first registration gets admin role; failed attempts counter reset

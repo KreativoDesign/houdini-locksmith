@@ -1,0 +1,18 @@
+{
+  "query": "SELECT lc.id, lc.userId, lc.email, lc.failedAttempts, lc.lockedUntil, lc.mustChangePassword FROM localCredentials lc ORDER BY id;\nUPDATE users SET role = 'admin' WHERE id = 60003;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute SELECT lc.id, lc.userId, lc.email, lc.failedAttempts, lc.lockedUntil, lc.mustChangePassword FROM localCredentials lc ORDER BY id;\nUPDATE users SET role = 'admin' WHERE id = 60003;",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "60003",
+      "email": "jayanalytics101@gmail.com",
+      "failedAttempts": "4",
+      "lockedUntil": "NULL",
+      "mustChangePassword": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\temail\tfailedAttempts\tlockedUntil\tmustChangePassword\n1\t60003\tjayanalytics101@gmail.com\t4\tNULL\t0\n",
+  "stderr": "",
+  "execution_time_ms": 72
+}

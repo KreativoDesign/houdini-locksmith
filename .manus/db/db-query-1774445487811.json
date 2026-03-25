@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, openId, name, email, role, loginMethod, isActive, createdAt FROM users ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute SELECT id, openId, name, email, role, loginMethod, isActive, createdAt FROM users ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "RZxPdg39NuCebQcM4erg8W",
+      "name": "Jamie Woodhead",
+      "email": "jayanalytics101@gmail.com",
+      "role": "admin",
+      "loginMethod": "google",
+      "isActive": "1",
+      "createdAt": "2026-03-25 12:29:05"
+    },
+    {
+      "id": "60003",
+      "openId": "local_Bd5ctpQW11wmFN8y",
+      "name": "Jamie Woodhead",
+      "email": "jayanalytics101@gmail.com",
+      "role": "technician",
+      "loginMethod": "local",
+      "isActive": "1",
+      "createdAt": "2026-03-25 13:22:26"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\trole\tloginMethod\tisActive\tcreatedAt\n1\tRZxPdg39NuCebQcM4erg8W\tJamie Woodhead\tjayanalytics101@gmail.com\tadmin\tgoogle\t1\t2026-03-25 12:29:05\n60003\tlocal_Bd5ctpQW11wmFN8y\tJamie Woodhead\tjayanalytics101@gmail.com\ttechnician\tlocal\t1\t2026-03-25 13:22:26\n",
+  "stderr": "",
+  "execution_time_ms": 99
+}
