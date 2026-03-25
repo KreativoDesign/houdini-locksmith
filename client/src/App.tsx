@@ -36,6 +36,9 @@ import JobCards from "./pages/JobCards";
 import JobCardDetail from "./pages/JobCardDetail";
 import JobCardForm from "./pages/JobCardForm";
 
+// Pricing page
+import Pricing from "./pages/Pricing";
+
 // ─────────────────────────────────────────────
 // ROUTE GUARDS
 // ─────────────────────────────────────────────
@@ -204,8 +207,15 @@ function Router() {
         </AppShell>
       </Route>
 
+      {/* ── Pricing ── */}
+      <Route path="/pricing">
+        <AppShell>
+          <ProtectedRoute component={Pricing} />
+        </AppShell>
+      </Route>
+
       {/* Placeholder routes — show "coming soon" */}
-      {["/schedule", "/pricing", "/reports", "/settings", "/notifications"].map((path) => (
+      {["/schedule", "/reports", "/settings", "/notifications"].map((path) => (
         <Route key={path} path={path}>
           <AppShell>
             <ProtectedRoute component={PlaceholderPage} />

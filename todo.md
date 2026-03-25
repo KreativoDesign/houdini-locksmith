@@ -189,3 +189,14 @@
 - [x] Create job card form (direct creation, not from enquiry)
 - [x] App.tsx routes wired: /jobs, /jobs/new, /jobs/:id
 - [x] TypeScript clean (0 errors), 75 tests still passing
+
+## Phase 17: Pricing Module UI
+- [x] Pricing page — full form with labour, parts, VAT, discount, and live total calculation
+- [x] Pricing status workflow: draft → pending_approval → approved → invoiced
+- [x] Role-aware actions: Manager submits for approval, Admin approves
+- [x] Invoice summary card with line-by-line breakdown
+- [x] Job items auto-populated from existing job items on the card
+- [x] Pricing entry point button on Job Card detail page (after completion)
+- [x] Pricing badge on job card list showing pricing status
+- [x] Route /pricing?jobCardId=:id wired in App.tsx
+- [x] TypeScript clean (0 errors), 75 tests still passing
