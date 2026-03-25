@@ -1,0 +1,9 @@
+{
+  "query": "\n-- Reassign audit log entries from duplicate (60003) to primary user (1)\nUPDATE authAuditLog SET userId = 1 WHERE userId = 60003;\n\n-- Now move the credential record to user 1\nUPDATE localCredentials SET userId = 1, failedAttempts = 0, lockedUntil = NULL WHERE userId = 60003;\n\n-- Delete the duplicate user\nDELETE FROM users WHERE id = 60003;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute \n-- Reassign audit log entries from duplicate (60003) to primary user (1)\nUPDATE authAuditLog SET userId = 1 WHERE userId = 60003;\n\n-- Now move the credential record to user 1\nUPDATE localCredentials SET userId = 1, failedAttempts = 0, lockedUntil = NULL WHERE userId = 60003;\n\n-- Delete the duplicate user\nDELETE FROM users WHERE id = 60003;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 95
+}

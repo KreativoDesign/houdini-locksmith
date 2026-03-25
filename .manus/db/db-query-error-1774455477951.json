@@ -1,0 +1,8 @@
+{
+  "query": "\n-- Move the credential record to user 1\nUPDATE localCredentials SET userId = 1, failedAttempts = 0, lockedUntil = NULL WHERE userId = 60003;\n\n-- Delete the duplicate user (60003) — no other FK references since it was unused\nDELETE FROM users WHERE id = 60003;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute \n-- Move the credential record to user 1\nUPDATE localCredentials SET userId = 1, failedAttempts = 0, lockedUntil = NULL WHERE userId = 60003;\n\n-- Delete the duplicate user (60003) — no other FK references since it was unused\nDELETE FROM users WHERE id = 60003;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1451 (23000) at line 6: Cannot delete or update a parent row: a foreign key constraint fails (`rhvefkenpu3fhptnd8shce`.`authauditlog`, CONSTRAINT `authAuditLog_userId_users_id_fk` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION)"
+  ]
+}

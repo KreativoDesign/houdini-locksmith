@@ -73,8 +73,8 @@ export interface AuditContext {
 
 function getJwtSecret(): Uint8Array {
   const secret = ENV.cookieSecret;
-  if (!secret || secret.length < 32) {
-    throw new Error("JWT_SECRET must be at least 32 characters");
+  if (!secret || secret.length < 8) {
+    throw new Error("JWT_SECRET is not configured. Please set the JWT_SECRET environment variable.");
   }
   return new TextEncoder().encode(secret);
 }

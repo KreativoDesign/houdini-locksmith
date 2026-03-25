@@ -1,0 +1,36 @@
+{
+  "query": "\nSELECT u.id, u.openId, u.name, u.email, u.role, u.createdAt,\n       lc.id AS credId, lc.email AS credEmail, lc.failedAttempts, lc.lockedUntil, lc.mustChangePassword\nFROM users u\nLEFT JOIN localCredentials lc ON lc.userId = u.id\nORDER BY u.id;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute \nSELECT u.id, u.openId, u.name, u.email, u.role, u.createdAt,\n       lc.id AS credId, lc.email AS credEmail, lc.failedAttempts, lc.lockedUntil, lc.mustChangePassword\nFROM users u\nLEFT JOIN localCredentials lc ON lc.userId = u.id\nORDER BY u.id;\n",
+  "rows": [
+    {
+      "id": "1",
+      "openId": "RZxPdg39NuCebQcM4erg8W",
+      "name": "Jamie Woodhead",
+      "email": "jayanalytics101@gmail.com",
+      "role": "admin",
+      "createdAt": "2026-03-25 12:29:05",
+      "credId": "NULL",
+      "credEmail": "NULL",
+      "failedAttempts": "NULL",
+      "lockedUntil": "NULL",
+      "mustChangePassword": "NULL"
+    },
+    {
+      "id": "60003",
+      "openId": "local_Bd5ctpQW11wmFN8y",
+      "name": "Jamie Woodhead",
+      "email": "jayanalytics101@gmail.com",
+      "role": "admin",
+      "createdAt": "2026-03-25 13:22:26",
+      "credId": "1",
+      "credEmail": "jayanalytics101@gmail.com",
+      "failedAttempts": "2",
+      "lockedUntil": "NULL",
+      "mustChangePassword": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\trole\tcreatedAt\tcredId\tcredEmail\tfailedAttempts\tlockedUntil\tmustChangePassword\n1\tRZxPdg39NuCebQcM4erg8W\tJamie Woodhead\tjayanalytics101@gmail.com\tadmin\t2026-03-25 12:29:05\tNULL\tNULL\tNULL\tNULL\tNULL\n60003\tlocal_Bd5ctpQW11wmFN8y\tJamie Woodhead\tjayanalytics101@gmail.com\tadmin\t2026-03-25 13:22:26\t1\tjayanalytics101@gmail.com\t2\tNULL\t0\n",
+  "stderr": "",
+  "execution_time_ms": 81
+}

@@ -1,0 +1,18 @@
+{
+  "query": "\nUPDATE localCredentials\nSET\n  passwordHash       = '$2b$12$/D0NK/Ce70xTHMv2DATUv.BL/PZLq4Cx8y9Ejb3vtTltraLXIJ1HO',\n  failedAttempts     = 0,\n  lockedUntil        = NULL,\n  mustChangePassword = 1,\n  updatedAt          = NOW()\nWHERE userId = 1;\n\nSELECT id, userId, email, failedAttempts, lockedUntil, mustChangePassword FROM localCredentials WHERE userId = 1;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute \nUPDATE localCredentials\nSET\n  passwordHash       = '$2b$12$/D0NK/Ce70xTHMv2DATUv.BL/PZLq4Cx8y9Ejb3vtTltraLXIJ1HO',\n  failedAttempts     = 0,\n  lockedUntil        = NULL,\n  mustChangePassword = 1,\n  updatedAt          = NOW()\nWHERE userId = 1;\n\nSELECT id, userId, email, failedAttempts, lockedUntil, mustChangePassword FROM localCredentials WHERE userId = 1;\n",
+  "rows": [
+    {
+      "id": "1",
+      "userId": "1",
+      "email": "jayanalytics101@gmail.com",
+      "failedAttempts": "0",
+      "lockedUntil": "NULL",
+      "mustChangePassword": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tuserId\temail\tfailedAttempts\tlockedUntil\tmustChangePassword\n1\t1\tjayanalytics101@gmail.com\t0\tNULL\t1\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}
