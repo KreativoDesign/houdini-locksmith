@@ -170,3 +170,22 @@
 - [x] Team Management user row — department dropdown wired (users.update)
 - [x] App.tsx route /departments wired to Departments page (admin only)
 - [x] TypeScript clean (0 errors), 75 tests passing
+
+## Phase 16: Job Cards Module UI
+- [x] JobCards list page — table view with status/dept/tech filters and search
+- [x] Kanban board view — 6 status columns (Pending/Assigned/In Progress/On Hold/Awaiting Pricing/Priced)
+- [x] Toggle between table and Kanban view
+- [x] JobCard detail page — full info, status badge, client/enquiry links
+- [x] Inline technician assignment dropdown on detail page
+- [x] Status transition buttons (role-aware: tech can progress, manager/admin can do all)
+- [x] Priority badge (low/medium/high/urgent) with colour coding
+- [x] 45-minute scheduling slot picker component
+- [x] Slot picker shows available slots for selected technician and date
+- [x] Book/release slot from job card detail page
+- [x] Job items panel — list of parts/services with qty, unit price, line total
+- [x] Add job item dialog (name, type, qty, unit price, discount %)
+- [x] Edit/delete job item inline
+- [x] Job items subtotal displayed on detail page (parts/labour/services breakdown)
+- [x] Create job card form (direct creation, not from enquiry)
+- [x] App.tsx routes wired: /jobs, /jobs/new, /jobs/:id
+- [x] TypeScript clean (0 errors), 75 tests still passing

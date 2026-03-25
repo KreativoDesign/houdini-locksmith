@@ -31,6 +31,11 @@ import EnquiryForm from "./pages/EnquiryForm";
 // Admin pages
 import Departments from "./pages/Departments";
 
+// Job Cards pages
+import JobCards from "./pages/JobCards";
+import JobCardDetail from "./pages/JobCardDetail";
+import JobCardForm from "./pages/JobCardForm";
+
 // ─────────────────────────────────────────────
 // ROUTE GUARDS
 // ─────────────────────────────────────────────
@@ -182,8 +187,25 @@ function Router() {
         </AppShell>
       </Route>
 
+      {/* ── Job Cards ── */}
+      <Route path="/jobs">
+        <AppShell>
+          <ProtectedRoute component={JobCards} />
+        </AppShell>
+      </Route>
+      <Route path="/jobs/new">
+        <AppShell>
+          <ProtectedRoute component={JobCardForm} roles={["admin", "manager"]} />
+        </AppShell>
+      </Route>
+      <Route path="/jobs/:id">
+        <AppShell>
+          <ProtectedRoute component={JobCardDetail} />
+        </AppShell>
+      </Route>
+
       {/* Placeholder routes — show "coming soon" */}
-      {["/jobs", "/jobs/new", "/jobs/:id", "/schedule", "/pricing", "/reports", "/settings", "/notifications"].map((path) => (
+      {["/schedule", "/pricing", "/reports", "/settings", "/notifications"].map((path) => (
         <Route key={path} path={path}>
           <AppShell>
             <ProtectedRoute component={PlaceholderPage} />
