@@ -192,21 +192,65 @@ export async function getClientById(id: number): Promise<Client | undefined> {
   return result[0];
 }
 
-export async function listClients(search?: string) {
+export async function listClients(opts?: { search?: string; includeInactive?: boolean; limit?: number; offset?: number }) {
   const db = await getDb();
   if (!db) return [];
-  if (search) {
-    const like = `%${search}%`;
-    return db.select().from(clients).where(
+  const conditions: ReturnType<typeof eq>[] = [];
+  if (!opts?.includeInactive) conditions.push(eq(clients.isActive, true));
+  let q = db.select().from(clients).$dynamic();
+  if (conditions.length) q = q.where(and(...conditions));
+  if (opts?.search) {
+    const like = `%${opts.search}%`;
+    q = q.where(
       or(
         sql`${clients.firstName} LIKE ${like}`,
         sql`${clients.lastName} LIKE ${like}`,
         sql`${clients.email} LIKE ${like}`,
         sql`${clients.phone} LIKE ${like}`,
       )
-    ).orderBy(clients.lastName);
+    );
   }
-  return db.select().from(clients).where(eq(clients.isActive, true)).orderBy(clients.lastName);
+  q = q.orderBy(clients.lastName);
+  if (opts?.limit) q = q.limit(opts.limit);
+  if (opts?.offset) q = q.offset(opts.offset);
+  return q;
+}
+
+export async function countClients(opts?: { search?: string; includeInactive?: boolean }) {
+  const db = await getDb();
+  if (!db) return 0;
+  const conditions: ReturnType<typeof eq>[] = [];
+  if (!opts?.includeInactive) conditions.push(eq(clients.isActive, true));
+  let q = db.select({ count: sql<number>`COUNT(*)` }).from(clients).$dynamic();
+  if (conditions.length) q = q.where(and(...conditions));
+  if (opts?.search) {
+    const like = `%${opts.search}%`;
+    q = q.where(
+      or(
+        sql`${clients.firstName} LIKE ${like}`,
+        sql`${clients.lastName} LIKE ${like}`,
+        sql`${clients.email} LIKE ${like}`,
+        sql`${clients.phone} LIKE ${like}`,
+      )
+    );
+  }
+  const result = await q;
+  return Number(result[0]?.count ?? 0);
+}
+
+export async function getClientWithEnquiries(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const [client] = await db.select().from(clients).where(eq(clients.id, id)).limit(1);
+  if (!client) return undefined;
+  const clientEnquiries = await db
+    .select()
+    .from(enquiries)
+    .where(eq(enquiries.clientId, id))
+    .orderBy(desc(enquiries.createdAt));
+  const enquiryCount = clientEnquiries.length;
+  const openEnquiries = clientEnquiries.filter(e => e.status === 'new' || e.status === 'in_review').length;
+  return { ...client, enquiries: clientEnquiries, enquiryCount, openEnquiries };
 }
 
 export async function updateClient(id: number, data: Partial<InsertClient>): Promise<void> {
@@ -238,15 +282,120 @@ export async function listEnquiries(filters?: {
   clientId?: number;
   departmentId?: number;
   assignedToId?: number;
+  serviceType?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
 }) {
   const db = await getDb();
   if (!db) return [];
-  const conditions = [];
-  if (filters?.status) conditions.push(eq(enquiries.status, filters.status));
+  const conditions: ReturnType<typeof eq>[] = [];
+  if (filters?.status) conditions.push(eq(enquiries.status, filters.status as Enquiry['status']));
   if (filters?.clientId) conditions.push(eq(enquiries.clientId, filters.clientId));
   if (filters?.departmentId) conditions.push(eq(enquiries.departmentId, filters.departmentId));
   if (filters?.assignedToId) conditions.push(eq(enquiries.assignedToId, filters.assignedToId));
-  return db.select().from(enquiries).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(enquiries.createdAt));
+  if (filters?.serviceType) conditions.push(sql`${enquiries.serviceType} = ${filters.serviceType}`);
+
+  // Join with clients and departments for enriched rows
+  let q = db
+    .select({
+      id: enquiries.id,
+      clientId: enquiries.clientId,
+      departmentId: enquiries.departmentId,
+      subject: enquiries.subject,
+      description: enquiries.description,
+      status: enquiries.status,
+      priority: enquiries.priority,
+      source: enquiries.source,
+      serviceType: enquiries.serviceType,
+      assignedToId: enquiries.assignedToId,
+      convertedToJobCardId: enquiries.convertedToJobCardId,
+      notes: enquiries.notes,
+      createdAt: enquiries.createdAt,
+      updatedAt: enquiries.updatedAt,
+      clientFirstName: clients.firstName,
+      clientLastName: clients.lastName,
+      clientPhone: clients.phone,
+      clientEmail: clients.email,
+      departmentName: departments.name,
+    })
+    .from(enquiries)
+    .leftJoin(clients, eq(enquiries.clientId, clients.id))
+    .leftJoin(departments, eq(enquiries.departmentId, departments.id))
+    .$dynamic();
+
+  if (conditions.length) q = q.where(and(...conditions));
+
+  if (filters?.search) {
+    const like = `%${filters.search}%`;
+    q = q.where(
+      or(
+        sql`${enquiries.subject} LIKE ${like}`,
+        sql`${clients.firstName} LIKE ${like}`,
+        sql`${clients.lastName} LIKE ${like}`,
+      )
+    );
+  }
+
+  q = q.orderBy(desc(enquiries.createdAt));
+  if (filters?.limit) q = q.limit(filters.limit);
+  if (filters?.offset) q = q.offset(filters.offset);
+  return q;
+}
+
+export async function countEnquiries(filters?: {
+  status?: Enquiry["status"];
+  clientId?: number;
+  serviceType?: string;
+}) {
+  const db = await getDb();
+  if (!db) return 0;
+  const conditions: ReturnType<typeof eq>[] = [];
+  if (filters?.status) conditions.push(eq(enquiries.status, filters.status as Enquiry['status']));
+  if (filters?.clientId) conditions.push(eq(enquiries.clientId, filters.clientId));
+  if (filters?.serviceType) conditions.push(sql`${enquiries.serviceType} = ${filters.serviceType}`);
+  const result = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(enquiries)
+    .where(conditions.length ? and(...conditions) : undefined);
+  return Number(result[0]?.count ?? 0);
+}
+
+export async function getEnquiryWithDetails(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select({
+      id: enquiries.id,
+      clientId: enquiries.clientId,
+      departmentId: enquiries.departmentId,
+      subject: enquiries.subject,
+      description: enquiries.description,
+      status: enquiries.status,
+      priority: enquiries.priority,
+      source: enquiries.source,
+      serviceType: enquiries.serviceType,
+      assignedToId: enquiries.assignedToId,
+      convertedToJobCardId: enquiries.convertedToJobCardId,
+      notes: enquiries.notes,
+      createdAt: enquiries.createdAt,
+      updatedAt: enquiries.updatedAt,
+      clientFirstName: clients.firstName,
+      clientLastName: clients.lastName,
+      clientPhone: clients.phone,
+      clientEmail: clients.email,
+      clientAddress: clients.address,
+      clientCity: clients.city,
+      departmentName: departments.name,
+      assignedToName: users.name,
+    })
+    .from(enquiries)
+    .leftJoin(clients, eq(enquiries.clientId, clients.id))
+    .leftJoin(departments, eq(enquiries.departmentId, departments.id))
+    .leftJoin(users, eq(enquiries.assignedToId, users.id))
+    .where(eq(enquiries.id, id))
+    .limit(1);
+  return result[0];
 }
 
 export async function updateEnquiry(id: number, data: Partial<InsertEnquiry>): Promise<void> {

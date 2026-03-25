@@ -1,0 +1,1 @@
+ALTER TABLE `enquiries` ADD `serviceType` enum('locksmithing','security','diagnostics','workshop','other') DEFAULT 'other';

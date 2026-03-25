@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     },
     {
       label: "Open Enquiries",
-      value: enquiries.filter((e: any) => e.status === "new" || e.status === "in_review").length,
+      value: (enquiries as any)?.rows ? (enquiries as any).rows.filter((e: any) => e.status === "new" || e.status === "in_review").length : Array.isArray(enquiries) ? (enquiries as any[]).filter((e: any) => e.status === "new" || e.status === "in_review").length : 0,
       icon: ClipboardList,
       color: "text-blue-600",
       bg: "bg-blue-50",

@@ -1,11 +1,13 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
+  countEnquiries,
   createEnquiry,
   createJobCard,
   getClientById,
   getDepartmentById,
   getEnquiryById,
+  getEnquiryWithDetails,
   getUserById,
   generateJobNumber,
   listEnquiries,
@@ -23,15 +25,28 @@ export const enquiriesRouter = router({
         clientId: z.number().int().positive().optional(),
         departmentId: z.number().int().positive().optional(),
         assignedToId: z.number().int().positive().optional(),
+        serviceType: z.enum(["locksmithing", "security", "diagnostics", "workshop", "other"]).optional(),
+        search: z.string().optional(),
+        limit: z.number().int().positive().max(200).default(50),
+        offset: z.number().int().min(0).default(0),
       }).optional()
     )
     .query(async ({ input }) => {
-      return listEnquiries(input);
+      const [rows, total] = await Promise.all([
+        listEnquiries(input),
+        countEnquiries(input),
+      ]);
+      return { rows, total };
     }),
 
   get: technicianProcedure
-    .input(z.object({ id: z.number().int().positive() }))
+    .input(z.object({ id: z.number().int().positive(), withDetails: z.boolean().optional() }))
     .query(async ({ input }) => {
+      if (input.withDetails) {
+        const enquiry = await getEnquiryWithDetails(input.id);
+        if (!enquiry) throw new TRPCError({ code: "NOT_FOUND", message: "Enquiry not found" });
+        return enquiry;
+      }
       const enquiry = await getEnquiryById(input.id);
       if (!enquiry) throw new TRPCError({ code: "NOT_FOUND", message: "Enquiry not found" });
       return enquiry;
@@ -44,6 +59,7 @@ export const enquiriesRouter = router({
         departmentId: z.number().int().positive().optional(),
         subject: z.string().min(1).max(255),
         description: z.string().min(1),
+        serviceType: z.enum(["locksmithing", "security", "diagnostics", "workshop", "other"]).default("other"),
         priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
         source: z.enum(["phone", "email", "walk_in", "online", "referral"]).default("phone"),
         notes: z.string().optional(),
@@ -74,6 +90,7 @@ export const enquiriesRouter = router({
         id: z.number().int().positive(),
         subject: z.string().min(1).max(255).optional(),
         description: z.string().optional(),
+        serviceType: z.enum(["locksmithing", "security", "diagnostics", "workshop", "other"]).optional(),
         status: z.enum(["new", "in_review", "converted", "closed"]).optional(),
         priority: z.enum(["low", "normal", "high", "urgent"]).optional(),
         source: z.enum(["phone", "email", "walk_in", "online", "referral"]).optional(),

@@ -1,19 +1,35 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createClient, getClientById, listClients, updateClient } from "../db";
+import { countClients, createClient, getClientById, getClientWithEnquiries, listClients, updateClient } from "../db";
 import { managerProcedure, technicianProcedure } from "./middleware";
 import { router } from "../_core/trpc";
 
 export const clientsRouter = router({
   list: technicianProcedure
-    .input(z.object({ search: z.string().optional() }).optional())
+    .input(
+      z.object({
+        search: z.string().optional(),
+        includeInactive: z.boolean().optional(),
+        limit: z.number().int().positive().max(200).default(50),
+        offset: z.number().int().min(0).default(0),
+      }).optional()
+    )
     .query(async ({ input }) => {
-      return listClients(input?.search);
+      const [rows, total] = await Promise.all([
+        listClients(input),
+        countClients(input),
+      ]);
+      return { rows, total };
     }),
 
   get: technicianProcedure
-    .input(z.object({ id: z.number().int().positive() }))
+    .input(z.object({ id: z.number().int().positive(), withEnquiries: z.boolean().optional() }))
     .query(async ({ input }) => {
+      if (input.withEnquiries) {
+        const client = await getClientWithEnquiries(input.id);
+        if (!client) throw new TRPCError({ code: "NOT_FOUND", message: "Client not found" });
+        return client;
+      }
       const client = await getClientById(input.id);
       if (!client) throw new TRPCError({ code: "NOT_FOUND", message: "Client not found" });
       return client;

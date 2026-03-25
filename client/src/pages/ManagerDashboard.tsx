@@ -43,7 +43,8 @@ export default function ManagerDashboard() {
   const notifs = notifsQuery.data ?? [];
 
   const awaitingPricing = jobs.filter((j: any) => j.status === "awaiting_pricing" || j.status === "completed");
-  const openEnquiries = enquiries.filter((e: any) => e.status === "new" || e.status === "in_review");
+  const enquiriesRows = (enquiries as any)?.rows ?? (Array.isArray(enquiries) ? enquiries : []);
+  const openEnquiries = enquiriesRows.filter((e: any) => e.status === "new" || e.status === "in_review");
   const unread = notifs.filter((n: any) => !n.isRead).length;
 
   const stats = [

@@ -96,6 +96,8 @@ export const enquiries = mysqlTable("enquiries", {
   source: mysqlEnum("source", ["phone", "email", "walk_in", "online", "referral"])
     .default("phone")
     .notNull(),
+  /** Service type maps to a department specialisation */
+  serviceType: mysqlEnum("serviceType", ["locksmithing", "security", "diagnostics", "workshop", "other"]).default("other"),
   assignedToId: int("assignedToId").references(() => users.id),
   convertedToJobCardId: int("convertedToJobCardId"), // populated after conversion
   notes: text("notes"),

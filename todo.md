@@ -133,3 +133,30 @@
 
 ## Bug Fixes
 - [x] Fix login/registration flow — context.ts now reads local auth cookie (app_session_id) alongside Manus OAuth cookie; first-user bootstrap ensures first registration gets admin role; failed attempts counter reset
+
+## Phase 14: Enquiry CRM Module
+
+### API Enhancements
+- [x] Validate and harden clients router (full CRUD, search, pagination)
+- [x] Validate and harden enquiries router (full CRUD, filters, pagination)
+- [x] Ensure enquiry-to-job-card conversion preserves all enquiry data
+- [x] Add serviceType enum validation on enquiries
+
+### Frontend — Clients
+- [x] Clients list page (table with search, filter by status, pagination)
+- [x] Client detail page (info card + enquiry history)
+- [x] Create/edit client dialog (name, email, phone, address)
+- [x] Deactivate client action
+
+### Frontend — Enquiries
+- [x] Enquiries list page (table with status filter, service type filter, search)
+- [x] Enquiry detail page (full info, status badge, linked client, convert button)
+- [x] Create enquiry form (client picker, service type, description, priority)
+- [x] Edit enquiry form (update fields, change status)
+- [x] Status badge component (open/in-review/converted/closed)
+
+### Frontend — Conversion Flow
+- [x] Convert to Job Card button (admin/manager only)
+- [x] Conversion confirmation dialog (shows preserved data preview)
+- [x] Post-conversion redirect to new job card
+- [x] Enquiry marked as converted with link to job card

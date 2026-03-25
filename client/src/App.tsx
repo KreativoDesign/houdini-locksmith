@@ -16,10 +16,17 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import TechnicianDashboard from "./pages/TechnicianDashboard";
 
-// Feature pages
+// Auth / settings pages
 import TeamManagement from "./pages/TeamManagement";
 import AuditLog from "./pages/AuditLog";
 import ChangePassword from "./pages/ChangePassword";
+
+// CRM pages
+import Clients from "./pages/Clients";
+import ClientDetail from "./pages/ClientDetail";
+import Enquiries from "./pages/Enquiries";
+import EnquiryDetail from "./pages/EnquiryDetail";
+import EnquiryForm from "./pages/EnquiryForm";
 
 // ─────────────────────────────────────────────
 // ROUTE GUARDS
@@ -32,14 +39,13 @@ function ProtectedRoute({ component: Component, roles }: {
 }) {
   const { user, loading } = useAuth();
 
-  if (loading) return null; // DashboardLayoutSkeleton handles this in AppShell
+  if (loading) return null;
 
   if (!user) {
     return <Redirect to="/login" />;
   }
 
   if (roles && !roles.includes(user.role as any)) {
-    // Redirect to their appropriate dashboard
     if (user.role === "admin") return <Redirect to="/admin" />;
     if (user.role === "manager") return <Redirect to="/manager" />;
     return <Redirect to="/technician" />;
@@ -85,8 +91,6 @@ function Router() {
       <Route path="/">
         <DashboardRedirect />
       </Route>
-
-      {/* Dashboard redirect */}
       <Route path="/dashboard">
         <DashboardRedirect />
       </Route>
@@ -105,6 +109,40 @@ function Router() {
       <Route path="/technician">
         <AppShell>
           <ProtectedRoute component={TechnicianDashboard} roles={["technician", "admin", "manager"]} />
+        </AppShell>
+      </Route>
+
+      {/* ── CRM: Clients ── */}
+      <Route path="/clients">
+        <AppShell>
+          <ProtectedRoute component={Clients} />
+        </AppShell>
+      </Route>
+      <Route path="/clients/:id">
+        <AppShell>
+          <ProtectedRoute component={ClientDetail} />
+        </AppShell>
+      </Route>
+
+      {/* ── CRM: Enquiries ── */}
+      <Route path="/enquiries">
+        <AppShell>
+          <ProtectedRoute component={Enquiries} />
+        </AppShell>
+      </Route>
+      <Route path="/enquiries/new">
+        <AppShell>
+          <ProtectedRoute component={EnquiryForm} />
+        </AppShell>
+      </Route>
+      <Route path="/enquiries/:id/edit">
+        <AppShell>
+          <ProtectedRoute component={EnquiryForm} />
+        </AppShell>
+      </Route>
+      <Route path="/enquiries/:id">
+        <AppShell>
+          <ProtectedRoute component={EnquiryDetail} />
         </AppShell>
       </Route>
 
@@ -134,8 +172,8 @@ function Router() {
         </AppShell>
       </Route>
 
-      {/* Placeholder routes — show "coming soon" toast */}
-      {["/jobs", "/jobs/new", "/enquiries", "/enquiries/new", "/clients", "/schedule", "/pricing", "/reports", "/departments", "/settings", "/notifications"].map((path) => (
+      {/* Placeholder routes — show "coming soon" */}
+      {["/jobs", "/jobs/new", "/jobs/:id", "/schedule", "/pricing", "/reports", "/departments", "/settings", "/notifications"].map((path) => (
         <Route key={path} path={path}>
           <AppShell>
             <ProtectedRoute component={PlaceholderPage} />
