@@ -75,6 +75,14 @@ export default function TeamManagement() {
     onError: (err) => toast.error(err.message),
   });
 
+  const deptAssignMutation = trpc.users.update.useMutation({
+    onSuccess: () => {
+      toast.success("Department updated");
+      utils.auth.listUsersWithCredentials.invalidate();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
   const unlockMutation = trpc.auth.unlockAccount.useMutation({
     onSuccess: () => {
       toast.success("Account unlocked");
@@ -203,7 +211,7 @@ export default function TeamManagement() {
 
                     {/* Actions (admin only, not self) */}
                     {!isSelf && (
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                         {isLocked && (
                           <Button
                             size="sm"
@@ -216,6 +224,28 @@ export default function TeamManagement() {
                             Unlock
                           </Button>
                         )}
+                        {/* Department picker */}
+                        <Select
+                          value={u.departmentId ? String(u.departmentId) : "none"}
+                          onValueChange={(val) =>
+                            deptAssignMutation.mutate({
+                              id: u.id,
+                              departmentId: val === "none" ? null : Number(val),
+                            })
+                          }
+                          disabled={deptAssignMutation.isPending}
+                        >
+                          <SelectTrigger className="h-8 w-36 text-xs">
+                            <SelectValue placeholder="No dept" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">No department</SelectItem>
+                            {depts.map((d: any) => (
+                              <SelectItem key={d.id} value={String(d.id)}>{d.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {/* Role picker */}
                         <Select
                           value={u.role}
                           onValueChange={(role) =>

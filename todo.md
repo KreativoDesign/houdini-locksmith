@@ -160,3 +160,13 @@
 - [x] Conversion confirmation dialog (shows preserved data preview)
 - [x] Post-conversion redirect to new job card
 - [x] Enquiry marked as converted with link to job card
+
+## Phase 15: Departments Management UI
+- [x] Departments page — list all 4 departments with member count and active job count
+- [x] Department card — show name, description, member list with avatars
+- [x] Assign technician to department — dialog picker with all users
+- [x] Remove technician from department (X button on member row)
+- [x] Unassigned users panel — quick-assign dropdown per user
+- [x] Team Management user row — department dropdown wired (users.update)
+- [x] App.tsx route /departments wired to Departments page (admin only)
+- [x] TypeScript clean (0 errors), 75 tests passing

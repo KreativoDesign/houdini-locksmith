@@ -1,0 +1,34 @@
+{
+  "query": "SELECT id, name, description, isActive FROM departments ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute SELECT id, name, description, isActive FROM departments ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Locksmithing",
+      "description": "Lock installation, repair, key cutting, and emergency lockout services",
+      "isActive": "1"
+    },
+    {
+      "id": "2",
+      "name": "Security",
+      "description": "CCTV, alarm systems, access control, and security assessments",
+      "isActive": "1"
+    },
+    {
+      "id": "3",
+      "name": "Diagnostics",
+      "description": "Vehicle diagnostics, transponder key programming, and electronic fault finding",
+      "isActive": "1"
+    },
+    {
+      "id": "4",
+      "name": "Workshop",
+      "description": "In-house repairs, key duplication, safe servicing, and hardware maintenance",
+      "isActive": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdescription\tisActive\n1\tLocksmithing\tLock installation, repair, key cutting, and emergency lockout services\t1\n2\tSecurity\tCCTV, alarm systems, access control, and security assessments\t1\n3\tDiagnostics\tVehicle diagnostics, transponder key programming, and electronic fault finding\t1\n4\tWorkshop\tIn-house repairs, key duplication, safe servicing, and hardware maintenance\t1\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}
