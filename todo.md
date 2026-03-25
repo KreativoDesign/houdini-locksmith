@@ -1,0 +1,84 @@
+# Houdini Locksmith & Security — Project TODO
+
+## Phase 1: Database Schema
+- [x] Extend users table with role (admin/manager/technician), departmentId, phone, avatar
+- [x] Create departments table (Locksmithing, Security, Diagnostics, Workshop)
+- [x] Create clients table with contact details
+- [x] Create enquiries table with status tracking
+- [x] Create jobCards table with full lifecycle fields
+- [x] Create timeSlots table (45-minute intervals)
+- [x] Create employeeAvailability table
+- [x] Create jobItems table (parts/services per job card)
+- [x] Create signatures table linked to job cards
+- [x] Create jobPricing table
+- [x] Create jobDocuments table (S3 file references)
+- [x] Create notifications table
+- [x] Push all migrations with pnpm db:push
+
+## Phase 2: Authentication & RBAC
+- [x] Extend user upsert to include role and department
+- [x] Implement adminProcedure, managerProcedure, technicianProcedure middleware
+- [x] User list/get/update/assign-department endpoints (admin only)
+- [x] Department CRUD endpoints
+
+## Phase 3: Client & Enquiry Module
+- [x] Client CRUD endpoints (create, list, get, update)
+- [x] Enquiry CRUD endpoints (create, list, get, update, delete)
+- [x] Enquiry status transitions (new → in-review → converted / closed)
+- [x] Enquiry-to-job-card conversion endpoint
+- [x] Owner notification on new enquiry submission
+
+## Phase 4: Job Card Module
+- [x] Job card create endpoint (from enquiry or direct)
+- [x] Job card list with filters (status, department, technician, date)
+- [x] Job card get by ID with full relations
+- [x] Job card update (status, assignment, notes)
+- [x] Job card status transitions (pending → assigned → in-progress → completed → priced)
+- [x] Assign technician to job card
+- [x] Owner notification when job marked urgent
+- [x] Owner notification when job completed and awaiting pricing
+
+## Phase 5: Scheduling Module
+- [x] Time slot generation (45-minute intervals, 08:00–18:00)
+- [x] Employee availability CRUD
+- [x] Available slots query by technician and date
+- [x] Book time slot for job card
+- [x] Conflict detection for double-booking
+
+## Phase 6: Job Items Module
+- [x] Job item create (part/service linked to job card)
+- [x] Job item list by job card
+- [x] Job item update (quantity, price)
+- [x] Job item delete
+
+## Phase 7: Signatures Module
+- [x] Signature upload endpoint (base64 data URL → S3)
+- [x] Signature get by job card
+- [x] Signature verification status
+
+## Phase 8: Job Pricing Module
+- [x] Pricing create/update (labour, parts, VAT, discount, total)
+- [x] Pricing get by job card
+- [x] Pricing approval workflow (draft → approved)
+- [x] Owner notification on pricing approval
+
+## Phase 9: File Storage Module
+- [x] Upload job document/photo to S3 (organized by jobCardId)
+- [x] List documents by job card
+- [x] Delete document
+- [x] Support categories: signature, photo, document, before_after
+
+## Phase 10: Notifications Module
+- [x] Internal notification create/list/mark-read
+- [x] Owner push notification integration
+- [x] Notification triggers wired to all critical events
+
+## Phase 11: Tests & Seed Data
+- [x] Seed departments (4 fixed departments)
+- [x] Vitest tests for auth RBAC middleware
+- [x] Vitest tests for enquiry-to-job-card conversion
+- [x] Vitest tests for scheduling conflict detection
+- [x] Vitest tests for pricing calculation
+
+## Phase 12: Frontend (Minimal API Explorer)
+- [x] Clean landing page showing system status and API overview
