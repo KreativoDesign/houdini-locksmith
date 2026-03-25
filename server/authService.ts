@@ -120,7 +120,7 @@ export async function createSessionToken(payload: SessionPayload): Promise<strin
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(`${SESSION_EXPIRY_MS}ms`)
+    .setExpirationTime("7d")
     .sign(secret);
 }
 
