@@ -365,3 +365,12 @@
 - [x] JobDetailRoute: detects technician role on mobile → renders TechnicianJobDetail
 - [x] Desktop technician view unchanged (TechnicianDashboard still used on ≥768px)
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 35: Mobile Signature Capture
+- [x] Audit desktop SignaturePad component and updateStatus backend contract
+- [x] MobileSignatureSheet: bottom-sheet with full-width touch canvas, clear button, confirm button, signer name field
+- [x] Wire into TechnicianJobDetail: intercept "Mark Completed" when requiresSignature is true, show sheet, call signatures.capture, then updateStatus
+- [x] Handle jobs where requiresSignature is false: Mark Completed proceeds directly (no sheet)
+- [x] Show amber "Signature required" notice + standalone "Capture Signature Now" button while in_progress
+- [x] Show green "Signature captured" badge once signed
+- [x] TypeScript clean (0 errors), 82 tests still passing

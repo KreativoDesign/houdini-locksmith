@@ -7,32 +7,32 @@
  *   - Job header (number, title, priority badge, status chip)
  *   - Scheduled slot + client info cards
  *   - Inline status transition buttons (role-aware)
+ *   - Signature capture gate for "Mark Completed" when requiresSignature is true
  *   - Technician notes (read + append)
  *   - Job items list (read-only for technician)
  */
 
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import MobileSignatureSheet from "@/components/MobileSignatureSheet";
 import { trpc } from "@/lib/trpc";
 import { format, parseISO } from "date-fns";
 import {
-  AlertCircle,
   ArrowLeft,
   Briefcase,
   Calendar,
   CheckCircle2,
-  Clock,
   Loader2,
   MapPin,
   MessageSquare,
   PauseCircle,
+  PenLine,
   Phone,
   PlayCircle,
   Send,
+  ShieldCheck,
   User,
-  Wrench,
 } from "lucide-react";
 import { useState } from "react";
 import { useParams, useLocation } from "wouter";
@@ -104,17 +104,46 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ─── Job Items sub-component (avoids hook-in-callback lint error) ─────────────
+
+function JobItemsList({ jobCardId }: { jobCardId: number }) {
+  const { data: items = [] } = trpc.jobItems.list.useQuery({ jobCardId });
+  if (items.length === 0) return null;
+  return (
+    <>
+      <SectionTitle>Job Items</SectionTitle>
+      <div className="mx-4 rounded-xl border border-border bg-card overflow-hidden divide-y divide-border">
+        {items.map((item: any) => (
+          <div key={item.id} className="flex items-center gap-3 px-4 py-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {item.type} · qty {item.quantity}
+              </p>
+            </div>
+            <p className="text-sm font-semibold text-foreground shrink-0">
+              R {(item.unitPrice * item.quantity * (1 - (item.discountPercent ?? 0) / 100)).toFixed(2)}
+            </p>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function TechnicianJobDetail() {
   const { id } = useParams<{ id: string }>();
   const jobId = Number(id);
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
   const utils = trpc.useUtils();
 
   const [noteText, setNoteText] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+  const [sigSheetOpen, setSigSheetOpen] = useState(false);
+  // Pending completion status — set when user taps "Mark Completed" and sig is needed
+  const [pendingComplete, setPendingComplete] = useState(false);
 
   const { data: job, isLoading } = trpc.jobCards.get.useQuery(
     { id: jobId },
@@ -143,12 +172,43 @@ export default function TechnicianJobDetail() {
   const handleSaveNote = () => {
     if (!noteText.trim() || !job) return;
     const j = job as any;
-    const existing = j.techNotes ?? "";
+    const existing = j.technicianNotes ?? "";
     const timestamp = format(new Date(), "dd MMM yyyy HH:mm");
     const appended = existing
       ? `${existing}\n\n[${timestamp}]\n${noteText.trim()}`
       : `[${timestamp}]\n${noteText.trim()}`;
     notesMutation.mutate({ id: jobId, technicianNotes: appended });
+  };
+
+  /**
+   * Called when the user taps a status action button.
+   * For "Mark Completed" when requiresSignature is true and job is not yet signed,
+   * we open the signature sheet first. Otherwise we call updateStatus directly.
+   */
+  const handleStatusAction = (toStatus: JobStatus) => {
+    const j = job as any;
+    if (
+      toStatus === "completed" &&
+      j.requiresSignature &&
+      !j.isSigned
+    ) {
+      setPendingComplete(true);
+      setSigSheetOpen(true);
+      return;
+    }
+    statusMutation.mutate({ id: jobId, status: toStatus });
+  };
+
+  /**
+   * Called by MobileSignatureSheet after a successful signature capture.
+   * At this point the backend has already set isSigned=true, so we can safely
+   * call updateStatus → completed.
+   */
+  const handleSigned = () => {
+    if (pendingComplete) {
+      statusMutation.mutate({ id: jobId, status: "completed" });
+      setPendingComplete(false);
+    }
   };
 
   if (isLoading) {
@@ -184,8 +244,12 @@ export default function TechnicianJobDetail() {
     : null;
 
   const clientAddress = [j.clientAddress, j.clientCity, j.clientPostalCode].filter(Boolean).join(", ");
-
   const techNoteLines = (j.technicianNotes as string | null | undefined)?.trim() ?? "";
+
+  // Show a "Signature required" notice when the job is in_progress and sig not yet captured
+  const showSigNotice = status === "in_progress" && j.requiresSignature && !j.isSigned;
+  // Show a "Signed" badge when signature is already captured
+  const showSigDone = j.isSigned && j.signerName;
 
   return (
     <div className="flex flex-col h-[100dvh] bg-background overflow-hidden">
@@ -242,27 +306,71 @@ export default function TechnicianJobDetail() {
           )}
         </div>
 
+        {/* Signature notice / badge */}
+        {showSigNotice && (
+          <>
+            <SectionTitle>Signature</SectionTitle>
+            <div className="mx-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <div className="flex items-start gap-3">
+                <PenLine className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-amber-800">Signature required</p>
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    A client signature must be captured before this job can be marked as completed.
+                  </p>
+                </div>
+              </div>
+              <Button
+                className="w-full mt-3 gap-2 bg-amber-600 hover:bg-amber-700 text-white"
+                onClick={() => { setPendingComplete(false); setSigSheetOpen(true); }}
+              >
+                <PenLine className="w-4 h-4" />
+                Capture Signature Now
+              </Button>
+            </div>
+          </>
+        )}
+
+        {showSigDone && (
+          <>
+            <SectionTitle>Signature</SectionTitle>
+            <div className="mx-4 rounded-xl border border-green-200 bg-green-50 p-4 flex items-center gap-3">
+              <ShieldCheck className="w-5 h-5 text-green-600 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-green-800">Signature captured</p>
+                <p className="text-xs text-green-700 mt-0.5">Signed by {j.signerName}</p>
+              </div>
+            </div>
+          </>
+        )}
+
         {/* Status actions */}
         {actions.length > 0 && (
           <>
             <SectionTitle>Update Status</SectionTitle>
             <div className="px-4 space-y-2.5">
-              {actions.map((action) => (
-                <Button
-                  key={action.to}
-                  variant={action.variant}
-                  className="w-full h-12 text-base font-medium gap-2"
-                  disabled={statusMutation.isPending}
-                  onClick={() => statusMutation.mutate({ id: jobId, status: action.to })}
-                >
-                  {statusMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <action.icon className="w-4 h-4" />
-                  )}
-                  {action.label}
-                </Button>
-              ))}
+              {actions.map((action) => {
+                const needsSig =
+                  action.to === "completed" &&
+                  j.requiresSignature &&
+                  !j.isSigned;
+                return (
+                  <Button
+                    key={action.to}
+                    variant={action.variant}
+                    className="w-full h-12 text-base font-medium gap-2"
+                    disabled={statusMutation.isPending}
+                    onClick={() => handleStatusAction(action.to)}
+                  >
+                    {statusMutation.isPending && pendingComplete === false ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <action.icon className="w-4 h-4" />
+                    )}
+                    {needsSig ? "Capture Signature & Complete" : action.label}
+                  </Button>
+                );
+              })}
             </div>
           </>
         )}
@@ -281,30 +389,7 @@ export default function TechnicianJobDetail() {
         )}
 
         {/* Job items */}
-        {(() => {
-          const { data: items = [] } = trpc.jobItems.list.useQuery({ jobCardId: jobId });
-          if (items.length === 0) return null;
-          return (
-            <>
-              <SectionTitle>Job Items</SectionTitle>
-              <div className="mx-4 rounded-xl border border-border bg-card overflow-hidden divide-y divide-border">
-                {items.map((item: any) => (
-                  <div key={item.id} className="flex items-center gap-3 px-4 py-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.type} · qty {item.quantity}
-                      </p>
-                    </div>
-                    <p className="text-sm font-semibold text-foreground shrink-0">
-                      R {(item.unitPrice * item.quantity * (1 - (item.discountPercent ?? 0) / 100)).toFixed(2)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </>
-          );
-        })()}
+        <JobItemsList jobCardId={jobId} />
 
         {/* Notes */}
         <SectionTitle>My Notes</SectionTitle>
@@ -367,6 +452,15 @@ export default function TechnicianJobDetail() {
 
         <div className="h-8" />
       </div>
+
+      {/* Mobile signature sheet */}
+      <MobileSignatureSheet
+        open={sigSheetOpen}
+        onClose={() => { setSigSheetOpen(false); setPendingComplete(false); }}
+        onSigned={handleSigned}
+        jobCardId={jobId}
+        jobNumber={j.jobNumber ?? undefined}
+      />
     </div>
   );
 }
