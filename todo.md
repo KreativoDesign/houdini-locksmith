@@ -285,3 +285,10 @@
 - [x] Groups are collapsible (click header to toggle)
 - [x] Groups with zero active items are hidden
 - [x] TypeScript clean, 80 tests still passing
+
+## Phase 26: Quantity Selector in Quick-Add Panel
+- [x] Per-item quantity state (default 1, min 0.5, step 0.5 for labour; min 1, step 1 for parts/services)
+- [x] Compact − / qty / + spinner inline with each catalogue item row
+- [x] Quantity resets to 1 after item is successfully added
+- [x] handleQuickAdd passes the selected quantity to createMutation
+- [x] TypeScript clean, 80 tests still passing

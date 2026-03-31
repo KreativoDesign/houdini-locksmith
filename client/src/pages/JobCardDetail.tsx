@@ -337,6 +337,16 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
   const [catalogueOpen, setCatalogueOpen] = useState(false);
   const [cataloguePrices, setCataloguePrices] = useState<Record<number, string>>({});
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  // Per-item quantity (keyed by catalogue item id)
+  const [catalogueQtys, setCatalogueQtys] = useState<Record<number, number>>({});
+
+  const getQty = (item: any): number => catalogueQtys[item.id] ?? 1;
+  const setQty = (id: number, val: number, isLabour: boolean) => {
+    const step = isLabour ? 0.5 : 1;
+    const min  = isLabour ? 0.5 : 1;
+    const clamped = Math.max(min, Math.round(val / step) * step);
+    setCatalogueQtys((q) => ({ ...q, [id]: clamped }));
+  };
 
   // Group items by type, preserving sort order within each group
   const catalogueByType = useMemo(() => {
@@ -370,15 +380,24 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
 
   const handleQuickAdd = (item: any) => {
     const price = getCataloguePrice(item);
-    createMutation.mutate({
-      jobCardId,
-      name: item.name,
-      type: item.type,
-      description: item.description ?? undefined,
-      quantity: 1,
-      unitPrice: price,
-      discountPct: 0,
-    });
+    const qty   = getQty(item);
+    createMutation.mutate(
+      {
+        jobCardId,
+        name: item.name,
+        type: item.type,
+        description: item.description ?? undefined,
+        quantity: qty,
+        unitPrice: price,
+        discountPct: 0,
+      },
+      {
+        onSuccess: () => {
+          // Reset quantity back to 1 after adding
+          setCatalogueQtys((q) => ({ ...q, [item.id]: 1 }));
+        },
+      }
+    );
   };
 
   const TYPE_ICONS: Record<string, React.ElementType> = {
@@ -442,36 +461,59 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
                     {/* Group items */}
                     {!isCollapsed && (
                       <div className="space-y-1.5 pl-1">
-                        {groupItems.map((item: any) => (
-                          <div key={item.id} className="flex items-center gap-2">
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium truncate">{item.name}</p>
-                              {item.description && (
-                                <p className="text-[10px] text-muted-foreground truncate">{item.description}</p>
-                              )}
+                        {groupItems.map((item: any) => {
+                          const isLabour = item.type === "labour";
+                          const qty = getQty(item);
+                          const step = isLabour ? 0.5 : 1;
+                          return (
+                            <div key={item.id} className="flex items-center gap-2">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium truncate">{item.name}</p>
+                                {item.description && (
+                                  <p className="text-[10px] text-muted-foreground truncate">{item.description}</p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {/* Quantity spinner */}
+                                <div className="flex items-center border rounded-md overflow-hidden h-7">
+                                  <button
+                                    type="button"
+                                    className="px-1.5 text-muted-foreground hover:bg-muted transition-colors text-xs h-full"
+                                    onClick={() => setQty(item.id, qty - step, isLabour)}
+                                    disabled={qty <= (isLabour ? 0.5 : 1)}
+                                  >−</button>
+                                  <span className="px-1.5 text-xs font-medium min-w-[2rem] text-center tabular-nums">
+                                    {qty % 1 === 0 ? qty : qty.toFixed(1)}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="px-1.5 text-muted-foreground hover:bg-muted transition-colors text-xs h-full"
+                                    onClick={() => setQty(item.id, qty + step, isLabour)}
+                                  >+</button>
+                                </div>
+                                {/* Price input */}
+                                <span className="text-xs text-muted-foreground">R</span>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={cataloguePrices[item.id] ?? cataloguePricesRef[item.id] ?? parseFloat(item.defaultPrice).toFixed(2)}
+                                  onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.id]: e.target.value }))}
+                                  className="h-7 w-20 text-xs"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 text-xs px-2"
+                                  disabled={createMutation.isPending}
+                                  onClick={() => handleQuickAdd(item)}
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-xs text-muted-foreground">R</span>
-                              <Input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={cataloguePrices[item.id] ?? cataloguePricesRef[item.id] ?? parseFloat(item.defaultPrice).toFixed(2)}
-                                onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.id]: e.target.value }))}
-                                className="h-7 w-24 text-xs"
-                              />
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 text-xs px-2"
-                                disabled={createMutation.isPending}
-                                onClick={() => handleQuickAdd(item)}
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
