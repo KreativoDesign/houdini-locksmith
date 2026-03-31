@@ -382,3 +382,12 @@
 - [x] Photo thumbnail grid grouped by Before / After / Photos with tap-to-lightbox preview
 - [x] Wired into TechnicianJobDetail between Job Items and Notes; readOnly when job is closed
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 37: Houdini Brand Retheme + Mascot Integration
+- [x] Upload both mascot images to CDN via manus-upload-file --webdev
+- [x] Retheme index.css: lime-green (oklch 0.73 0.22 130) primary, near-black sidebar, dark card backgrounds
+- [x] Login page: dark left panel with radial glow, mascot (key-holding version) centred, feature checklist below; right panel with login/register form
+- [x] Admin sidebar header: replaced generic Lock icon with mascot logo image
+- [x] Mobile top bar: replaced Lock icon with mascot logo image
+- [x] Auth-required screen: replaced Lock icon with mascot logo image
+- [x] TypeScript clean (0 errors), 82 tests still passing

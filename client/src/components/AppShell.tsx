@@ -47,7 +47,6 @@ import {
   FileText,
   KeyRound,
   LayoutDashboard,
-  Lock,
   LogOut,
   PanelLeft,
   Settings,
@@ -228,9 +227,11 @@ function InnerSidebar({
           {/* Header */}
           <SidebarHeader className="h-16 justify-center border-b border-sidebar-border">
             <div className="flex items-center gap-3 px-3">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-                <Lock className="w-4 h-4 text-primary-foreground" />
-              </div>
+              <img
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-logo_e1c5aaa1.jpeg"
+                alt="Houdini"
+                className="w-9 h-9 rounded-lg object-cover shrink-0"
+              />
               {!isCollapsed && (
                 <div className="min-w-0">
                   <p className="font-bold text-sidebar-foreground text-sm leading-none truncate">
@@ -373,8 +374,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="flex flex-col items-center gap-6 p-8 max-w-sm w-full text-center">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Lock className="w-7 h-7 text-primary" />
+          <div className="w-14 h-14 rounded-2xl overflow-hidden">
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-logo_e1c5aaa1.jpeg"
+              alt="Houdini"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <h1 className="text-xl font-semibold text-foreground">Authentication required</h1>
@@ -413,7 +418,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg" />
               <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-primary" />
+                <img
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-logo_e1c5aaa1.jpeg"
+                  alt="Houdini"
+                  className="w-6 h-6 rounded-md object-cover"
+                />
                 <span className="font-semibold text-sm text-foreground">
                   {activeItem?.label ?? "Houdini"}
                 </span>
