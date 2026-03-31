@@ -83,9 +83,11 @@ export default function Register() {
 
     if (!name.trim()) { setError("Full name is required"); return; }
     if (!email.trim() || !email.includes("@")) { setError("A valid email address is required"); return; }
-    if (password.length < 8) { setError("Password must be at least 8 characters"); return; }
-    if (!/[a-zA-Z]/.test(password)) { setError("Password must contain at least one letter"); return; }
+    if (password.length < 12) { setError("Password must be at least 12 characters"); return; }
+    if (!/[A-Z]/.test(password)) { setError("Password must contain at least one uppercase letter"); return; }
+    if (!/[a-z]/.test(password)) { setError("Password must contain at least one lowercase letter"); return; }
     if (!/[0-9]/.test(password)) { setError("Password must contain at least one number"); return; }
+    if (!/[^A-Za-z0-9]/.test(password)) { setError("Password must contain at least one special character"); return; }
     if (password !== confirmPassword) { setError("Passwords do not match"); return; }
 
     registerMutation.mutate({
@@ -285,7 +287,7 @@ export default function Register() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete="new-password"
-                  placeholder="At least 8 characters"
+                  placeholder="At least 12 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={registerMutation.isPending}
@@ -302,11 +304,13 @@ export default function Register() {
               </div>
               {/* Password strength hints */}
               {password.length > 0 && (
-                <div className="flex gap-3 pt-1">
+                <div className="flex flex-wrap gap-2 pt-1">
                   {[
-                    { label: "8+ chars", ok: password.length >= 8 },
-                    { label: "Letter", ok: /[a-zA-Z]/.test(password) },
+                    { label: "12+ chars", ok: password.length >= 12 },
+                    { label: "Uppercase", ok: /[A-Z]/.test(password) },
+                    { label: "Lowercase", ok: /[a-z]/.test(password) },
                     { label: "Number", ok: /[0-9]/.test(password) },
+                    { label: "Special", ok: /[^A-Za-z0-9]/.test(password) },
                   ].map((hint) => (
                     <span
                       key={hint.label}

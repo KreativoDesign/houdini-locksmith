@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useLocation, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -57,8 +57,11 @@ import {
   XCircle,
   MessageSquare,
   Send,
+  PenLine,
+  ShieldCheck,
 } from "lucide-react";
 import { format } from "date-fns";
+import SignaturePad, { type SignaturePadHandle } from "@/components/SignaturePad";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type JobStatus =
@@ -289,41 +292,42 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
     return base - (base * disc) / 100;
   }, [form.quantity, form.unitPrice, form.discountPct]);
 
-  const handleSubmit = () => {
-    if (!form.name.trim()) return toast.error("Name is required");
-    const qty = parseFloat(form.quantity);
-    const price = parseFloat(form.unitPrice);
-    const disc = parseFloat(form.discountPct);
-    if (isNaN(qty) || qty <= 0) return toast.error("Quantity must be a positive number");
-    if (isNaN(price) || price < 0) return toast.error("Unit price must be a non-negative number");
-    if (isNaN(disc) || disc < 0 || disc > 100) return toast.error("Discount must be between 0 and 100");
-
-    const payload = { name: form.name.trim(), type: form.type, description: form.description || undefined, quantity: qty, unitPrice: price, discountPct: disc };
-    if (editItem) {
-      updateMutation.mutate({ id: editItem.id, ...payload });
-    } else {
-      createMutation.mutate({ jobCardId, ...payload });
-    }
-  };
-
   const openEdit = (item: any) => {
+    setEditItem(item);
     setForm({
       name: item.name,
       type: item.type,
       description: item.description ?? "",
-      quantity: String(Number(item.quantity)),
-      unitPrice: Number(item.unitPrice).toFixed(2),
-      discountPct: String(Number(item.discountPct ?? 0)),
+      quantity: String(item.quantity),
+      unitPrice: String(item.unitPrice),
+      discountPct: String(item.discountPct ?? 0),
     });
-    setEditItem(item);
     setAddOpen(true);
   };
 
-  const TYPE_ICONS: Record<string, React.ElementType> = {
-    part: Package, service: Wrench, labour: User, other: FileText,
+  const handleSubmit = () => {
+    const payload = {
+      jobCardId,
+      name: form.name.trim(),
+      type: form.type,
+      description: form.description.trim() || undefined,
+      quantity: parseFloat(form.quantity) || 1,
+      unitPrice: parseFloat(form.unitPrice) || 0,
+      discountPct: parseFloat(form.discountPct) || 0,
+    };
+    if (editItem) {
+      updateMutation.mutate({ id: editItem.id, ...payload });
+    } else {
+      createMutation.mutate(payload);
+    }
   };
 
-  const s = summary as any;
+  const TYPE_ICONS: Record<string, React.ElementType> = {
+    part: Package,
+    service: Wrench,
+    labour: Timer,
+    other: FileText,
+  };
 
   return (
     <div className="space-y-3">
@@ -334,7 +338,7 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
         {canEdit && (
           <Button size="sm" variant="outline" className="h-7 text-xs gap-1"
             onClick={() => { resetForm(); setEditItem(null); setAddOpen(true); }}>
-            <Plus className="w-3 h-3" /> Add Item
+            <Plus className="w-3 h-3" /> Add item
           </Button>
         )}
       </div>
@@ -347,27 +351,38 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
         <div className="space-y-2">
           {(items as any[]).map((item: any) => {
             const Icon = TYPE_ICONS[item.type] ?? FileText;
-            const total = Number(item.quantity) * Number(item.unitPrice) * (1 - Number(item.discountPct ?? 0) / 100);
             return (
-              <div key={item.id} className="flex items-center gap-3 p-2.5 rounded-lg border bg-card hover:bg-muted/30 transition-colors">
-                <Icon className="w-4 h-4 text-muted-foreground shrink-0" />
+              <div key={item.id} className="flex items-start gap-3 p-3 rounded-lg border bg-muted/30">
+                <Icon className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{item.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {Number(item.quantity)} × R{Number(item.unitPrice).toFixed(2)}
-                    {Number(item.discountPct) > 0 && ` (${item.discountPct}% off)`}
-                  </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-medium">{item.name}</p>
+                      {item.description && (
+                        <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>
+                      )}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-semibold">
+                        R {(item.lineTotal ?? 0).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.quantity} × R {parseFloat(item.unitPrice).toFixed(2)}
+                        {item.discountPct > 0 && ` (${item.discountPct}% off)`}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm font-semibold shrink-0">R{total.toFixed(2)}</p>
                 {canEdit && (
-                  <div className="flex gap-1">
-                    <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => openEdit(item)}>
-                      <Edit2 className="w-3 h-3" />
-                    </Button>
-                    <Button size="icon" variant="ghost" className="h-6 w-6 text-red-500 hover:text-red-600"
-                      onClick={() => setDeleteId(item.id)}>
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
+                  <div className="flex gap-1 shrink-0">
+                    <button onClick={() => openEdit(item)}
+                      className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground transition-colors">
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => setDeleteId(item.id)}
+                      className="p-1 rounded hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 )}
               </div>
@@ -377,34 +392,30 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
       )}
 
       {/* Summary */}
-      {s && (
-        <div className="border-t pt-3 space-y-1 text-sm">
-          {s.partsTotal > 0 && <div className="flex justify-between text-muted-foreground"><span>Parts</span><span>R{Number(s.partsTotal).toFixed(2)}</span></div>}
-          {s.labourTotal > 0 && <div className="flex justify-between text-muted-foreground"><span>Labour</span><span>R{Number(s.labourTotal).toFixed(2)}</span></div>}
-          {s.servicesTotal > 0 && <div className="flex justify-between text-muted-foreground"><span>Services</span><span>R{Number(s.servicesTotal).toFixed(2)}</span></div>}
-          <div className="flex justify-between font-semibold pt-1 border-t">
-            <span>Subtotal</span>
-            <span>R{Number(s.grandTotal ?? s.total ?? 0).toFixed(2)}</span>
-          </div>
+      {(summary as any)?.itemCount > 0 && (
+        <div className="flex justify-between items-center pt-2 border-t text-sm">
+          <span className="text-muted-foreground">{(summary as any).itemCount} item(s)</span>
+          <span className="font-semibold">Subtotal: R {parseFloat((summary as any).subtotal ?? "0").toFixed(2)}</span>
         </div>
       )}
 
-      {/* Add/Edit dialog */}
-      <Dialog open={addOpen} onOpenChange={(o) => { if (!o) { setAddOpen(false); setEditItem(null); } }}>
+      {/* Add / Edit dialog */}
+      <Dialog open={addOpen} onOpenChange={(o) => { setAddOpen(o); if (!o) { setEditItem(null); resetForm(); } }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editItem ? "Edit Item" : "Add Job Item"}</DialogTitle>
-            <DialogDescription>Add a part, service, or labour charge to this job card.</DialogDescription>
+            <DialogTitle>{editItem ? "Edit Item" : "Add Item"}</DialogTitle>
+            <DialogDescription>Fill in the details for this job item.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <div className="space-y-1.5">
-              <Label>Name *</Label>
-              <Input value={form.name} onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Deadbolt lock" />
-            </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
+              <div className="col-span-2 space-y-1">
+                <Label>Name *</Label>
+                <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  placeholder="e.g. Deadbolt lock" />
+              </div>
+              <div className="space-y-1">
                 <Label>Type</Label>
-                <Select value={form.type} onValueChange={(v) => setForm(p => ({ ...p, type: v as any }))}>
+                <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as any })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="part">Part</SelectItem>
@@ -414,74 +425,53 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label>Quantity</Label>
-                <Input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  value={form.quantity}
-                  onChange={(e) => setForm(p => ({ ...p, quantity: e.target.value }))}
-                />
+                <Input type="number" min="0.01" step="0.01" value={form.quantity}
+                  onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label>Unit Price (R)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.unitPrice}
-                  onChange={(e) => setForm(p => ({ ...p, unitPrice: e.target.value }))}
-                  onBlur={(e) => {
-                    const v = parseFloat(e.target.value);
-                    if (!isNaN(v)) setForm(p => ({ ...p, unitPrice: v.toFixed(2) }));
-                  }}
-                  placeholder="0.00"
-                />
+                <Input type="number" min="0" step="0.01" value={form.unitPrice}
+                  onChange={(e) => setForm({ ...form, unitPrice: e.target.value })} />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label>Discount %</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  value={form.discountPct}
-                  onChange={(e) => setForm(p => ({ ...p, discountPct: e.target.value }))}
-                />
+                <Input type="number" min="0" max="100" step="0.1" value={form.discountPct}
+                  onChange={(e) => setForm({ ...form, discountPct: e.target.value })} />
+              </div>
+              <div className="col-span-2 space-y-1">
+                <Label>Description</Label>
+                <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  placeholder="Optional details" />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Description</Label>
-              <Input value={form.description} onChange={(e) => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Optional detail" />
-            </div>
-            <div className="flex justify-between items-center pt-1 text-sm font-semibold border-t">
-              <span>Line Total</span>
-              <span>R{lineTotal.toFixed(2)}</span>
+            <div className="flex justify-between items-center pt-1 border-t text-sm">
+              <span className="text-muted-foreground">Line total</span>
+              <span className="font-semibold">R {lineTotal.toFixed(2)}</span>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setAddOpen(false); setEditItem(null); }}>Cancel</Button>
-            <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
-              {editItem ? "Update" : "Add Item"}
+            <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
+            <Button disabled={!form.name.trim() || createMutation.isPending || updateMutation.isPending}
+              onClick={handleSubmit}>
+              {editItem ? "Save changes" : "Add item"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete confirm */}
-      <AlertDialog open={deleteId !== null} onOpenChange={(o) => { if (!o) setDeleteId(null); }}>
+      <AlertDialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove item?</AlertDialogTitle>
-            <AlertDialogDescription>This will permanently remove the item from the job card.</AlertDialogDescription>
+            <AlertDialogDescription>This will permanently remove this item from the job card.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-700"
-              onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })}>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => deleteId !== null && deleteMutation.mutate({ id: deleteId })}>
               Remove
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -491,10 +481,12 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
   );
 }
 
-// ─── Notes Panel ──────────────────────────────────────────────────────────────
+// ─── Notes Panel ─────────────────────────────────────────────────────────────
 function NotesPanel({ jobCardId, rawNotes, currentUser, jobStatus }: {
-  jobCardId: number; rawNotes: string | null | undefined;
-  currentUser: any; jobStatus: JobStatus;
+  jobCardId: number;
+  rawNotes: string | null | undefined;
+  currentUser: any;
+  jobStatus: JobStatus;
 }) {
   const utils = trpc.useUtils();
   const [newNote, setNewNote] = useState("");
@@ -591,6 +583,195 @@ function NotesPanel({ jobCardId, rawNotes, currentUser, jobStatus }: {
   );
 }
 
+// ─── Signature Section ────────────────────────────────────────────────────────
+function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }: {
+  jobCardId: number;
+  jobStatus: JobStatus;
+  requiresSignature: boolean;
+  isSigned: boolean;
+}) {
+  const utils = trpc.useUtils();
+  const { user } = useAuth();
+  const sigPadRef = useRef<SignaturePadHandle>(null);
+  const [captureOpen, setCaptureOpen] = useState(false);
+  const [signerName, setSignerName] = useState("");
+  const [signerRole, setSignerRole] = useState("");
+  const [padEmpty, setPadEmpty] = useState(true);
+
+  const { data: existingSig } = trpc.signatures.getByJobCard.useQuery(
+    { jobCardId },
+    { enabled: isSigned }
+  );
+
+  const captureMutation = trpc.signatures.capture.useMutation({
+    onSuccess: () => {
+      toast.success("Signature captured successfully");
+      utils.jobCards.get.invalidate({ id: jobCardId });
+      utils.signatures.getByJobCard.invalidate({ jobCardId });
+      setCaptureOpen(false);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const handleCapture = () => {
+    const dataUrl = sigPadRef.current?.getDataUrl();
+    if (!dataUrl) {
+      toast.error("Please draw a signature first");
+      return;
+    }
+    if (!signerName.trim()) {
+      toast.error("Please enter the signer's name");
+      return;
+    }
+    captureMutation.mutate({
+      jobCardId,
+      signatureDataUrl: dataUrl,
+      signerName: signerName.trim(),
+      signerRole: signerRole.trim() || undefined,
+      ipAddress: undefined,
+    });
+  };
+
+  const handleOpenCapture = () => {
+    setSignerName("");
+    setSignerRole("");
+    setPadEmpty(true);
+    setCaptureOpen(true);
+  };
+
+  const isClosed = ["priced", "cancelled"].includes(jobStatus);
+
+  // Show the section if:
+  // 1. Signature is required (always show status)
+  // 2. Job is signed (show existing signature)
+  // 3. Job is in a signable state (in_progress, completed, awaiting_pricing)
+  const signableStatuses: JobStatus[] = ["in_progress", "on_hold", "completed", "awaiting_pricing"];
+  const canCapture = !isSigned && signableStatuses.includes(jobStatus);
+
+  if (!requiresSignature && !isSigned) return null;
+
+  return (
+    <>
+      <Card className={isSigned
+        ? "border-green-200 bg-green-50"
+        : "border-amber-200 bg-amber-50"
+      }>
+        <CardContent className="pt-4 pb-4">
+          {isSigned ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-green-600 shrink-0" />
+                <p className="text-sm font-semibold text-green-800">Signature Captured</p>
+              </div>
+              {existingSig && (
+                <div className="space-y-2">
+                  <div className="rounded-lg border border-green-200 bg-white overflow-hidden">
+                    <img
+                      src={(existingSig as any).signatureUrl}
+                      alt="Client signature"
+                      className="w-full h-28 object-contain p-2"
+                    />
+                  </div>
+                  <div className="text-xs text-green-700 space-y-0.5">
+                    <p><span className="font-medium">Signed by:</span> {(existingSig as any).signerName}</p>
+                    {(existingSig as any).signerRole && (
+                      <p><span className="font-medium">Role:</span> {(existingSig as any).signerRole}</p>
+                    )}
+                    {(existingSig as any).signedAt && (
+                      <p><span className="font-medium">Date:</span> {format(new Date((existingSig as any).signedAt), "dd MMM yyyy, HH:mm")}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-amber-800">Signature Required</p>
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    A client signature must be captured before this job can be marked as completed.
+                  </p>
+                </div>
+              </div>
+              {canCapture && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-amber-300 text-amber-800 hover:bg-amber-100 gap-2 mt-1"
+                  onClick={handleOpenCapture}
+                >
+                  <PenLine className="w-3.5 h-3.5" />
+                  Capture Signature
+                </Button>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Capture dialog */}
+      <Dialog open={captureOpen} onOpenChange={setCaptureOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PenLine className="w-4 h-4" /> Capture Client Signature
+            </DialogTitle>
+            <DialogDescription>
+              Have the client sign below to confirm the work has been completed to their satisfaction.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="col-span-2 space-y-1">
+                <Label>Signer Name *</Label>
+                <Input
+                  value={signerName}
+                  onChange={(e) => setSignerName(e.target.value)}
+                  placeholder="Full name of the person signing"
+                />
+              </div>
+              <div className="col-span-2 space-y-1">
+                <Label>Signer Role / Title</Label>
+                <Input
+                  value={signerRole}
+                  onChange={(e) => setSignerRole(e.target.value)}
+                  placeholder="e.g. Property Owner, Manager (optional)"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label>Signature *</Label>
+              <SignaturePad
+                ref={sigPadRef}
+                onChange={(isEmpty) => setPadEmpty(isEmpty)}
+                disabled={captureMutation.isPending}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCaptureOpen(false)} disabled={captureMutation.isPending}>
+              Cancel
+            </Button>
+            <Button
+              disabled={padEmpty || !signerName.trim() || captureMutation.isPending}
+              onClick={handleCapture}
+              className="gap-2"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              {captureMutation.isPending ? "Saving…" : "Confirm Signature"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 // ─── Main Detail Page ─────────────────────────────────────────────────────────
 export default function JobCardDetail() {
   const { id } = useParams<{ id: string }>();
@@ -651,12 +832,23 @@ export default function JobCardDetail() {
   const j = job as any;
   const status = j.status as JobStatus;
   const priority = j.priority as Priority;
+  const requiresSignature = !!j.requiresSignature;
+  const isSigned = !!j.isSigned;
 
   // Compute allowed transitions — filtered by role
   const serverAllowed: JobStatus[] = STATUS_TRANSITIONS[status] ?? [];
-  const allowedTransitions: JobStatus[] = isManager
+
+  // Block "completed" if signature is required but not yet captured
+  const signatureBlocked = requiresSignature && !isSigned && status === "in_progress";
+
+  const allowedTransitions: JobStatus[] = (isManager
     ? serverAllowed
-    : serverAllowed.filter((s) => (TECH_ALLOWED[status] ?? []).includes(s));
+    : serverAllowed.filter((s) => (TECH_ALLOWED[status] ?? []).includes(s))
+  ).filter((s) => {
+    // Block moving to "completed" if signature is required and not captured
+    if (s === "completed" && signatureBlocked) return false;
+    return true;
+  });
 
   const TRANSITION_LABELS: Partial<Record<JobStatus, string>> = {
     assigned: "Mark Assigned",
@@ -691,6 +883,11 @@ export default function JobCardDetail() {
               <h1 className="text-xl font-bold text-foreground">{j.title}</h1>
               <StatusBadge status={status} />
               <PriorityBadge priority={priority} />
+              {isSigned && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border bg-green-100 text-green-700 border-green-200">
+                  <ShieldCheck className="w-3 h-3" /> Signed
+                </span>
+              )}
             </div>
             <p className="text-sm text-muted-foreground font-mono mt-0.5">{j.jobNumber}</p>
           </div>
@@ -709,7 +906,14 @@ export default function JobCardDetail() {
               {TRANSITION_LABELS[next] ?? next}
             </Button>
           ))}
-          {allowedTransitions.length === 0 && !["priced", "cancelled"].includes(status) && (
+          {/* Show blocked completion notice */}
+          {signatureBlocked && (
+            <div className="flex items-center gap-1.5 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              Capture signature to mark completed
+            </div>
+          )}
+          {allowedTransitions.length === 0 && !["priced", "cancelled"].includes(status) && !signatureBlocked && (
             <span className="text-xs text-muted-foreground self-center">No transitions available</span>
           )}
         </div>
@@ -867,22 +1071,13 @@ export default function JobCardDetail() {
             </CardContent>
           </Card>
 
-          {/* Signature required notice */}
-          {j.requiresSignature && !["priced", "cancelled"].includes(status) && (
-            <Card className="border-amber-200 bg-amber-50">
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-sm font-semibold text-amber-800">Signature Required</p>
-                    <p className="text-xs text-amber-700 mt-0.5">
-                      A client signature must be captured before this job can be marked as completed.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Signature section */}
+          <SignatureSection
+            jobCardId={jobId}
+            jobStatus={status}
+            requiresSignature={requiresSignature}
+            isSigned={isSigned}
+          />
 
           {/* Pricing link */}
           {["awaiting_pricing", "priced"].includes(status) && isManager && (

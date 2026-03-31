@@ -113,7 +113,7 @@ export const localAuthRouter = router({
     .input(
       z.object({
         email: z.string().email("Invalid email address"),
-        password: z.string().min(8, "Password must be at least 8 characters"),
+        password: z.string().min(12, "Password must be at least 12 characters"),
         name: z.string().min(2, "Name must be at least 2 characters").max(100),
         inviteToken: z.string().optional(),
       })
@@ -211,7 +211,7 @@ export const localAuthRouter = router({
     .input(
       z.object({
         currentPassword: z.string().min(1),
-        newPassword: z.string().min(8, "New password must be at least 8 characters"),
+        newPassword: z.string().min(12, "New password must be at least 12 characters"),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -307,7 +307,7 @@ export const localAuthRouter = router({
     .input(
       z.object({
         targetUserId: z.number().int().positive(),
-        temporaryPassword: z.string().min(8),
+        temporaryPassword: z.string().min(12),
       })
     )
     .mutation(async ({ input, ctx }) => {

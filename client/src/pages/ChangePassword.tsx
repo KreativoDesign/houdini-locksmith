@@ -31,7 +31,11 @@ export default function ChangePassword() {
     e.preventDefault();
     setError(null);
     if (!current) { setError("Current password is required"); return; }
-    if (next.length < 8) { setError("New password must be at least 8 characters"); return; }
+    if (next.length < 12) { setError("New password must be at least 12 characters"); return; }
+    if (!/[A-Z]/.test(next)) { setError("Password must contain at least one uppercase letter"); return; }
+    if (!/[a-z]/.test(next)) { setError("Password must contain at least one lowercase letter"); return; }
+    if (!/[0-9]/.test(next)) { setError("Password must contain at least one number"); return; }
+    if (!/[^A-Za-z0-9]/.test(next)) { setError("Password must contain at least one special character"); return; }
     if (next !== confirm) { setError("New passwords do not match"); return; }
     mutation.mutate({ currentPassword: current, newPassword: next });
   };
@@ -52,7 +56,7 @@ export default function ChangePassword() {
             <div>
               <CardTitle className="text-base">Update Password</CardTitle>
               <CardDescription className="text-xs mt-0.5">
-                Minimum 8 characters with at least one letter and one number.
+                Minimum 12 characters with uppercase, lowercase, number, and special character.
               </CardDescription>
             </div>
           </div>
@@ -110,14 +114,16 @@ export default function ChangePassword() {
                   onChange={(e) => setNext(e.target.value)}
                   disabled={mutation.isPending}
                   className="h-11"
-                  placeholder="At least 8 characters"
+                  placeholder="At least 12 characters"
                 />
                 {next.length > 0 && (
-                  <div className="flex gap-3 pt-1">
+                  <div className="flex flex-wrap gap-2 pt-1">
                     {[
-                      { label: "8+ chars", ok: next.length >= 8 },
-                      { label: "Letter", ok: /[a-zA-Z]/.test(next) },
+                      { label: "12+ chars", ok: next.length >= 12 },
+                      { label: "Uppercase", ok: /[A-Z]/.test(next) },
+                      { label: "Lowercase", ok: /[a-z]/.test(next) },
                       { label: "Number", ok: /[0-9]/.test(next) },
+                      { label: "Special", ok: /[^A-Za-z0-9]/.test(next) },
                     ].map((hint) => (
                       <span key={hint.label} className={`text-xs flex items-center gap-1 ${hint.ok ? "text-green-600" : "text-muted-foreground"}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${hint.ok ? "bg-green-500" : "bg-muted-foreground/40"}`} />

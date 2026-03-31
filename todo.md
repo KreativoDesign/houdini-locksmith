@@ -213,3 +213,27 @@
 - [ ] Job card status: allow status update from job card detail page action buttons
 - [ ] Kanban board: drag-and-drop cards between status columns
 - [ ] Kanban board: status update fires when card is dropped into new column
+
+## Phase 19: Digital Signature Capture UI
+- [x] SignaturePad canvas component (touch + mouse drawing, clear, undo stroke)
+- [x] Submit signature as base64 PNG to signatures.capture API → S3 upload
+- [x] Signature display on job card detail (shows stored signature image from S3)
+- [x] Completion gate: "Mark Completed" button only active after signature captured
+- [x] Signature section visible on job card detail for in_progress/completed jobs
+- [x] Signed-by name and timestamp displayed alongside signature
+- [x] Re-sign option for admin/manager if signature needs to be replaced
+- [x] TypeScript clean, 75 tests still passing
+
+## Phase 20: Notifications Drawer & Password Policy
+- [x] Notifications bell icon in AppShell top bar (mobile + desktop)
+- [x] Unread count badge on bell icon (auto-refreshes every 30s)
+- [x] Slide-out notifications drawer (Sheet component, right side)
+- [x] Notification rows with type icons, colour coding, relative timestamps
+- [x] Mark individual notification as read on click
+- [x] Mark all as read button
+- [x] Unread-only filter toggle
+- [x] Clicking notification with entity link navigates to relevant page
+- [x] Password policy updated: min 12 chars, uppercase, lowercase, number, special char
+- [x] Password strength hints updated on Register and ChangePassword pages
+- [x] Server-side validation updated (authService + auth router zod schemas)
+- [x] TypeScript clean (0 errors), 75 tests still passing

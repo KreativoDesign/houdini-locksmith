@@ -59,6 +59,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from "./DashboardLayoutSkeleton";
 import { Button } from "./ui/button";
+import { NotificationsBell } from "./NotificationsDrawer";
 
 // ─────────────────────────────────────────────
 // MENU DEFINITIONS
@@ -411,7 +412,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 </span>
               </div>
             </div>
-            <Bell className="w-5 h-5 text-muted-foreground" />
+            <NotificationsBell />
           </div>
         )}
 
@@ -431,9 +432,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               )}
             </div>
             <div className="flex items-center gap-3">
-              <button className="relative h-8 w-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors">
-                <Bell className="w-4 h-4 text-muted-foreground" />
-              </button>
+              <NotificationsBell />
             </div>
           </div>
         )}
