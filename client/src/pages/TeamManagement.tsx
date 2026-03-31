@@ -52,6 +52,7 @@ export default function TeamManagement() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"admin" | "manager" | "technician">("technician");
   const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [inviteEmailSent, setInviteEmailSent] = useState<boolean>(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
   const usersQuery = trpc.auth.listUsersWithCredentials.useQuery();
@@ -61,6 +62,7 @@ export default function TeamManagement() {
   const inviteMutation = trpc.auth.createInvite.useMutation({
     onSuccess: (data) => {
       setInviteLink(data.inviteUrl);
+      setInviteEmailSent(data.emailSent ?? false);
       setInviteError(null);
       utils.auth.listUsersWithCredentials.invalidate();
     },
@@ -97,7 +99,7 @@ export default function TeamManagement() {
   const handleInvite = () => {
     setInviteError(null);
     if (!inviteEmail.includes("@")) { setInviteError("Enter a valid email address"); return; }
-    inviteMutation.mutate({ email: inviteEmail, role: inviteRole });
+    inviteMutation.mutate({ email: inviteEmail, role: inviteRole, origin: window.location.origin });
   };
 
   const copyInviteLink = () => {
@@ -110,6 +112,7 @@ export default function TeamManagement() {
   const resetInviteDialog = () => {
     setInviteOpen(false);
     setInviteLink(null);
+    setInviteEmailSent(false);
     setInviteEmail("");
     setInviteRole("technician");
     setInviteError(null);
@@ -284,16 +287,29 @@ export default function TeamManagement() {
               Invite Team Member
             </DialogTitle>
             <DialogDescription>
-              Generate a secure invite link. The link expires in 48 hours and can only be used once.
+              Send a secure invite email. The link expires in 48 hours and can only be used once.
             </DialogDescription>
           </DialogHeader>
 
           {inviteLink ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-4">
-                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                <p className="text-sm text-green-800 font-medium">Invite link generated!</p>
-              </div>
+              {inviteEmailSent ? (
+                <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-4">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                  <div>
+                    <p className="text-sm text-green-800 font-medium">Invite email sent!</p>
+                    <p className="text-xs text-green-700 mt-0.5">An invitation email has been sent to <strong>{inviteEmail}</strong>.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 rounded-xl border border-yellow-200 bg-yellow-50 p-4">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 shrink-0" />
+                  <div>
+                    <p className="text-sm text-yellow-800 font-medium">Invite link generated</p>
+                    <p className="text-xs text-yellow-700 mt-0.5">Email could not be sent automatically. Please copy and share the link below.</p>
+                  </div>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label className="text-xs text-muted-foreground">Invite link (expires in 48 hours)</Label>
                 <div className="flex gap-2">
@@ -304,7 +320,7 @@ export default function TeamManagement() {
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                Share this link with the invitee. They must register using the email address you specified.
+                The invitee must register using the email address you specified.
               </p>
             </div>
           ) : (
@@ -371,7 +387,7 @@ export default function TeamManagement() {
                 {inviteMutation.isPending ? (
                   <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating…</>
                 ) : (
-                  <><Mail className="w-4 h-4 mr-2" />Generate Invite</>
+                  <><Mail className="w-4 h-4 mr-2" />Send Invite</>
                 )}
               </Button>
             )}

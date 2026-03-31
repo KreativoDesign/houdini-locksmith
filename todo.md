@@ -344,3 +344,11 @@
 - [x] Conflict indicator (warning icon) on days with multiple bookings
 - [x] Colour-coded legend per technician at the bottom of the page
 - [x] TypeScript clean (0 errors), 80 tests still passing
+
+## Phase 33: Invite-by-Email & Job Card Scheduling Fix
+- [x] Wire Resend to createInvite: send invite email with link to invitee automatically
+- [x] Update TeamManagement dialog: "Send Invite" button label, show success state with email confirmation
+- [x] Job card scheduling: fix booked slot not displaying in the details section after booking
+- [x] Job card scheduling: clarify purpose — show scheduled date/time prominently in job card header/sidebar
+- [x] Job card scheduling: display technician name + booked slot in the job info card
+- [x] TypeScript clean, 82 tests passing (2 new sendInviteEmail unit tests added)

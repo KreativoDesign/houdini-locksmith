@@ -1595,10 +1595,27 @@ export default function JobCardDetail() {
                   </CardTitle>
                   <Button size="sm" variant="ghost" className="h-7 text-xs gap-1"
                     onClick={() => setScheduleOpen(!scheduleOpen)}>
-                    {scheduleOpen ? "Hide" : "Pick slot"}
+                    {scheduleOpen ? "Hide" : (j.scheduledTimeSlotId ? "Change slot" : "Pick slot")}
                   </Button>
                 </div>
               </CardHeader>
+              {/* Always show the currently booked slot summary */}
+              {j.scheduledDate && !scheduleOpen && (
+                <CardContent className="pt-0 pb-4">
+                  <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+                    <div>
+                      <p className="text-xs font-medium text-green-800">Slot booked</p>
+                      <p className="text-sm font-semibold text-green-900">
+                        {format(new Date(j.scheduledDate), "EEE dd MMM yyyy, HH:mm")}
+                      </p>
+                      {j.technicianName && (
+                        <p className="text-xs text-green-700 mt-0.5">Technician: {j.technicianName}</p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              )}
               {scheduleOpen && j.assignedTechnicianId && (
                 <CardContent>
                   <SlotPicker

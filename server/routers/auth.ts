@@ -41,6 +41,7 @@ import {
   SESSION_EXPIRY_MS,
 } from "../authService";
 import { writeAuditLog } from "../authService";
+import { sendInviteEmail } from "../_core/email";
 
 // ─────────────────────────────────────────────
 // HELPERS
@@ -260,13 +261,15 @@ export const localAuthRouter = router({
 
   // ── ADMIN ───────────────────────────────────
 
-  /** Create an invite link for a new user */
+  /** Create an invite link for a new user and optionally email it */
   createInvite: adminProcedure
     .input(
       z.object({
         email: z.string().email(),
         role: z.enum(["admin", "manager", "technician"]),
         departmentId: z.number().int().positive().optional(),
+        /** Frontend origin so the invite URL points to the correct domain */
+        origin: z.string().url().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -281,8 +284,19 @@ export const localAuthRouter = router({
             userAgent: getClientUserAgent(ctx.req),
           }
         );
-        const inviteUrl = `${ctx.req.protocol}://${ctx.req.get("host")}/register?invite=${token}`;
-        return { token, inviteUrl };
+        // Use the frontend origin if provided, otherwise fall back to the request host
+        const base = input.origin ?? `${ctx.req.protocol}://${ctx.req.get("host")}`;
+        const inviteUrl = `${base}/register?invite=${token}`;
+
+        // Send invite email via Resend (non-fatal if it fails)
+        const emailSent = await sendInviteEmail({
+          to: input.email,
+          role: input.role,
+          inviteUrl,
+          invitedByName: ctx.user.name ?? "Houdini Locksmith Admin",
+        });
+
+        return { token, inviteUrl, emailSent };
       } catch (err) {
         throw new TRPCError({
           code: "BAD_REQUEST",

@@ -508,6 +508,13 @@ export async function getAvailableSlots(technicianId: number, slotDate: string):
   ).orderBy(timeSlots.startTime);
 }
 
+export async function getSlotById(slotId: number): Promise<TimeSlot | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(timeSlots).where(eq(timeSlots.id, slotId)).limit(1);
+  return result[0];
+}
+
 export async function bookTimeSlot(slotId: number, jobCardId: number): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

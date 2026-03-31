@@ -8,6 +8,7 @@ import {
   getAvailableSlots,
   getBookedSlotsForDate,
   getJobCardById,
+  getSlotById,
   getSlotsByTechnicianAndDate,
   getUserById,
   listAvailability,
@@ -124,10 +125,24 @@ export const schedulingRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot book a slot for a closed job" });
       }
 
+      // Fetch the slot to derive the scheduledDate
+      const slot = await getSlotById(input.slotId);
+      if (!slot) throw new TRPCError({ code: "NOT_FOUND", message: "Time slot not found" });
+
+      // Release any previously booked slot for this job card
+      if (job.scheduledTimeSlotId && job.scheduledTimeSlotId !== input.slotId) {
+        await releaseTimeSlot(job.scheduledTimeSlotId);
+      }
+
       try {
         await bookTimeSlot(input.slotId, input.jobCardId);
-        // Update job card's scheduled slot reference
-        await updateJobCard(input.jobCardId, { scheduledTimeSlotId: input.slotId });
+        // Persist both the slot reference and the human-readable scheduled date/time
+        // so the sidebar and other surfaces can display it without a slot join.
+        const scheduledDate = new Date(`${slot.slotDate}T${slot.startTime}:00`);
+        await updateJobCard(input.jobCardId, {
+          scheduledTimeSlotId: input.slotId,
+          scheduledDate,
+        });
       } catch (err) {
         if (err instanceof Error && err.message === "Time slot is already booked") {
           throw new TRPCError({ code: "CONFLICT", message: "This time slot is already booked" });
@@ -142,6 +157,14 @@ export const schedulingRouter = router({
   releaseSlot: managerProcedure
     .input(z.object({ slotId: z.number().int().positive() }))
     .mutation(async ({ input }) => {
+      // Find the job card that owns this slot so we can clear its scheduled fields
+      const slot = await getSlotById(input.slotId);
+      if (slot?.jobCardId) {
+        await updateJobCard(slot.jobCardId, {
+          scheduledTimeSlotId: null,
+          scheduledDate: null,
+        });
+      }
       await releaseTimeSlot(input.slotId);
       return { success: true };
     }),

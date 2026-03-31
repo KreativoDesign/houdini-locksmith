@@ -9,7 +9,7 @@
  *    This test is skipped when RESEND_API_KEY is not set so CI stays green.
  */
 import { describe, expect, it, vi } from "vitest";
-import { sendSignatureConfirmationEmail } from "./_core/email";
+import { sendSignatureConfirmationEmail, sendInviteEmail } from "./_core/email";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -45,6 +45,34 @@ describe("sendSignatureConfirmationEmail – unit", () => {
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining("no valid email address")
     );
+    warnSpy.mockRestore();
+  });
+});
+
+// ── sendInviteEmail unit tests ───────────────────────────────────────────────
+
+describe("sendInviteEmail – unit", () => {
+  it("returns false when recipient email is empty", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await sendInviteEmail({
+      to: "",
+      role: "technician",
+      inviteUrl: "https://example.com/register?invite=abc",
+      invitedByName: "Admin",
+    });
+    expect(result).toBe(false);
+    warnSpy.mockRestore();
+  });
+
+  it("returns false when recipient email has no @ symbol", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = await sendInviteEmail({
+      to: "notanemail",
+      role: "manager",
+      inviteUrl: "https://example.com/register?invite=xyz",
+      invitedByName: "Admin",
+    });
+    expect(result).toBe(false);
     warnSpy.mockRestore();
   });
 });

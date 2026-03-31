@@ -169,6 +169,113 @@ function buildHtml(p: SignatureConfirmationEmailParams): string {
 </html>`;
 }
 
+export type InviteEmailParams = {
+  /** Recipient email address */
+  to: string;
+  /** Role being invited to */
+  role: "admin" | "manager" | "technician";
+  /** Full invite URL including token */
+  inviteUrl: string;
+  /** Name of the admin who sent the invite */
+  invitedByName: string;
+};
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Administrator",
+  manager: "Manager",
+  technician: "Technician",
+};
+
+function buildInviteHtml(p: InviteEmailParams): string {
+  const roleLabel = ROLE_LABELS[p.role] ?? p.role;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You've been invited to Houdini Locksmith &amp; Security</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,Helvetica,sans-serif;color:#18181b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <!-- Header -->
+          <tr>
+            <td style="background:#18181b;padding:28px 32px;">
+              <p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">🔐 Houdini Locksmith &amp; Security</p>
+              <p style="margin:4px 0 0;font-size:13px;color:#a1a1aa;">Team Invitation</p>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
+                <strong>${p.invitedByName}</strong> has invited you to join the Houdini Locksmith &amp; Security team as a <strong>${roleLabel}</strong>.
+              </p>
+              <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#3f3f46;">
+                Click the button below to create your account. This invite link expires in <strong>48 hours</strong> and can only be used once.
+              </p>
+              <div style="text-align:center;margin:32px 0;">
+                <a href="${p.inviteUrl}" style="display:inline-block;background:#18181b;color:#ffffff;font-size:15px;font-weight:600;padding:14px 32px;border-radius:8px;text-decoration:none;letter-spacing:-0.2px;">Accept Invitation</a>
+              </div>
+              <p style="margin:0 0 8px;font-size:13px;color:#71717a;">Or copy and paste this link into your browser:</p>
+              <p style="margin:0 0 24px;font-size:12px;color:#a1a1aa;word-break:break-all;font-family:monospace;background:#f4f4f5;padding:10px 12px;border-radius:6px;">${p.inviteUrl}</p>
+              <p style="margin:0;font-size:13px;color:#71717a;line-height:1.6;">
+                If you did not expect this invitation, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f4f4f5;padding:20px 32px;border-top:1px solid #e4e4e7;">
+              <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;">
+                This is an automated invitation from Houdini Locksmith &amp; Security.<br />
+                Please do not reply to this email.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+/**
+ * Send a team invitation email to a new user via Resend.
+ * Returns `true` if accepted, `false` on any error (non-fatal).
+ */
+export async function sendInviteEmail(params: InviteEmailParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY is not configured — skipping invite email.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient email — skipping invite email.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `You've been invited to join Houdini Locksmith & Security`,
+      html: buildInviteHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend returned an error sending invite:", error);
+      return false;
+    }
+    console.log(`[Email] Invite email sent to ${params.to} (role: ${params.role})`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send invite email:", err);
+    return false;
+  }
+}
+
 /**
  * Send a work-completion confirmation email to the client after a digital
  * signature has been successfully captured and uploaded to S3.
