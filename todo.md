@@ -200,3 +200,16 @@
 - [x] Pricing badge on job card list showing pricing status
 - [x] Route /pricing?jobCardId=:id wired in App.tsx
 - [x] TypeScript clean (0 errors), 75 tests still passing
+
+## Phase 18: Director UX Fixes (Bug Round 1)
+- [ ] Enquiry form: new client vs existing client toggle (create inline or pick from dropdown)
+- [ ] Enquiry form: add phone, address, email fields for new client creation
+- [ ] Invite system: send invite via email, not just generate a link
+- [ ] Job card: unit price field accepts decimal places (e.g. 99.99)
+- [ ] Job card notes: show technician name in dropdown/label
+- [ ] Job card notes: timestamp on each note entry
+- [ ] Job card notes: fix save notes button (currently not saving)
+- [ ] Job card status: fix invalid transition guard (in-progress → in-progress blocked correctly)
+- [ ] Job card status: allow status update from job card detail page action buttons
+- [ ] Kanban board: drag-and-drop cards between status columns
+- [ ] Kanban board: status update fires when card is dropped into new column

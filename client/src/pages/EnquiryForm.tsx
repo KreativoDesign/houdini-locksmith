@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -13,8 +14,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
+
+type ClientMode = "existing" | "new";
 
 export default function EnquiryForm() {
   const { id } = useParams<{ id: string }>();
@@ -28,20 +31,24 @@ export default function EnquiryForm() {
 
   const utils = trpc.useUtils();
 
-  // Load existing enquiry for edit
+  // ── Client mode ──────────────────────────────────────────────────────────
+  const [clientMode, setClientMode] = useState<ClientMode>(presetClientId ? "existing" : "existing");
+
+  // ── Load existing enquiry for edit ───────────────────────────────────────
   const { data: existing } = trpc.enquiries.get.useQuery(
     { id: enquiryId!, withDetails: true },
     { enabled: isEdit }
   );
 
-  // Load clients for picker
+  // ── Load clients for picker ───────────────────────────────────────────────
   const { data: clientsData } = trpc.clients.list.useQuery({ limit: 200 });
   const clientsList = clientsData?.rows ?? [];
 
-  // Load departments
+  // ── Load departments ──────────────────────────────────────────────────────
   const { data: depts } = trpc.departments.list.useQuery();
   const deptsList = depts ?? [];
 
+  // ── Enquiry form state ────────────────────────────────────────────────────
   const [form, setForm] = useState({
     clientId: presetClientId ? String(presetClientId) : "",
     departmentId: "",
@@ -52,6 +59,16 @@ export default function EnquiryForm() {
     source: "phone",
     notes: "",
   });
+
+  // ── New client form state ─────────────────────────────────────────────────
+  const [newClient, setNewClient] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
   const [saving, setSaving] = useState(false);
 
   // Populate form when editing
@@ -71,9 +88,15 @@ export default function EnquiryForm() {
     }
   }, [existing, isEdit]);
 
+  // ── Mutations ─────────────────────────────────────────────────────────────
+  const createClientMutation = trpc.clients.create.useMutation({
+    onError: (e) => toast.error(`Client creation failed: ${e.message}`),
+  });
+
   const createMutation = trpc.enquiries.create.useMutation({
     onSuccess: (data) => {
       utils.enquiries.list.invalidate();
+      utils.clients.list.invalidate();
       toast.success("Enquiry created successfully");
       navigate(`/enquiries/${data.id}`);
     },
@@ -89,12 +112,28 @@ export default function EnquiryForm() {
     onError: (e) => toast.error(e.message),
   });
 
+  // ── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.clientId || !form.subject || !form.description) {
-      toast.error("Please fill in all required fields");
+
+    // Validate new client fields if in new mode
+    if (!isEdit && clientMode === "new") {
+      if (!newClient.firstName.trim() || !newClient.lastName.trim() || !newClient.phone.trim()) {
+        toast.error("Client first name, last name, and phone are required");
+        return;
+      }
+    }
+
+    if (!isEdit && clientMode === "existing" && !form.clientId) {
+      toast.error("Please select a client");
       return;
     }
+
+    if (!form.subject || !form.description) {
+      toast.error("Subject and description are required");
+      return;
+    }
+
     setSaving(true);
     try {
       if (isEdit && enquiryId) {
@@ -109,8 +148,20 @@ export default function EnquiryForm() {
           notes: form.notes || undefined,
         });
       } else {
+        // Create new client first if needed
+        let clientId = form.clientId ? parseInt(form.clientId) : 0;
+        if (clientMode === "new") {
+          const created = await createClientMutation.mutateAsync({
+            firstName: newClient.firstName.trim(),
+            lastName: newClient.lastName.trim(),
+            email: newClient.email.trim() || undefined,
+            phone: newClient.phone.trim(),
+            address: newClient.address.trim() || undefined,
+          });
+          clientId = created.id;
+        }
         await createMutation.mutateAsync({
-          clientId: parseInt(form.clientId),
+          clientId,
           departmentId: form.departmentId ? parseInt(form.departmentId) : undefined,
           subject: form.subject,
           description: form.description,
@@ -127,6 +178,16 @@ export default function EnquiryForm() {
 
   const f = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((prev) => ({ ...prev, [k]: e.target.value }));
+
+  const nc = (k: keyof typeof newClient) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setNewClient((prev) => ({ ...prev, [k]: e.target.value }));
+
+  const isFormValid = () => {
+    if (!form.subject || !form.description) return false;
+    if (isEdit) return true;
+    if (clientMode === "existing") return !!form.clientId;
+    return !!(newClient.firstName.trim() && newClient.lastName.trim() && newClient.phone.trim());
+  };
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
@@ -146,29 +207,143 @@ export default function EnquiryForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Client & Department */}
+
+        {/* ── Client Section ── */}
         <Card>
-          <CardHeader><CardTitle className="text-base">Client & Department</CardTitle></CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 space-y-1.5">
-              <Label>Client *</Label>
-              <Select
-                value={form.clientId}
-                onValueChange={(v) => setForm((p) => ({ ...p, clientId: v }))}
-                disabled={isEdit}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a client…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {clientsList.map((c: any) => (
-                    <SelectItem key={c.id} value={String(c.id)}>
-                      {c.firstName} {c.lastName} — {c.phone}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Client</CardTitle>
+              {!isEdit && (
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={clientMode === "existing" ? "default" : "outline"}
+                    className="gap-1.5 h-7 text-xs"
+                    onClick={() => setClientMode("existing")}
+                  >
+                    <Users className="h-3 w-3" />
+                    Existing Client
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={clientMode === "new" ? "default" : "outline"}
+                    className="gap-1.5 h-7 text-xs"
+                    onClick={() => setClientMode("new")}
+                  >
+                    <UserPlus className="h-3 w-3" />
+                    New Client
+                  </Button>
+                </div>
+              )}
             </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Existing client picker */}
+            {(isEdit || clientMode === "existing") && (
+              <div className="space-y-1.5">
+                <Label>Select Client *</Label>
+                <Select
+                  value={form.clientId}
+                  onValueChange={(v) => setForm((p) => ({ ...p, clientId: v }))}
+                  disabled={isEdit}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Search and select a client…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clientsList.map((c: any) => (
+                      <SelectItem key={c.id} value={String(c.id)}>
+                        {c.firstName} {c.lastName}
+                        {c.phone ? ` — ${c.phone}` : ""}
+                        {c.email ? ` (${c.email})` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {clientsList.length === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    No clients found.{" "}
+                    <button
+                      type="button"
+                      className="text-primary underline"
+                      onClick={() => setClientMode("new")}
+                    >
+                      Create a new client instead.
+                    </button>
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* New client inline form */}
+            {!isEdit && clientMode === "new" && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Badge variant="secondary" className="text-xs">New Client</Badge>
+                  <span className="text-xs text-muted-foreground">This client will be created and linked to the enquiry</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>First Name *</Label>
+                    <Input
+                      value={newClient.firstName}
+                      onChange={nc("firstName")}
+                      placeholder="John"
+                      maxLength={100}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Last Name *</Label>
+                    <Input
+                      value={newClient.lastName}
+                      onChange={nc("lastName")}
+                      placeholder="Smith"
+                      maxLength={100}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Phone *</Label>
+                    <Input
+                      value={newClient.phone}
+                      onChange={nc("phone")}
+                      placeholder="+27 11 000 0000"
+                      maxLength={30}
+                      type="tel"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Email</Label>
+                    <Input
+                      value={newClient.email}
+                      onChange={nc("email")}
+                      placeholder="john@example.com"
+                      maxLength={320}
+                      type="email"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Address</Label>
+                  <Input
+                    value={newClient.address}
+                    onChange={nc("address")}
+                    placeholder="123 Main Street, Johannesburg"
+                    maxLength={500}
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* ── Department & Service ── */}
+        <Card>
+          <CardHeader><CardTitle className="text-base">Department & Service</CardTitle></CardHeader>
+          <CardContent className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label>Department</Label>
               <Select
@@ -207,7 +382,7 @@ export default function EnquiryForm() {
           </CardContent>
         </Card>
 
-        {/* Enquiry Details */}
+        {/* ── Enquiry Details ── */}
         <Card>
           <CardHeader><CardTitle className="text-base">Enquiry Details</CardTitle></CardHeader>
           <CardContent className="space-y-4">
@@ -236,9 +411,7 @@ export default function EnquiryForm() {
                   value={form.priority}
                   onValueChange={(v) => setForm((p) => ({ ...p, priority: v }))}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="normal">Normal</SelectItem>
@@ -253,9 +426,7 @@ export default function EnquiryForm() {
                   value={form.source}
                   onValueChange={(v) => setForm((p) => ({ ...p, source: v }))}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="phone">Phone</SelectItem>
                     <SelectItem value="email">Email</SelectItem>
@@ -278,7 +449,7 @@ export default function EnquiryForm() {
           </CardContent>
         </Card>
 
-        {/* Actions */}
+        {/* ── Actions ── */}
         <div className="flex justify-end gap-3">
           <Button
             type="button"
@@ -289,7 +460,7 @@ export default function EnquiryForm() {
           </Button>
           <Button
             type="submit"
-            disabled={saving || !form.clientId || !form.subject || !form.description}
+            disabled={saving || !isFormValid()}
             className="gap-2"
           >
             <Save className="h-4 w-4" />
