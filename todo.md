@@ -243,3 +243,13 @@
 - [x] Dialog has "Confirm & Upload" and "Re-draw" buttons
 - [x] Confirming triggers the S3 upload; re-drawing returns to the canvas
 - [x] TypeScript clean, 75 tests still passing
+
+## Phase 22: Post-Signature Client Confirmation Email
+- [x] Investigate available email sending infrastructure (Manus API Hub / built-in)
+- [x] Install Resend SDK and configure RESEND_API_KEY + EMAIL_FROM secrets
+- [x] Build sendSignatureConfirmationEmail helper (HTML email with signature image + job summary)
+- [x] Wire email send into signatures.capture procedure after successful S3 upload
+- [x] Gracefully handle missing client email (log warning, do not fail the capture)
+- [x] Email failure is non-fatal — signature capture always succeeds regardless
+- [x] Vitest tests: key configured, email validation guards, live API ping
+- [x] TypeScript clean, 80 tests passing (5 new email tests)

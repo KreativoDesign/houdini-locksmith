@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   createSignature,
+  getClientById,
   getJobCardById,
   getSignatureByJobCard,
   updateJobCard,
@@ -9,6 +10,7 @@ import {
 import { technicianProcedure, emitNotification } from "./middleware";
 import { router } from "../_core/trpc";
 import { storagePut } from "../storage";
+import { sendSignatureConfirmationEmail } from "../_core/email";
 
 /** Convert a base64 data URL to a Buffer */
 function dataUrlToBuffer(dataUrl: string): { buffer: Buffer; mimeType: string } {
@@ -81,6 +83,8 @@ export const signaturesRouter = router({
         });
       }
 
+      const signedAt = new Date();
+
       // Save signature record
       const id = await createSignature({
         jobCardId: input.jobCardId,
@@ -90,7 +94,7 @@ export const signaturesRouter = router({
         signerRole: input.signerRole ?? null,
         ipAddress: input.ipAddress ?? null,
         capturedById: ctx.user.id,
-        signedAt: new Date(),
+        signedAt,
       });
 
       // Mark job card as signed
@@ -103,6 +107,32 @@ export const signaturesRouter = router({
         entityType: "job_card",
         entityId: input.jobCardId,
       });
+
+      // ── Send confirmation email to client (non-fatal) ──────────────────────
+      try {
+        const client = job.clientId ? await getClientById(job.clientId) : null;
+        if (client?.email) {
+          const clientName = `${client.firstName} ${client.lastName}`.trim();
+          await sendSignatureConfirmationEmail({
+            to: client.email,
+            clientName,
+            jobNumber: job.jobNumber,
+            jobTitle: job.title,
+            signerName: input.signerName,
+            signerRole: input.signerRole ?? null,
+            signedAt,
+            signatureUrl,
+            technicianName: ctx.user.name ?? "Houdini Technician",
+          });
+        } else {
+          console.warn(
+            `[Signatures] Client for job ${job.jobNumber} has no email — confirmation email skipped.`
+          );
+        }
+      } catch (emailErr) {
+        // Never let an email failure roll back the signature capture
+        console.warn("[Signatures] Failed to send confirmation email:", emailErr);
+      }
 
       return { id, signatureUrl };
     }),
