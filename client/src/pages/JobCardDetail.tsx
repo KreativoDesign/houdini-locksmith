@@ -635,7 +635,7 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-semibold">
-                        R {(item.lineTotal ?? 0).toFixed(2)}
+                        R {parseFloat(String(item.lineTotal ?? 0)).toFixed(2)}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {item.quantity} × R {parseFloat(item.unitPrice).toFixed(2)}
@@ -1437,17 +1437,24 @@ export default function JobCardDetail() {
 
   // ── Client portal link ──────────────────────────────────────────────────────
   const [portalLinkCopied, setPortalLinkCopied] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [expiryDays, setExpiryDays] = useState<string>("30");
   const portalLinkQuery = trpc.clientPortal.getLink.useQuery(
     { jobCardId: jobId },
     { enabled: isManager }
   );
   const generatePortalLink = trpc.clientPortal.generateLink.useMutation({
-    onSuccess: ({ url }) => {
+    onSuccess: ({ url, emailSent }) => {
+      setShowShareDialog(false);
       navigator.clipboard.writeText(url).then(() => {
         setPortalLinkCopied(true);
         setTimeout(() => setPortalLinkCopied(false), 2500);
       });
-      toast.success("Client portal link copied to clipboard");
+      if (emailSent) {
+        toast.success("Client portal link sent to client and copied to clipboard");
+      } else {
+        toast.success("Client portal link copied to clipboard");
+      }
       utils.clientPortal.getLink.invalidate({ jobCardId: jobId });
     },
     onError: (err) => toast.error(`Failed to generate link: ${err.message}`),
@@ -1544,31 +1551,67 @@ export default function JobCardDetail() {
         <div className="flex gap-2 flex-wrap justify-end">
           {/* Share client portal link (managers only) */}
           {isManager && (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={generatePortalLink.isPending}
-              onClick={() =>
-                generatePortalLink.mutate({
-                  jobCardId: jobId,
-                  origin: window.location.origin,
-                })
-              }
-              className="gap-1.5 border-primary/40 text-primary hover:bg-primary/10"
-            >
-              {generatePortalLink.isPending ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : portalLinkCopied ? (
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              ) : (
-                <Share2 className="w-3.5 h-3.5" />
-              )}
-              {portalLinkCopied
-                ? "Link Copied!"
-                : portalLinkQuery.data
-                ? "Refresh & Copy Link"
-                : "Share Client Link"}
-            </Button>
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={generatePortalLink.isPending}
+                onClick={() => setShowShareDialog(true)}
+                className="gap-1.5 border-primary/40 text-primary hover:bg-primary/10"
+              >
+                {portalLinkCopied ? (
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                ) : (
+                  <Share2 className="w-3.5 h-3.5" />
+                )}
+                {portalLinkCopied ? "Link Copied!" : portalLinkQuery.data ? "Refresh Client Link" : "Share Client Link"}
+              </Button>
+              <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+                <DialogContent className="max-w-sm">
+                  <DialogHeader>
+                    <DialogTitle>Share Client Portal Link</DialogTitle>
+                    <DialogDescription>
+                      Generate a read-only link for the client to track their job status. The link will be copied to your clipboard and emailed to the client automatically.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="expiry-select">Link expiry</Label>
+                      <Select value={expiryDays} onValueChange={setExpiryDays}>
+                        <SelectTrigger id="expiry-select" className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="7">7 days</SelectItem>
+                          <SelectItem value="14">14 days</SelectItem>
+                          <SelectItem value="30">30 days</SelectItem>
+                          <SelectItem value="never">Never expires</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowShareDialog(false)}>Cancel</Button>
+                    <Button
+                      disabled={generatePortalLink.isPending}
+                      onClick={() =>
+                        generatePortalLink.mutate({
+                          jobCardId: jobId,
+                          origin: window.location.origin,
+                          expiryDays: expiryDays === "never" ? null : parseInt(expiryDays, 10),
+                        })
+                      }
+                    >
+                      {generatePortalLink.isPending ? (
+                        <><Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />Generating…</>
+                      ) : (
+                        <><Share2 className="w-3.5 h-3.5 mr-2" />Generate &amp; Share</>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </>
           )}
           {/* Download PDF */}
           <Button

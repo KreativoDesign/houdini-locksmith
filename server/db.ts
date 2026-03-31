@@ -821,13 +821,20 @@ export async function seedDefaultCatalogueItems(adminUserId: number): Promise<vo
 // ─────────────────────────────────────────────
 
 /** Create or replace the portal token for a job card (one token per job). */
-export async function upsertClientPortalToken(jobCardId: number): Promise<string> {
+export async function upsertClientPortalToken(
+  jobCardId: number,
+  expiresAt?: Date | null
+): Promise<string> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const token = require("crypto").randomBytes(32).toString("hex") as string;
   // Delete any existing token for this job card first
   await db.delete(clientPortalTokens).where(eq(clientPortalTokens.jobCardId, jobCardId));
-  await db.insert(clientPortalTokens).values({ jobCardId, token } as InsertClientPortalToken);
+  await db.insert(clientPortalTokens).values({
+    jobCardId,
+    token,
+    expiresAt: expiresAt ?? null,
+  } as InsertClientPortalToken);
   return token;
 }
 

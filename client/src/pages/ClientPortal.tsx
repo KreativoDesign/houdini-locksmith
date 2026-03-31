@@ -3,6 +3,7 @@ import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import {
   CheckCircle2,
   Circle,
@@ -14,6 +15,7 @@ import {
   AlertCircle,
   Loader2,
   Lock,
+  FileDown,
 } from "lucide-react";
 
 // ─── Status colour map ────────────────────────────────────────────────────────
@@ -54,6 +56,12 @@ export default function ClientPortal() {
     { token },
     { enabled: token.length === 64, retry: false }
   );
+
+  const pdfMutation = trpc.jobCards.generatePdf.useMutation({
+    onSuccess: ({ url }) => {
+      window.open(url, "_blank", "noopener,noreferrer");
+    },
+  });
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
@@ -338,10 +346,42 @@ export default function ClientPortal() {
           </Card>
         )}
 
-        {/* ── Footer ───────────────────────────────────────────────────────── */}
+           {/* ── PDF Download ─────────────────────────────────────────────── */}
+        {data.jobCardId && (
+          <div className="flex justify-center pb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pdfMutation.isPending}
+              onClick={() => pdfMutation.mutate({ id: data.jobCardId! })}
+              className="gap-2 border-primary/40 text-primary hover:bg-primary/10"
+            >
+              {pdfMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileDown className="w-4 h-4" />
+              )}
+              {pdfMutation.isPending ? "Generating PDF…" : "Download Job Card PDF"}
+            </Button>
+          </div>
+        )}
+
+        {/* ── Footer ─────────────────────────────────────────────────── */}
         <div className="text-center text-xs text-muted-foreground/50 pb-6 space-y-1">
           <p>This is a read-only status page provided by Houdini Locksmith & Security.</p>
           <p>Last updated: {new Date(data.updatedAt).toLocaleString("en-ZA")}</p>
+          {data.expiresAt && (
+            <p>
+              This link expires on{" "}
+              <span className="font-medium">
+                {new Date(data.expiresAt).toLocaleDateString("en-ZA", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </span>.
+            </p>
+          )}
         </div>
       </main>
     </div>

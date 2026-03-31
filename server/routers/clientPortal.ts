@@ -15,27 +15,90 @@ import {
 } from "../db";
 import { managerProcedure } from "./middleware";
 import { publicProcedure, router } from "../_core/trpc";
+import { sendClientPortalEmail } from "../_core/email";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Convert expiryDays (number | null) to a Date or null */
+function calcExpiresAt(expiryDays: number | null): Date | null {
+  if (!expiryDays) return null;
+  const d = new Date();
+  d.setDate(d.getDate() + expiryDays);
+  return d;
+}
+
+/** Format a Date to a human-readable label, e.g. "30 Apr 2026" */
+function formatExpiryLabel(d: Date): string {
+  return d.toLocaleDateString("en-ZA", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "Africa/Johannesburg",
+  });
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Received",
+  assigned: "Technician Assigned",
+  in_progress: "In Progress",
+  completed: "Work Completed",
+  invoiced: "Invoice Sent",
+  closed: "Closed",
+};
+
+// ─── Router ───────────────────────────────────────────────────────────────────
 
 export const clientPortalRouter = router({
   /**
    * Generate (or refresh) a shareable client portal link for a job card.
    * Protected — only managers and admins can generate links.
+   * Automatically emails the client if they have an email address on file.
    */
   generateLink: managerProcedure
     .input(
       z.object({
         jobCardId: z.number().int().positive(),
-        /** Optional: pass window.location.origin so we can return a full URL */
+        /** Pass window.location.origin so we can return a full URL */
         origin: z.string().url().optional(),
+        /**
+         * Optional expiry in days. null / undefined = never expires.
+         * Accepted values: 7, 14, 30, or null.
+         */
+        expiryDays: z.number().int().positive().nullable().optional(),
       })
     )
     .mutation(async ({ input }) => {
       const job = await getJobCardById(input.jobCardId);
       if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
-      const token = await upsertClientPortalToken(input.jobCardId);
+
+      const expiresAt = calcExpiresAt(input.expiryDays ?? null);
+      const token = await upsertClientPortalToken(input.jobCardId, expiresAt);
       const path = `/portal/${token}`;
       const url = input.origin ? `${input.origin}${path}` : path;
-      return { token, url };
+
+      // Auto-email the client if they have an email address
+      let emailSent = false;
+      if (job.clientId) {
+        const client = await getClientById(job.clientId);
+        if (client?.email) {
+          const expiresLabel = expiresAt ? formatExpiryLabel(expiresAt) : undefined;
+          emailSent = await sendClientPortalEmail({
+            to: client.email,
+            clientFirstName: client.firstName,
+            jobNumber: job.jobNumber ?? "N/A",
+            jobTitle: job.description ?? "Locksmith service",
+            portalUrl: url,
+            expiresLabel,
+          });
+        }
+      }
+
+      return {
+        token,
+        url,
+        expiresAt,
+        emailSent,
+      };
     }),
 
   /**
@@ -46,7 +109,7 @@ export const clientPortalRouter = router({
     .input(z.object({ jobCardId: z.number().int().positive() }))
     .query(async ({ input }) => {
       const row = await getClientPortalTokenByJobCard(input.jobCardId);
-      return row ? { token: row.token } : null;
+      return row ? { token: row.token, expiresAt: row.expiresAt } : null;
     }),
 
   /**
@@ -149,15 +212,10 @@ export const clientPortalRouter = router({
         requiresSignature: job.requiresSignature,
         createdAt: job.createdAt,
         updatedAt: job.updatedAt,
+        /** Token expiry — null means the link never expires */
+        expiresAt: portalToken.expiresAt,
+        /** Job card ID needed by the client for PDF download */
+        jobCardId: job.id,
       };
     }),
 });
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: "Received",
-  assigned: "Technician Assigned",
-  in_progress: "In Progress",
-  completed: "Work Completed",
-  invoiced: "Invoice Sent",
-  closed: "Closed",
-};

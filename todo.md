@@ -419,3 +419,13 @@
 - [x] PWAInstallPrompt component: captures beforeinstallprompt, shows floating banner above mobile nav with Install + Dismiss, session-storage dismissal memory
 - [x] Mounted globally in main.tsx
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 41: Client Portal Enhancements
+- [x] sendClientPortalEmail helper in email.ts — branded HTML email with portal URL, job title, client name, expiry note
+- [x] generateLink procedure: auto-sends portal email to client after token creation; returns emailSent flag
+- [x] generateLink procedure: accepts optional expiryDays (7/14/30/null for never), stores expiresAt in DB
+- [x] getJobStatus procedure: returns expiresAt and jobCardId; rejects expired tokens with clear error
+- [x] ClientPortal page: expiry date shown in footer; "Download Job Card PDF" button added
+- [x] JobCardDetail share button: dialog with expiry selector (7/14/30/never); toast shows "sent to client" when emailSent=true
+- [x] lineTotal.toFixed runtime error fixed (parseFloat guard)
+- [x] TypeScript clean (0 errors), 82 tests still passing
