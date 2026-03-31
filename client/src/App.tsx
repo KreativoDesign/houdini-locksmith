@@ -40,6 +40,9 @@ import JobCardForm from "./pages/JobCardForm";
 import Pricing from "./pages/Pricing";
 import PricingCatalogue from "./pages/PricingCatalogue";
 
+// Schedule page
+import SchedulePage from "./pages/Schedule";
+
 // ─────────────────────────────────────────────
 // ROUTE GUARDS
 // ─────────────────────────────────────────────
@@ -222,8 +225,15 @@ function Router() {
         </AppShell>
       </Route>
 
+      {/* Schedule page */}
+      <Route path="/schedule">
+        <AppShell>
+          <ProtectedRoute component={SchedulePage} />
+        </AppShell>
+      </Route>
+
       {/* Placeholder routes — show "coming soon" */}
-      {["/schedule", "/reports", "/settings", "/notifications"].map((path) => (
+      {["/reports", "/settings", "/notifications"].map((path) => (
         <Route key={path} path={path}>
           <AppShell>
             <ProtectedRoute component={PlaceholderPage} />

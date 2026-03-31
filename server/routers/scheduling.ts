@@ -54,6 +54,35 @@ export const schedulingRouter = router({
       return getSlotsByTechnicianAndDate(input.technicianId, input.date);
     }),
 
+  /** Get all booked slots for a list of technicians across a date range (weekly calendar) */
+  getWeeklyBookings: technicianProcedure
+    .input(
+      z.object({
+        technicianIds: z.array(z.number().int().positive()).min(1).max(50),
+        fromDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+        toDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+      })
+    )
+    .query(async ({ input }) => {
+      // Build list of dates in range
+      const dates: string[] = [];
+      const start = new Date(input.fromDate);
+      const end = new Date(input.toDate);
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        dates.push(d.toISOString().slice(0, 10));
+      }
+      // Fetch booked slots for each technician × each date in parallel
+      const results = await Promise.all(
+        input.technicianIds.flatMap((techId) =>
+          dates.map(async (date) => {
+            const slots = await getBookedSlotsForDate(techId, date);
+            return slots.map((s) => ({ ...s, technicianId: techId, date }));
+          })
+        )
+      );
+      return results.flat();
+    }),
+
   /** Get booked slots for a technician on a date — used for conflict detection in the slot picker */
   getBookingsForDate: technicianProcedure
     .input(

@@ -332,3 +332,15 @@
 - [x] Warning auto-clears when date or technician changes to a conflict-free selection
 - [x] Current job's own slot excluded from conflict count
 - [x] TypeScript clean (0 errors), 80 tests still passing
+
+## Phase 32: Weekly Calendar View on Schedule Page
+- [x] scheduling.getWeeklyBookings procedure: returns all booked slots for a date range, grouped by technician
+- [x] Schedule page: department selector (defaults to first dept)
+- [x] Schedule page: week navigation (prev/next week, "Today" button)
+- [x] Weekly grid: columns = Mon–Sun, rows = technicians in selected dept
+- [x] Each booked slot shown as a colour-coded chip with time range and job card ref
+- [x] Clicking a chip navigates to the job card detail page
+- [x] Empty cells show a subtle "—" to indicate no bookings
+- [x] Conflict indicator (warning icon) on days with multiple bookings
+- [x] Colour-coded legend per technician at the bottom of the page
+- [x] TypeScript clean (0 errors), 80 tests still passing
