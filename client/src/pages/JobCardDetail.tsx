@@ -62,6 +62,16 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import SignaturePad, { type SignaturePadHandle } from "@/components/SignaturePad";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Navigation,
+  Camera,
+  X as XIcon,
+  Zap,
+} from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type JobStatus =
@@ -322,13 +332,41 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
     }
   };
 
+   // Quick-add catalogue
+  const CATALOGUE = [
+    { name: "Call-out Fee", type: "service" as const, unitPrice: 350, description: "Standard call-out / site visit fee" },
+    { name: "Labour (per hour)", type: "labour" as const, unitPrice: 450, description: "Hourly labour rate" },
+    { name: "Gate Motor Installation", type: "service" as const, unitPrice: 2500, description: "Supply and install gate motor" },
+    { name: "Lock Replacement", type: "service" as const, unitPrice: 800, description: "Remove and replace standard lock" },
+    { name: "Key Cutting", type: "service" as const, unitPrice: 120, description: "Cut duplicate key" },
+    { name: "Emergency After-Hours", type: "service" as const, unitPrice: 600, description: "After-hours emergency surcharge" },
+    { name: "Access Control Installation", type: "service" as const, unitPrice: 3500, description: "Install access control unit" },
+    { name: "CCTV Camera", type: "part" as const, unitPrice: 1800, description: "Supply and install CCTV camera" },
+  ];
+  const [catalogueOpen, setCatalogueOpen] = useState(false);
+  const [cataloguePrices, setCataloguePrices] = useState<Record<string, string>>(
+    Object.fromEntries(CATALOGUE.map((c) => [c.name, String(c.unitPrice)]))
+  );
+
+  const handleQuickAdd = (item: typeof CATALOGUE[number]) => {
+    const price = parseFloat(cataloguePrices[item.name] ?? String(item.unitPrice)) || item.unitPrice;
+    createMutation.mutate({
+      jobCardId,
+      name: item.name,
+      type: item.type,
+      description: item.description,
+      quantity: 1,
+      unitPrice: price,
+      discountPct: 0,
+    });
+  };
+
   const TYPE_ICONS: Record<string, React.ElementType> = {
     part: Package,
     service: Wrench,
     labour: Timer,
     other: FileText,
   };
-
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -336,12 +374,56 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
           <Package className="w-4 h-4" /> Job Items
         </h3>
         {canEdit && (
-          <Button size="sm" variant="outline" className="h-7 text-xs gap-1"
-            onClick={() => { resetForm(); setEditItem(null); setAddOpen(true); }}>
-            <Plus className="w-3 h-3" /> Add item
-          </Button>
+          <div className="flex gap-1.5">
+            <Button size="sm" variant="outline" className="h-7 text-xs gap-1"
+              onClick={() => setCatalogueOpen(!catalogueOpen)}>
+              <Zap className="w-3 h-3" /> Quick-add
+            </Button>
+            <Button size="sm" variant="outline" className="h-7 text-xs gap-1"
+              onClick={() => { resetForm(); setEditItem(null); setAddOpen(true); }}>
+              <Plus className="w-3 h-3" /> Custom
+            </Button>
+          </div>
         )}
       </div>
+      {/* Quick-add catalogue */}
+      {canEdit && catalogueOpen && (
+        <div className="rounded-xl border bg-muted/30 p-3 space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+            <Zap className="w-3 h-3" /> Quick-add Pricing Catalogue
+          </p>
+          <div className="space-y-1.5">
+            {CATALOGUE.map((item) => (
+              <div key={item.name} className="flex items-center gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate">{item.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="text-xs text-muted-foreground">R</span>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={cataloguePrices[item.name] ?? String(item.unitPrice)}
+                    onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.name]: e.target.value }))}
+                    className="h-7 w-24 text-xs"
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-7 text-xs px-2"
+                    disabled={createMutation.isPending}
+                    onClick={() => handleQuickAdd(item)}
+                  >
+                    <Plus className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
@@ -482,50 +564,20 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
 }
 
 // ─── Notes Panel ─────────────────────────────────────────────────────────────
-function NotesPanel({ jobCardId, rawNotes, currentUser, jobStatus }: {
-  jobCardId: number;
-  rawNotes: string | null | undefined;
-  currentUser: any;
-  jobStatus: JobStatus;
+function NoteThread({ notes, isClosed, onAdd, isPending }: {
+  notes: NoteEntry[];
+  isClosed: boolean;
+  onAdd: (text: string) => void;
+  isPending: boolean;
 }) {
-  const utils = trpc.useUtils();
   const [newNote, setNewNote] = useState("");
-  const isClosed = ["priced", "cancelled"].includes(jobStatus);
-
-  const notes = useMemo(() => parseNotes(rawNotes), [rawNotes]);
-
-  const notesMutation = trpc.jobCards.updateStatus.useMutation({
-    onSuccess: () => {
-      utils.jobCards.get.invalidate({ id: jobCardId });
-      setNewNote("");
-      toast.success("Note added");
-    },
-    onError: (err) => toast.error(err.message),
-  });
-
-  const handleAddNote = () => {
+  const handleSend = () => {
     if (!newNote.trim()) return;
-    const entry: NoteEntry = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      text: newNote.trim(),
-      authorName: currentUser?.name ?? currentUser?.email ?? "Unknown",
-      authorId: currentUser?.id ?? 0,
-      timestamp: new Date().toISOString(),
-    };
-    const updated = [...notes, entry];
-    notesMutation.mutate({
-      id: jobCardId,
-      status: jobStatus,
-      notes: serializeNotes(updated),
-    });
+    onAdd(newNote.trim());
+    setNewNote("");
   };
-
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-        <MessageSquare className="w-4 h-4" /> Technician Notes
-      </h3>
-
       {notes.length === 0 ? (
         <p className="text-sm text-muted-foreground italic">No notes added yet.</p>
       ) : (
@@ -550,40 +602,289 @@ function NotesPanel({ jobCardId, rawNotes, currentUser, jobStatus }: {
           ))}
         </div>
       )}
-
       {!isClosed && (
-        <div className="flex gap-2 pt-1">
-          <Textarea
-            value={newNote}
-            onChange={(e) => setNewNote(e.target.value)}
-            placeholder="Add a note…"
-            rows={2}
-            className="resize-none text-sm"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                e.preventDefault();
-                handleAddNote();
-              }
-            }}
-          />
-          <Button
-            size="icon"
-            className="self-end h-9 w-9 shrink-0"
-            disabled={!newNote.trim() || notesMutation.isPending}
-            onClick={handleAddNote}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-      {!isClosed && (
-        <p className="text-xs text-muted-foreground">Press Ctrl+Enter to send</p>
+        <>
+          <div className="flex gap-2 pt-1">
+            <Textarea
+              value={newNote}
+              onChange={(e) => setNewNote(e.target.value)}
+              placeholder="Add a note…"
+              rows={2}
+              className="resize-none text-sm"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+            />
+            <Button
+              size="icon"
+              className="self-end h-9 w-9 shrink-0"
+              disabled={!newNote.trim() || isPending}
+              onClick={handleSend}
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">Press Ctrl+Enter to send</p>
+        </>
       )}
     </div>
   );
 }
 
-// ─── Signature Section ────────────────────────────────────────────────────────
+function NotesPanel({ jobCardId, rawTechNotes, rawManagerNotes, currentUser, jobStatus, isManager }: {
+  jobCardId: number;
+  rawTechNotes: string | null | undefined;
+  rawManagerNotes: string | null | undefined;
+  currentUser: any;
+  jobStatus: JobStatus;
+  isManager: boolean;
+}) {
+  const utils = trpc.useUtils();
+  const isClosed = ["priced", "cancelled"].includes(jobStatus);
+  const techNotes = useMemo(() => parseNotes(rawTechNotes), [rawTechNotes]);
+  const managerNotes = useMemo(() => parseNotes(rawManagerNotes), [rawManagerNotes]);
+
+  const notesMutation = trpc.jobCards.updateNotes.useMutation({
+    onSuccess: () => {
+      utils.jobCards.get.invalidate({ id: jobCardId });
+      toast.success("Note saved");
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const makeEntry = (text: string): NoteEntry => ({
+    id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    text,
+    authorName: currentUser?.name ?? currentUser?.email ?? "Unknown",
+    authorId: currentUser?.id ?? 0,
+    timestamp: new Date().toISOString(),
+  });
+
+  const handleAddTechNote = (text: string) => {
+    const updated = [...techNotes, makeEntry(text)];
+    notesMutation.mutate({ id: jobCardId, technicianNotes: serializeNotes(updated) });
+  };
+
+  const handleAddManagerNote = (text: string) => {
+    const updated = [...managerNotes, makeEntry(text)];
+    notesMutation.mutate({ id: jobCardId, managerNotes: serializeNotes(updated) });
+  };
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+        <MessageSquare className="w-4 h-4" /> Notes
+      </h3>
+      {isManager ? (
+        <Tabs defaultValue="tech">
+          <TabsList className="h-8">
+            <TabsTrigger value="tech" className="text-xs h-7">
+              Technician {techNotes.length > 0 && <span className="ml-1 opacity-60">({techNotes.length})</span>}
+            </TabsTrigger>
+            <TabsTrigger value="manager" className="text-xs h-7">
+              Manager {managerNotes.length > 0 && <span className="ml-1 opacity-60">({managerNotes.length})</span>}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="tech" className="mt-3">
+            <NoteThread notes={techNotes} isClosed={isClosed} onAdd={handleAddTechNote} isPending={notesMutation.isPending} />
+          </TabsContent>
+          <TabsContent value="manager" className="mt-3">
+            <NoteThread notes={managerNotes} isClosed={isClosed} onAdd={handleAddManagerNote} isPending={notesMutation.isPending} />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <NoteThread notes={techNotes} isClosed={isClosed} onAdd={handleAddTechNote} isPending={notesMutation.isPending} />
+      )}
+    </div>
+  );
+}
+// ─── Photos Panel ─────────────────────────────────────────────────────────────
+const PHOTO_CATEGORIES = [
+  { value: "photo", label: "Photo" },
+  { value: "before_image", label: "Before" },
+  { value: "after_image", label: "After" },
+  { value: "document", label: "Document" },
+] as const;
+
+function PhotosPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus: JobStatus }) {
+  const utils = trpc.useUtils();
+  const isClosed = ["priced", "cancelled"].includes(jobStatus);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const [category, setCategory] = useState<"photo" | "before_image" | "after_image" | "document">("photo");
+
+  const { data: photos = [] } = trpc.documents.list.useQuery(
+    { jobCardId },
+    { refetchOnWindowFocus: false }
+  );
+
+  const uploadMutation = trpc.documents.upload.useMutation({
+    onSuccess: () => {
+      utils.documents.list.invalidate({ jobCardId });
+      toast.success("Photo uploaded");
+      setUploading(false);
+    },
+    onError: (err) => {
+      toast.error(err.message);
+      setUploading(false);
+    },
+  });
+
+  const deleteMutation = trpc.documents.delete.useMutation({
+    onSuccess: () => {
+      utils.documents.list.invalidate({ jobCardId });
+      toast.success("Photo removed");
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File must be under 10 MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setUploading(true);
+      uploadMutation.mutate({
+        jobCardId,
+        category,
+        fileName: file.name,
+        fileDataUrl: reader.result as string,
+      });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const imagePhotos = (photos as any[]).filter((p: any) =>
+    ["photo", "before_image", "after_image"].includes(p.category) &&
+    (p.mimeType?.startsWith("image/") ?? true)
+  );
+  const docPhotos = (photos as any[]).filter((p: any) =>
+    p.category === "document" || !p.mimeType?.startsWith("image/")
+  );
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+          <Camera className="w-4 h-4" /> Photos &amp; Documents
+        </h3>
+        {!isClosed && (
+          <div className="flex items-center gap-2">
+            <Select value={category} onValueChange={(v) => setCategory(v as any)}>
+              <SelectTrigger className="h-7 text-xs w-28">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PHOTO_CATEGORIES.map((c) => (
+                  <SelectItem key={c.value} value={c.value} className="text-xs">{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs gap-1"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Camera className="w-3 h-3" />
+              {uploading ? "Uploading…" : "Upload"}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,application/pdf"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+          </div>
+        )}
+      </div>
+
+      {imagePhotos.length === 0 && docPhotos.length === 0 ? (
+        <p className="text-sm text-muted-foreground italic">No photos or documents uploaded yet.</p>
+      ) : (
+        <>
+          {imagePhotos.length > 0 && (
+            <div className="grid grid-cols-3 gap-2">
+              {imagePhotos.map((photo: any) => (
+                <div key={photo.id} className="relative group rounded-lg overflow-hidden border bg-muted aspect-square">
+                  <img
+                    src={photo.fileUrl}
+                    alt={photo.fileName}
+                    className="w-full h-full object-cover cursor-pointer"
+                    onClick={() => setLightbox(photo.fileUrl)}
+                  />
+                  <div className="absolute top-1 left-1">
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-black/60 text-white capitalize">
+                      {photo.category.replace("_", " ")}
+                    </span>
+                  </div>
+                  {!isClosed && (
+                    <button
+                      onClick={() => deleteMutation.mutate({ id: photo.id })}
+                      className="absolute top-1 right-1 p-0.5 rounded bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <XIcon className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {docPhotos.length > 0 && (
+            <div className="space-y-1.5">
+              {docPhotos.map((doc: any) => (
+                <div key={doc.id} className="flex items-center gap-2 p-2 rounded-lg border bg-muted/30 text-sm">
+                  <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer"
+                    className="flex-1 truncate text-primary hover:underline">
+                    {doc.fileName}
+                  </a>
+                  {!isClosed && (
+                    <button onClick={() => deleteMutation.mutate({ id: doc.id })}
+                      className="text-muted-foreground hover:text-red-600 transition-colors">
+                      <XIcon className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setLightbox(null)}
+              className="absolute -top-8 right-0 text-white/80 hover:text-white"
+            >
+              <XIcon className="w-6 h-6" />
+            </button>
+            <img src={lightbox} alt="Full size" className="w-full rounded-lg max-h-[80vh] object-contain" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Signature Section ─────────────────────────────────────────────────────────────
 function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }: {
   jobCardId: number;
   jobStatus: JobStatus;
@@ -1066,34 +1367,107 @@ export default function JobCardDetail() {
             <CardContent className="pt-5">
               <NotesPanel
                 jobCardId={jobId}
-                rawNotes={j.technicianNotes}
+                rawTechNotes={j.technicianNotes}
+                rawManagerNotes={j.managerNotes}
                 currentUser={user}
                 jobStatus={status}
+                isManager={isManager}
               />
+            </CardContent>
+          </Card>
+
+          {/* Photos & Documents */}
+          <Card>
+            <CardContent className="pt-5">
+              <PhotosPanel jobCardId={jobId} jobStatus={status} />
             </CardContent>
           </Card>
         </div>
 
         {/* ── Right sidebar ── */}
         <div className="space-y-4">
+          {/* Client info card */}
+          {j.clientId && (
+            <Card>
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                    <User className="w-4 h-4" /> Client
+                  </CardTitle>
+                  <Link href={`/clients/${j.clientId}`} className="text-xs text-primary hover:underline">
+                    View profile →
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <p className="font-semibold text-base">{j.clientName}</p>
+                {j.clientPhone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <a href={`tel:${j.clientPhone}`} className="text-primary hover:underline">{j.clientPhone}</a>
+                  </div>
+                )}
+                {j.clientAlternatePhone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <a href={`tel:${j.clientAlternatePhone}`} className="text-muted-foreground hover:text-primary hover:underline">
+                      {j.clientAlternatePhone} <span className="text-xs">(alt)</span>
+                    </a>
+                  </div>
+                )}
+                {j.clientEmail && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <a href={`mailto:${j.clientEmail}`} className="text-primary hover:underline truncate">{j.clientEmail}</a>
+                  </div>
+                )}
+                {(j.clientAddress || j.clientCity) && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                      <div className="text-sm text-foreground">
+                        {j.clientAddress && <p>{j.clientAddress}</p>}
+                        {(j.clientCity || j.clientPostalCode) && (
+                          <p className="text-muted-foreground">
+                            {[j.clientCity, j.clientPostalCode].filter(Boolean).join(", ")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {(j.clientAddress || j.clientCity) && (
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                          [j.clientAddress, j.clientCity, j.clientPostalCode].filter(Boolean).join(", ")
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md px-3 py-1.5 transition-colors"
+                      >
+                        <Navigation className="w-3 h-3" /> Get Directions
+                      </a>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Details card */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              {/* Client */}
+              {/* Client (compact link when info card is shown) */}
+              {!j.clientId && (
               <div className="flex items-start gap-2">
                 <User className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
                 <div>
                   <p className="text-xs text-muted-foreground">Client</p>
-                  {j.clientId ? (
-                    <Link href={`/clients/${j.clientId}`} className="font-medium hover:text-primary transition-colors">
-                      {j.clientName ?? `Client #${j.clientId}`}
-                    </Link>
-                  ) : <p className="font-medium">—</p>}
+                  <p className="font-medium">—</p>
                 </div>
               </div>
+              )}
               {/* Department */}
               <div className="flex items-start gap-2">
                 <Building2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />

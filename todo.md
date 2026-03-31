@@ -253,3 +253,17 @@
 - [x] Email failure is non-fatal — signature capture always succeeds regardless
 - [x] Vitest tests: key configured, email validation guards, live API ping
 - [x] TypeScript clean, 80 tests passing (5 new email tests)
+
+## Phase 23: Job Card Detail Enhancements
+- [x] Client info panel: full name, email, phone, alternate phone, address, city, postal code
+- [x] Directions button: opens Google Maps with client address
+- [x] Notes: save technician notes with timestamp per save (append history or last-saved-at)
+- [x] Notes: save manager notes with timestamp
+- [x] Notes: fix save button so changes persist to the database
+- [x] Photo upload: upload images to S3 under jobs/{id}/photos/
+- [x] Photo gallery: display uploaded images in a grid on the job card detail page
+- [x] Photo delete: allow admin/manager to remove a photo
+- [x] Quick-add pricing catalogue: predefined items (Labour, Call-out Fee, Gate Motor, etc.)
+- [x] Quick-add: each catalogue item has a default price, editable before adding
+- [x] Quick-add: generic/custom line item option still available
+- [x] TypeScript clean, 80 tests still passing

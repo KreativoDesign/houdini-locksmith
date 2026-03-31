@@ -61,7 +61,26 @@ export const jobCardsRouter = router({
       if (ctx.user.role === "technician" && job.assignedTechnicianId !== ctx.user.id) {
         throw new TRPCError({ code: "FORBIDDEN", message: "You are not assigned to this job" });
       }
-      return job;
+      // Enrich with client, department, and user details in parallel
+      const [client, dept, tech, manager] = await Promise.all([
+        job.clientId ? getClientById(job.clientId) : null,
+        getDepartmentById(job.departmentId),
+        job.assignedTechnicianId ? getUserById(job.assignedTechnicianId) : null,
+        job.assignedManagerId ? getUserById(job.assignedManagerId) : null,
+      ]);
+      return {
+        ...job,
+        clientName: client ? `${client.firstName} ${client.lastName}`.trim() : null,
+        clientEmail: client?.email ?? null,
+        clientPhone: client?.phone ?? null,
+        clientAlternatePhone: client?.alternatePhone ?? null,
+        clientAddress: client?.address ?? null,
+        clientCity: client?.city ?? null,
+        clientPostalCode: client?.postalCode ?? null,
+        departmentName: dept?.name ?? null,
+        technicianName: tech ? (tech.name ?? tech.email) : null,
+        managerName: manager ? (manager.name ?? manager.email) : null,
+      };
     }),
 
   /** Create a job card directly (without going through an enquiry) */
@@ -295,6 +314,39 @@ export const jobCardsRouter = router({
       }
 
       await updateJobCard(id, updateData);
+      return { success: true };
+    }),
+
+  /**
+   * Update technician or manager notes independently of status changes.
+   * Technicians can update technicianNotes; managers/admins can update both.
+   */
+  updateNotes: technicianProcedure
+    .input(
+      z.object({
+        id: z.number().int().positive(),
+        technicianNotes: z.string().optional(),
+        managerNotes: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const job = await getJobCardById(input.id);
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+      if (ctx.user.role === "technician" && job.assignedTechnicianId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "You are not assigned to this job" });
+      }
+      if (["priced", "cancelled"].includes(job.status)) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot update notes on a closed job" });
+      }
+      // Technicians cannot update manager notes
+      if (ctx.user.role === "technician" && input.managerNotes !== undefined) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Technicians cannot update manager notes" });
+      }
+      const updateData: Parameters<typeof updateJobCard>[1] = {};
+      if (input.technicianNotes !== undefined) updateData.technicianNotes = input.technicianNotes;
+      if (input.managerNotes !== undefined) updateData.managerNotes = input.managerNotes;
+      if (Object.keys(updateData).length === 0) return { success: true };
+      await updateJobCard(input.id, updateData);
       return { success: true };
     }),
 
