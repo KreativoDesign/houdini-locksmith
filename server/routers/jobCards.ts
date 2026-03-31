@@ -163,9 +163,12 @@ export const jobCardsRouter = router({
       const tech = await getUserById(input.technicianId);
       if (!tech) throw new TRPCError({ code: "NOT_FOUND", message: "Technician not found" });
 
+      // Only transition to "assigned" if the job is still pending.
+      // Jobs already in progress / on hold keep their current status.
+      const newStatus = job.status === "pending" ? "assigned" : job.status;
       await updateJobCard(input.id, {
         assignedTechnicianId: input.technicianId,
-        status: "assigned",
+        status: newStatus,
       });
 
       await emitNotification({

@@ -304,3 +304,12 @@
 - [x] tRPC procedure jobCards.generatePdf: generates PDF, uploads to S3, returns public URL
 - [x] Download PDF button on job card detail page header (opens PDF in new tab)
 - [x] TypeScript clean, 80 tests still passing
+
+## Phase 29: Assignment Flow, Department Slot Picker & Signature Audit
+- [x] Assignment: pending → assigned on first assignment; in_progress/on_hold preserved on reassignment
+- [x] Assign dialog: technicians filtered by job card departmentId (users.technicians query)
+- [x] Assign dialog: department name shown in description; empty state if no technicians in dept
+- [x] Signature: fully confirmed end-to-end — canvas, preview dialog, S3 upload, isSigned flag, gating
+- [x] Signature: signatures.replace procedure added for admin/manager re-sign
+- [x] Signature: Re-sign button visible to manager/admin when signature already exists (non-closed jobs)
+- [x] TypeScript clean (0 errors), 80 tests still passing

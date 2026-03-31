@@ -998,6 +998,7 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
 }) {
   const utils = trpc.useUtils();
   const { user } = useAuth();
+  const isManager = user?.role === "manager" || user?.role === "admin";
   const sigPadRef = useRef<SignaturePadHandle>(null);
   const [captureOpen, setCaptureOpen] = useState(false);
   const [signerName, setSignerName] = useState("");
@@ -1006,6 +1007,8 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
   // Preview confirmation state
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null);
+  // Re-sign mode: uses signatures.replace instead of signatures.capture
+  const [isResigning, setIsResigning] = useState(false);
 
   const { data: existingSig } = trpc.signatures.getByJobCard.useQuery(
     { jobCardId },
@@ -1020,6 +1023,20 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
       setPreviewOpen(false);
       setCaptureOpen(false);
       setPreviewDataUrl(null);
+      setIsResigning(false);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const replaceMutation = trpc.signatures.replace.useMutation({
+    onSuccess: () => {
+      toast.success("Signature replaced successfully");
+      utils.jobCards.get.invalidate({ id: jobCardId });
+      utils.signatures.getByJobCard.invalidate({ jobCardId });
+      setPreviewOpen(false);
+      setCaptureOpen(false);
+      setPreviewDataUrl(null);
+      setIsResigning(false);
     },
     onError: (err) => toast.error(err.message),
   });
@@ -1043,13 +1060,18 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
   /** Step 2 — called when the user confirms the preview and triggers the upload. */
   const handleConfirmUpload = () => {
     if (!previewDataUrl || !signerName.trim()) return;
-    captureMutation.mutate({
+    const payload = {
       jobCardId,
       signatureDataUrl: previewDataUrl,
       signerName: signerName.trim(),
       signerRole: signerRole.trim() || undefined,
       ipAddress: undefined,
-    });
+    };
+    if (isResigning) {
+      replaceMutation.mutate(payload);
+    } else {
+      captureMutation.mutate(payload);
+    }
   };
 
   /** Re-draw — close the preview and return to the canvas. */
@@ -1110,6 +1132,20 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
                       <p><span className="font-medium">Date:</span> {format(new Date((existingSig as any).signedAt), "dd MMM yyyy, HH:mm")}</p>
                     )}
                   </div>
+                  {isManager && !isClosed && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full border-green-300 text-green-800 hover:bg-green-100 gap-2 mt-1"
+                      onClick={() => {
+                        setIsResigning(true);
+                        handleOpenCapture();
+                      }}
+                    >
+                      <PenLine className="w-3.5 h-3.5" />
+                      Re-sign (Replace Signature)
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
@@ -1290,9 +1326,12 @@ export default function JobCardDetail() {
     { enabled: !!jobId, refetchInterval: 15_000 }
   );
 
-  const { data: technicians = [] } = trpc.users.technicians.useQuery(undefined, {
-    enabled: isManager,
-  });
+  // Filter technicians by the job card's department once the job is loaded
+  const deptId = (job as any)?.departmentId as number | undefined;
+  const { data: technicians = [] } = trpc.users.technicians.useQuery(
+    deptId ? { departmentId: deptId } : undefined,
+    { enabled: isManager && !!deptId }
+  );
 
   const statusMutation = trpc.jobCards.updateStatus.useMutation({
     onSuccess: () => {
@@ -1701,23 +1740,29 @@ export default function JobCardDetail() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Assign Technician</DialogTitle>
-            <DialogDescription>Select a technician to assign to this job card.</DialogDescription>
+            <DialogDescription>
+              Showing technicians in the <span className="font-semibold">{(job as any)?.departmentName ?? "selected"}</span> department.
+            </DialogDescription>
           </DialogHeader>
           <Select value={selectedTechId} onValueChange={setSelectedTechId}>
             <SelectTrigger><SelectValue placeholder="Select technician" /></SelectTrigger>
             <SelectContent>
-              {(technicians as any[]).map((t: any) => (
-                <SelectItem key={t.id} value={String(t.id)}>
-                  {t.name ?? t.email}{t.departmentName ? ` — ${t.departmentName}` : ""}
-                </SelectItem>
-              ))}
+              {(technicians as any[]).length === 0 ? (
+                <div className="px-3 py-2 text-sm text-muted-foreground">No technicians in this department</div>
+              ) : (
+                (technicians as any[]).map((t: any) => (
+                  <SelectItem key={t.id} value={String(t.id)}>
+                    {t.name ?? t.email}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button>
             <Button disabled={!selectedTechId || assignMutation.isPending}
               onClick={() => assignMutation.mutate({ id: jobId, technicianId: Number(selectedTechId) })}>
-              Assign
+              {assignMutation.isPending ? "Assigning…" : "Assign"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -625,6 +625,12 @@ export async function getSignatureByJobCard(jobCardId: number): Promise<Signatur
   return result[0];
 }
 
+export async function deleteSignatureByJobCard(jobCardId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(signatures).where(eq(signatures.jobCardId, jobCardId));
+}
+
 // ─────────────────────────────────────────────
 // JOB PRICING
 // ─────────────────────────────────────────────

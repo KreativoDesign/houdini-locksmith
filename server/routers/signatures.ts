@@ -2,12 +2,13 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   createSignature,
+  deleteSignatureByJobCard,
   getClientById,
   getJobCardById,
   getSignatureByJobCard,
   updateJobCard,
 } from "../db";
-import { technicianProcedure, emitNotification } from "./middleware";
+import { managerProcedure, technicianProcedure, emitNotification } from "./middleware";
 import { router } from "../_core/trpc";
 import { storagePut } from "../storage";
 import { sendSignatureConfirmationEmail } from "../_core/email";
@@ -133,6 +134,72 @@ export const signaturesRouter = router({
         // Never let an email failure roll back the signature capture
         console.warn("[Signatures] Failed to send confirmation email:", emailErr);
       }
+
+      return { id, signatureUrl };
+    }),
+
+  /**
+   * Replace an existing signature (admin/manager only).
+   * Deletes the old record, uploads the new signature, and re-marks the job as signed.
+   */
+  replace: managerProcedure
+    .input(
+      z.object({
+        jobCardId: z.number().int().positive(),
+        signatureDataUrl: z.string().min(10),
+        signerName: z.string().min(1).max(200),
+        signerRole: z.string().max(100).optional(),
+        ipAddress: z.string().max(45).optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const job = await getJobCardById(input.jobCardId);
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+      if (["priced", "cancelled"].includes(job.status)) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot replace signature on a closed job" });
+      }
+
+      // Delete existing signature record
+      await deleteSignatureByJobCard(input.jobCardId);
+
+      // Upload new signature to S3
+      let signatureUrl: string;
+      let signatureKey: string;
+      try {
+        const { buffer, mimeType } = dataUrlToBuffer(input.signatureDataUrl);
+        const timestamp = Date.now();
+        signatureKey = `jobs/${input.jobCardId}/signatures/sig-${timestamp}.png`;
+        const result = await storagePut(signatureKey, buffer, mimeType);
+        signatureUrl = result.url;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to upload replacement signature: " + (err instanceof Error ? err.message : "Unknown error"),
+        });
+      }
+
+      const signedAt = new Date();
+
+      const id = await createSignature({
+        jobCardId: input.jobCardId,
+        signatureUrl,
+        signatureKey,
+        signerName: input.signerName,
+        signerRole: input.signerRole ?? null,
+        ipAddress: input.ipAddress ?? null,
+        capturedById: ctx.user.id,
+        signedAt,
+      });
+
+      await updateJobCard(input.jobCardId, { isSigned: true });
+
+      await emitNotification({
+        type: "signature_captured",
+        title: "Signature Replaced",
+        message: `Signature replaced for job card ${job.jobNumber} by ${input.signerName} (${ctx.user.name ?? ctx.user.email}).`,
+        entityType: "job_card",
+        entityId: input.jobCardId,
+      });
 
       return { id, signatureUrl };
     }),
