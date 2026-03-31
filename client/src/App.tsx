@@ -38,6 +38,7 @@ import JobCardForm from "./pages/JobCardForm";
 
 // Pricing page
 import Pricing from "./pages/Pricing";
+import PricingCatalogue from "./pages/PricingCatalogue";
 
 // ─────────────────────────────────────────────
 // ROUTE GUARDS
@@ -211,6 +212,13 @@ function Router() {
       <Route path="/pricing">
         <AppShell>
           <ProtectedRoute component={Pricing} />
+        </AppShell>
+      </Route>
+
+      {/* ── Pricing Catalogue (admin only) ── */}
+      <Route path="/settings/catalogue">
+        <AppShell>
+          <ProtectedRoute component={PricingCatalogue} roles={["admin"]} />
         </AppShell>
       </Route>
 

@@ -433,3 +433,24 @@ export const inviteTokens = mysqlTable("inviteTokens", {
 });
 export type InviteToken = typeof inviteTokens.$inferSelect;
 export type InsertInviteToken = typeof inviteTokens.$inferInsert;
+
+// ─────────────────────────────────────────────
+// PRICING CATALOGUE  (admin-configurable quick-add items)
+// ─────────────────────────────────────────────
+export const pricingCatalogue = mysqlTable("pricingCatalogue", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  type: mysqlEnum("type", ["part", "service", "labour", "other"]).default("service").notNull(),
+  /** Default price in ZAR (stored as decimal string for precision) */
+  defaultPrice: varchar("defaultPrice", { length: 20 }).notNull().default("0.00"),
+  /** Whether this item appears in the quick-add panel */
+  isActive: boolean("isActive").default(true).notNull(),
+  /** Controls display order in the quick-add panel */
+  sortOrder: int("sortOrder").default(0).notNull(),
+  createdById: int("createdById").references(() => users.id),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type PricingCatalogueItem = typeof pricingCatalogue.$inferSelect;
+export type InsertPricingCatalogueItem = typeof pricingCatalogue.$inferInsert;

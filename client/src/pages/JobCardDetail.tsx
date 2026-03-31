@@ -332,29 +332,30 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
     }
   };
 
-   // Quick-add catalogue
-  const CATALOGUE = [
-    { name: "Call-out Fee", type: "service" as const, unitPrice: 350, description: "Standard call-out / site visit fee" },
-    { name: "Labour (per hour)", type: "labour" as const, unitPrice: 450, description: "Hourly labour rate" },
-    { name: "Gate Motor Installation", type: "service" as const, unitPrice: 2500, description: "Supply and install gate motor" },
-    { name: "Lock Replacement", type: "service" as const, unitPrice: 800, description: "Remove and replace standard lock" },
-    { name: "Key Cutting", type: "service" as const, unitPrice: 120, description: "Cut duplicate key" },
-    { name: "Emergency After-Hours", type: "service" as const, unitPrice: 600, description: "After-hours emergency surcharge" },
-    { name: "Access Control Installation", type: "service" as const, unitPrice: 3500, description: "Install access control unit" },
-    { name: "CCTV Camera", type: "part" as const, unitPrice: 1800, description: "Supply and install CCTV camera" },
-  ];
+  // Quick-add catalogue — live from database
+  const { data: catalogueItems = [] } = trpc.catalogue.list.useQuery({ activeOnly: true });
   const [catalogueOpen, setCatalogueOpen] = useState(false);
-  const [cataloguePrices, setCataloguePrices] = useState<Record<string, string>>(
-    Object.fromEntries(CATALOGUE.map((c) => [c.name, String(c.unitPrice)]))
-  );
+  const [cataloguePrices, setCataloguePrices] = useState<Record<number, string>>({});
 
-  const handleQuickAdd = (item: typeof CATALOGUE[number]) => {
-    const price = parseFloat(cataloguePrices[item.name] ?? String(item.unitPrice)) || item.unitPrice;
+  // Initialise editable prices when catalogue loads
+  const cataloguePricesRef = useMemo(() => {
+    const map: Record<number, string> = {};
+    (catalogueItems as any[]).forEach((c: any) => {
+      if (!(c.id in cataloguePrices)) map[c.id] = parseFloat(c.defaultPrice).toFixed(2);
+    });
+    return map;
+  }, [catalogueItems]);
+
+  const getCataloguePrice = (item: any): number =>
+    parseFloat(cataloguePrices[item.id] ?? cataloguePricesRef[item.id] ?? item.defaultPrice) || 0;
+
+  const handleQuickAdd = (item: any) => {
+    const price = getCataloguePrice(item);
     createMutation.mutate({
       jobCardId,
       name: item.name,
       type: item.type,
-      description: item.description,
+      description: item.description ?? undefined,
       quantity: 1,
       unitPrice: price,
       discountPct: 0,
@@ -392,36 +393,44 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
             <Zap className="w-3 h-3" /> Quick-add Pricing Catalogue
           </p>
-          <div className="space-y-1.5">
-            {CATALOGUE.map((item) => (
-              <div key={item.name} className="flex items-center gap-2">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium truncate">{item.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+          {(catalogueItems as any[]).length === 0 ? (
+            <p className="text-xs text-muted-foreground italic">
+              No active catalogue items. Ask an admin to add items in Settings → Pricing Catalogue.
+            </p>
+          ) : (
+            <div className="space-y-1.5">
+              {(catalogueItems as any[]).map((item: any) => (
+                <div key={item.id} className="flex items-center gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium truncate">{item.name}</p>
+                    {item.description && (
+                      <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-xs text-muted-foreground">R</span>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={cataloguePrices[item.id] ?? cataloguePricesRef[item.id] ?? parseFloat(item.defaultPrice).toFixed(2)}
+                      onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.id]: e.target.value }))}
+                      className="h-7 w-24 text-xs"
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs px-2"
+                      disabled={createMutation.isPending}
+                      onClick={() => handleQuickAdd(item)}
+                    >
+                      <Plus className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-xs text-muted-foreground">R</span>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={cataloguePrices[item.name] ?? String(item.unitPrice)}
-                    onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.name]: e.target.value }))}
-                    className="h-7 w-24 text-xs"
-                  />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-7 text-xs px-2"
-                    disabled={createMutation.isPending}
-                    onClick={() => handleQuickAdd(item)}
-                  >
-                    <Plus className="w-3 h-3" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

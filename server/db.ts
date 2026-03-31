@@ -25,6 +25,8 @@ import {
   Signature,
   TimeSlot,
   User,
+  InsertPricingCatalogueItem,
+  PricingCatalogueItem,
   clients,
   departments,
   employeeAvailability,
@@ -34,6 +36,7 @@ import {
   jobItems,
   jobPricing,
   notifications,
+  pricingCatalogue,
   signatures,
   timeSlots,
   users,
@@ -708,4 +711,65 @@ export async function markAllNotificationsRead(userId: number): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(notifications).set({ isRead: true }).where(eq(notifications.userId, userId));
+}
+
+// ─────────────────────────────────────────────────────────────
+// PRICING CATALOGUE HELPERS
+// ─────────────────────────────────────────────────────────────
+
+export async function listCatalogueItems(activeOnly = false): Promise<PricingCatalogueItem[]> {
+  const db = await getDb();
+  if (!db) return [];
+  const query = db.select().from(pricingCatalogue);
+  if (activeOnly) {
+    return query.where(eq(pricingCatalogue.isActive, true)).orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
+  }
+  return query.orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
+}
+
+export async function getCatalogueItemById(id: number): Promise<PricingCatalogueItem | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(pricingCatalogue).where(eq(pricingCatalogue.id, id)).limit(1);
+  return rows[0] ?? null;
+}
+
+export async function createCatalogueItem(data: InsertPricingCatalogueItem): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(pricingCatalogue).values(data);
+  return result[0].insertId;
+}
+
+export async function updateCatalogueItem(
+  id: number,
+  data: Partial<Omit<InsertPricingCatalogueItem, "id" | "createdAt">>
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(pricingCatalogue).set(data).where(eq(pricingCatalogue.id, id));
+}
+
+export async function deleteCatalogueItem(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(pricingCatalogue).where(eq(pricingCatalogue.id, id));
+}
+
+export async function seedDefaultCatalogueItems(adminUserId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await db.select({ id: pricingCatalogue.id }).from(pricingCatalogue).limit(1);
+  if (existing.length > 0) return; // already seeded
+  const defaults: InsertPricingCatalogueItem[] = [
+    { name: "Call-out Fee", type: "service", defaultPrice: "350.00", description: "Standard call-out / site visit fee", sortOrder: 1, createdById: adminUserId },
+    { name: "Labour (per hour)", type: "labour", defaultPrice: "450.00", description: "Hourly labour rate", sortOrder: 2, createdById: adminUserId },
+    { name: "Gate Motor Installation", type: "service", defaultPrice: "2500.00", description: "Supply and install gate motor", sortOrder: 3, createdById: adminUserId },
+    { name: "Lock Replacement", type: "service", defaultPrice: "800.00", description: "Remove and replace standard lock", sortOrder: 4, createdById: adminUserId },
+    { name: "Key Cutting", type: "service", defaultPrice: "120.00", description: "Cut duplicate key", sortOrder: 5, createdById: adminUserId },
+    { name: "Emergency After-Hours", type: "service", defaultPrice: "600.00", description: "After-hours emergency surcharge", sortOrder: 6, createdById: adminUserId },
+    { name: "Access Control Installation", type: "service", defaultPrice: "3500.00", description: "Install access control unit", sortOrder: 7, createdById: adminUserId },
+    { name: "CCTV Camera", type: "part", defaultPrice: "1800.00", description: "Supply and install CCTV camera", sortOrder: 8, createdById: adminUserId },
+  ];
+  await db.insert(pricingCatalogue).values(defaults);
 }

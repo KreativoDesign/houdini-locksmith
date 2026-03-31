@@ -54,6 +54,7 @@ import {
   ShieldCheck,
   Users,
   Wrench,
+  Zap,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -132,6 +133,12 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     icon: ShieldCheck,
     label: "Audit Log",
     path: "/audit",
+    roles: ["admin"],
+  },
+  {
+    icon: Zap,
+    label: "Pricing Catalogue",
+    path: "/settings/catalogue",
     roles: ["admin"],
   },
   {

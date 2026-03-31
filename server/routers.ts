@@ -14,6 +14,7 @@ import { signaturesRouter } from "./routers/signatures";
 import { pricingRouter } from "./routers/pricing";
 import { documentsRouter } from "./routers/documents";
 import { notificationsRouter } from "./routers/notifications";
+import { catalogueRouter } from "./routers/catalogue";
 import { localAuthRouter } from "./routers/auth";
 
 export const appRouter = router({
@@ -66,6 +67,9 @@ export const appRouter = router({
 
   /** In-app notifications */
   notifications: notificationsRouter,
+
+  /** Admin-configurable pricing catalogue for quick-add job items */
+  catalogue: catalogueRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -267,3 +267,14 @@
 - [x] Quick-add: each catalogue item has a default price, editable before adding
 - [x] Quick-add: generic/custom line item option still available
 - [x] TypeScript clean, 80 tests still passing
+
+## Phase 24: Admin-Configurable Pricing Catalogue
+- [x] pricingCatalogue table: id, name, description, type (part/service/labour/other), defaultPrice, isActive, sortOrder, createdAt
+- [x] Seed 8 default items (Call-out Fee, Labour/hr, Gate Motor, etc.) on first run
+- [x] catalogue.list (public to technicians+), catalogue.create/update/delete (admin only)
+- [x] Pricing Catalogue page under Settings (admin only) — table with inline edit/delete
+- [x] Add item dialog: name, description, type, default price, active toggle
+- [x] Reorder items via sort order field
+- [x] Job card quick-add panel replaced with live catalogue query (falls back to empty state)
+- [x] Inactive catalogue items hidden from quick-add but visible in admin settings
+- [x] TypeScript clean, 80 tests still passing
