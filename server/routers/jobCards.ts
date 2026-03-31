@@ -9,10 +9,14 @@ import {
   getSignatureByJobCard,
   getUserById,
   listJobCards,
+  listJobItems,
+  listJobDocuments,
   updateJobCard,
 } from "../db";
 import { adminProcedure, managerProcedure, technicianProcedure, emitNotification } from "./middleware";
 import { router } from "../_core/trpc";
+import { generateJobCardPdf } from "../pdfGenerator";
+import { storagePut } from "../storage";
 
 // Valid status transitions
 const STATUS_TRANSITIONS: Record<string, string[]> = {
@@ -348,6 +352,78 @@ export const jobCardsRouter = router({
       if (Object.keys(updateData).length === 0) return { success: true };
       await updateJobCard(input.id, updateData);
       return { success: true };
+    }),
+
+  /**
+   * Generate a PDF of the job card, upload it to S3, and return a public URL.
+   */
+  generatePdf: technicianProcedure
+    .input(z.object({ id: z.number().int().positive() }))
+    .mutation(async ({ input, ctx }) => {
+      const job = await getJobCardById(input.id);
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+      if (ctx.user.role === "technician" && job.assignedTechnicianId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "You are not assigned to this job" });
+      }
+
+      const [client, dept, tech, manager, items, documents, signature] = await Promise.all([
+        job.clientId ? getClientById(job.clientId) : null,
+        getDepartmentById(job.departmentId),
+        job.assignedTechnicianId ? getUserById(job.assignedTechnicianId) : null,
+        job.assignedManagerId ? getUserById(job.assignedManagerId) : null,
+        listJobItems(job.id),
+        listJobDocuments(job.id),
+        getSignatureByJobCard(job.id),
+      ]);
+
+      const photos = documents.filter(
+        (d) => ["photo", "before_image", "after_image"].includes(d.category) && d.mimeType.startsWith("image/")
+      );
+
+      const pdfBuffer = await generateJobCardPdf({
+        jobNumber: job.jobNumber,
+        title: job.title,
+        description: job.description,
+        status: job.status,
+        priority: job.priority,
+        scheduledDate: job.scheduledDate,
+        createdAt: job.createdAt,
+        clientName: client ? `${client.firstName} ${client.lastName}`.trim() : null,
+        clientEmail: client?.email ?? null,
+        clientPhone: client?.phone ?? null,
+        clientAlternatePhone: client?.alternatePhone ?? null,
+        clientAddress: client?.address ?? null,
+        clientCity: client?.city ?? null,
+        clientPostalCode: client?.postalCode ?? null,
+        technicianName: tech ? (tech.name ?? tech.email) : null,
+        managerName: manager ? (manager.name ?? manager.email) : null,
+        departmentName: dept?.name ?? null,
+        technicianNotes: job.technicianNotes,
+        managerNotes: job.managerNotes,
+        items: items.map((i) => ({
+          name: i.name,
+          type: i.type,
+          description: i.description,
+          quantity: i.quantity,
+          unitPrice: i.unitPrice,
+          discountPct: i.discountPct,
+          lineTotal: i.lineTotal,
+        })),
+        photos: photos.map((p) => ({
+          fileUrl: p.fileUrl,
+          fileName: p.fileName,
+          category: p.category,
+          mimeType: p.mimeType,
+        })),
+        signatureUrl: signature?.signatureUrl ?? null,
+        signerName: signature?.signerName ?? null,
+        signerRole: signature?.signerRole ?? null,
+        signedAt: signature?.createdAt ?? null,
+      });
+
+      const fileKey = `jobs/${job.id}/pdf/${job.jobNumber}-${Date.now()}.pdf`;
+      const { url } = await storagePut(fileKey, pdfBuffer, "application/pdf");
+      return { url, jobNumber: job.jobNumber };
     }),
 
   /** Schedule a job card to a specific date */

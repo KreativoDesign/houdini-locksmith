@@ -71,6 +71,8 @@ import {
   Camera,
   X as XIcon,
   Zap,
+  FileDown,
+  Loader2,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1310,6 +1312,15 @@ export default function JobCardDetail() {
     onError: (err) => toast.error(err.message),
   });
 
+  const pdfMutation = trpc.jobCards.generatePdf.useMutation({
+    onSuccess: ({ url, jobNumber }) => {
+      // Open the PDF in a new tab for download
+      window.open(url, "_blank", "noopener,noreferrer");
+      toast.success(`PDF generated for ${jobNumber}`);
+    },
+    onError: (err) => toast.error(`PDF generation failed: ${err.message}`),
+  });
+
   if (isLoading) {
     return <div className="flex items-center justify-center h-64 text-muted-foreground">Loading job card…</div>;
   }
@@ -1390,6 +1401,21 @@ export default function JobCardDetail() {
         </div>
         {/* Status action buttons */}
         <div className="flex gap-2 flex-wrap justify-end">
+          {/* Download PDF */}
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={pdfMutation.isPending}
+            onClick={() => pdfMutation.mutate({ id: jobId })}
+            className="gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50"
+          >
+            {pdfMutation.isPending ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <FileDown className="w-3.5 h-3.5" />
+            )}
+            {pdfMutation.isPending ? "Generating…" : "Download PDF"}
+          </Button>
           {allowedTransitions.map((next) => (
             <Button
               key={next}

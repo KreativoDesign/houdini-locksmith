@@ -297,3 +297,10 @@
 - [x] Show qty × price total (R xx.xx) next to each item's + button
 - [x] Total updates live as qty or price changes
 - [x] TypeScript clean, 80 tests still passing
+
+## Phase 28: Job Card PDF Export
+- [x] Install PDFKit for server-side PDF generation
+- [x] Build generateJobCardPdf helper: company header, client info, job summary, line items table, photos, signature
+- [x] tRPC procedure jobCards.generatePdf: generates PDF, uploads to S3, returns public URL
+- [x] Download PDF button on job card detail page header (opens PDF in new tab)
+- [x] TypeScript clean, 80 tests still passing
