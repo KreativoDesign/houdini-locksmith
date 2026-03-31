@@ -174,11 +174,33 @@ function PriorityBadge({ priority }: { priority: Priority }) {
 }
 
 // ─── Slot Picker ──────────────────────────────────────────────────────────────
-function SlotPicker({ technicianId, jobCardId, currentSlotId, onBooked }: {
-  technicianId: number; jobCardId: number; currentSlotId?: number | null; onBooked: () => void;
+function SlotPicker({
+  technicianId: initialTechnicianId,
+  jobCardId,
+  currentSlotId,
+  onBooked,
+  departmentId,
+  departmentName,
+}: {
+  technicianId: number;
+  jobCardId: number;
+  currentSlotId?: number | null;
+  onBooked: () => void;
+  departmentId?: number;
+  departmentName?: string;
 }) {
   const [date, setDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
+  // Allow browsing slots for any dept technician; default to the assigned one
+  const [selectedTechId, setSelectedTechId] = useState<number>(initialTechnicianId);
   const utils = trpc.useUtils();
+
+  // Fetch technicians in this department for the selector
+  const { data: deptTechnicians = [] } = trpc.users.technicians.useQuery(
+    departmentId ? { departmentId } : undefined,
+    { enabled: !!departmentId }
+  );
+
+  const technicianId = selectedTechId || initialTechnicianId;
 
   const { data: slots = [], isLoading } = trpc.scheduling.getAvailableSlots.useQuery(
     { technicianId, date }, { enabled: !!technicianId }
@@ -206,6 +228,30 @@ function SlotPicker({ technicianId, jobCardId, currentSlotId, onBooked }: {
 
   return (
     <div className="space-y-3">
+      {/* Technician selector — filtered by department */}
+      {departmentId && (deptTechnicians as any[]).length > 0 && (
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground font-medium">
+            {departmentName ? `Technicians — ${departmentName}` : "Technician"}
+          </p>
+          <Select
+            value={String(selectedTechId)}
+            onValueChange={(v) => setSelectedTechId(Number(v))}
+          >
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Select technician" />
+            </SelectTrigger>
+            <SelectContent>
+              {(deptTechnicians as any[]).map((t: any) => (
+                <SelectItem key={t.id} value={String(t.id)}>
+                  {t.name ?? t.email}
+                  {t.id === initialTechnicianId ? " (assigned)" : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       <div className="flex items-center gap-2">
         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)}
           className="h-9 w-44" min={format(new Date(), "yyyy-MM-dd")} />
@@ -1518,8 +1564,14 @@ export default function JobCardDetail() {
               </CardHeader>
               {scheduleOpen && j.assignedTechnicianId && (
                 <CardContent>
-                  <SlotPicker technicianId={j.assignedTechnicianId} jobCardId={jobId}
-                    currentSlotId={j.scheduledTimeSlotId} onBooked={() => setScheduleOpen(false)} />
+                  <SlotPicker
+                    technicianId={j.assignedTechnicianId}
+                    jobCardId={jobId}
+                    currentSlotId={j.scheduledTimeSlotId}
+                    onBooked={() => setScheduleOpen(false)}
+                    departmentId={(j as any).departmentId ?? undefined}
+                    departmentName={(j as any).departmentName ?? undefined}
+                  />
                 </CardContent>
               )}
               {scheduleOpen && !j.assignedTechnicianId && (

@@ -313,3 +313,12 @@
 - [x] Signature: signatures.replace procedure added for admin/manager re-sign
 - [x] Signature: Re-sign button visible to manager/admin when signature already exists (non-closed jobs)
 - [x] TypeScript clean (0 errors), 80 tests still passing
+
+## Phase 30: Slot Picker Department Filter
+- [x] SlotPicker: accepts optional departmentId and departmentName props
+- [x] SlotPicker: fetches technicians filtered by departmentId via users.technicians query
+- [x] SlotPicker: shows department name label above technician dropdown
+- [x] SlotPicker: technician dropdown defaults to assigned technician, allows browsing others in dept
+- [x] SlotPicker: assigned technician marked "(assigned)" in dropdown
+- [x] JobCardDetail: passes job departmentId and departmentName into SlotPicker
+- [x] TypeScript clean (0 errors), 80 tests still passing
