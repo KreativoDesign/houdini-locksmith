@@ -374,3 +374,11 @@
 - [x] Show amber "Signature required" notice + standalone "Capture Signature Now" button while in_progress
 - [x] Show green "Signature captured" badge once signed
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 36: Mobile Photo Upload
+- [x] Audit desktop photo upload flow (documents.upload procedure, S3 storage)
+- [x] MobilePhotoSection: Camera button (capture="environment") + Gallery button (multi-select), category selector (Before/After/Photo)
+- [x] Per-upload progress row (spinner → done ✓ → error) with 2-second auto-dismiss on success
+- [x] Photo thumbnail grid grouped by Before / After / Photos with tap-to-lightbox preview
+- [x] Wired into TechnicianJobDetail between Job Items and Notes; readOnly when job is closed
+- [x] TypeScript clean (0 errors), 82 tests still passing

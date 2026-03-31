@@ -9,6 +9,7 @@
  *   - Inline status transition buttons (role-aware)
  *   - Signature capture gate for "Mark Completed" when requiresSignature is true
  *   - Technician notes (read + append)
+ *   - Photo upload (camera + gallery) with thumbnail grid
  *   - Job items list (read-only for technician)
  */
 
@@ -16,6 +17,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import MobileSignatureSheet from "@/components/MobileSignatureSheet";
+import MobilePhotoSection from "@/components/MobilePhotoSection";
 import { trpc } from "@/lib/trpc";
 import { format, parseISO } from "date-fns";
 import {
@@ -390,6 +392,12 @@ export default function TechnicianJobDetail() {
 
         {/* Job items */}
         <JobItemsList jobCardId={jobId} />
+
+        {/* Photos */}
+        <SectionTitle>Photos</SectionTitle>
+        <div className="mx-4">
+          <MobilePhotoSection jobCardId={jobId} readOnly={isClosed} />
+        </div>
 
         {/* Notes */}
         <SectionTitle>My Notes</SectionTitle>
