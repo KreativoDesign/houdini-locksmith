@@ -15,6 +15,8 @@ import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import TechnicianDashboard from "./pages/TechnicianDashboard";
+import TechnicianMobileApp from "./pages/TechnicianMobileApp";
+import { useIsMobile } from "./hooks/useMobile";
 
 // Auth / settings pages
 import TeamManagement from "./pages/TeamManagement";
@@ -34,6 +36,7 @@ import Departments from "./pages/Departments";
 // Job Cards pages
 import JobCards from "./pages/JobCards";
 import JobCardDetail from "./pages/JobCardDetail";
+import TechnicianJobDetail from "./pages/TechnicianJobDetail";
 import JobCardForm from "./pages/JobCardForm";
 
 // Pricing page
@@ -79,6 +82,53 @@ function DashboardRedirect() {
   return <Redirect to="/technician" />;
 }
 
+/**
+ * JobDetailRoute — renders the mobile-optimised job detail for technicians on
+ * small screens, and the full JobCardDetail inside AppShell otherwise.
+ */
+function JobDetailRoute() {
+  const { user, loading } = useAuth();
+  const isMobile = useIsMobile();
+
+  if (loading) return null;
+  if (!user) return <Redirect to="/login" />;
+
+  if (user.role === "technician" && isMobile) {
+    return <TechnicianJobDetail />;
+  }
+
+  return (
+    <AppShell>
+      <ProtectedRoute component={JobCardDetail} />
+    </AppShell>
+  );
+}
+
+/**
+ * TechnicianRoute — renders the full-screen mobile app for technicians on
+ * small screens, and the standard AppShell + TechnicianDashboard on desktop.
+ * Admin/manager users who visit /technician still get the desktop view.
+ */
+function TechnicianRoute() {
+  const { user, loading } = useAuth();
+  const isMobile = useIsMobile();
+
+  if (loading) return null;
+  if (!user) return <Redirect to="/login" />;
+
+  // Technicians on mobile → dedicated mobile shell (no sidebar)
+  if (user.role === "technician" && isMobile) {
+    return <TechnicianMobileApp />;
+  }
+
+  // Desktop or admin/manager previewing the technician view
+  return (
+    <AppShell>
+      <ProtectedRoute component={TechnicianDashboard} roles={["technician", "admin", "manager"]} />
+    </AppShell>
+  );
+}
+
 /** Redirect authenticated users away from auth pages */
 function AuthRoute({ component: Component }: { component: React.ComponentType }) {
   const { user, loading } = useAuth();
@@ -122,9 +172,7 @@ function Router() {
         </AppShell>
       </Route>
       <Route path="/technician">
-        <AppShell>
-          <ProtectedRoute component={TechnicianDashboard} roles={["technician", "admin", "manager"]} />
-        </AppShell>
+        <TechnicianRoute />
       </Route>
 
       {/* ── CRM: Clients ── */}
@@ -206,9 +254,7 @@ function Router() {
         </AppShell>
       </Route>
       <Route path="/jobs/:id">
-        <AppShell>
-          <ProtectedRoute component={JobCardDetail} />
-        </AppShell>
+        <JobDetailRoute />
       </Route>
 
       {/* ── Pricing ── */}

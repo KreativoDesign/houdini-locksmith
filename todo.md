@@ -352,3 +352,16 @@
 - [x] Job card scheduling: clarify purpose — show scheduled date/time prominently in job card header/sidebar
 - [x] Job card scheduling: display technician name + booked slot in the job info card
 - [x] TypeScript clean, 82 tests passing (2 new sendInviteEmail unit tests added)
+
+## Phase 34: Mobile-First Technician View
+- [x] TechnicianMobileApp: full-screen mobile shell with sticky header + bottom nav (Today / Jobs / Profile)
+- [x] Today tab: date header, greeting, stats row, today's jobs section, urgent alert banner, in-progress jobs
+- [x] Jobs tab: filterable list (All / Active / Completed) with job cards showing status chip, priority stripe, client name, scheduled time
+- [x] Quick status update: bottom-sheet action menu per job card (Start Job / Put On Hold / Mark Completed / etc.)
+- [x] TechnicianJobDetail: mobile-optimised job detail page with client info, scheduled slot, status badge, action buttons, and notes
+- [x] Notes: technician can add a timestamped note from mobile detail view
+- [x] Profile tab: name, role badge, change password link, sign out
+- [x] TechnicianRoute: detects technician role on mobile → renders TechnicianMobileApp (no sidebar)
+- [x] JobDetailRoute: detects technician role on mobile → renders TechnicianJobDetail
+- [x] Desktop technician view unchanged (TechnicianDashboard still used on ≥768px)
+- [x] TypeScript clean (0 errors), 82 tests still passing
