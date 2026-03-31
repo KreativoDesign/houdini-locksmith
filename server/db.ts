@@ -531,6 +531,32 @@ export async function getSlotsByTechnicianAndDate(technicianId: number, slotDate
   ).orderBy(timeSlots.startTime);
 }
 
+/** Returns booked slots for a technician on a given date, with their linked job card IDs */
+export async function getBookedSlotsForDate(
+  technicianId: number,
+  slotDate: string
+): Promise<{ id: number; startTime: string; endTime: string; jobCardId: number | null }[]> {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db
+    .select({
+      id: timeSlots.id,
+      startTime: timeSlots.startTime,
+      endTime: timeSlots.endTime,
+      jobCardId: timeSlots.jobCardId,
+    })
+    .from(timeSlots)
+    .where(
+      and(
+        eq(timeSlots.technicianId, technicianId),
+        eq(timeSlots.slotDate, slotDate),
+        eq(timeSlots.isBooked, true)
+      )
+    )
+    .orderBy(timeSlots.startTime);
+  return rows;
+}
+
 // ─────────────────────────────────────────────
 // EMPLOYEE AVAILABILITY
 // ─────────────────────────────────────────────

@@ -206,6 +206,16 @@ function SlotPicker({
     { technicianId, date }, { enabled: !!technicianId }
   );
 
+  // Conflict detection: fetch already-booked slots for this technician on the selected date
+  const { data: bookedSlots = [] } = trpc.scheduling.getBookingsForDate.useQuery(
+    { technicianId, date },
+    { enabled: !!technicianId && !!date }
+  );
+  // Exclude the current job's own slot from conflicts
+  const conflicts = (bookedSlots as any[]).filter(
+    (s: any) => s.jobCardId !== jobCardId
+  );
+
   const bookMutation = trpc.scheduling.bookSlot.useMutation({
     onSuccess: () => {
       toast.success("Time slot booked");
@@ -263,6 +273,33 @@ function SlotPicker({
           </Button>
         )}
       </div>
+
+      {/* Conflict warning banner */}
+      {conflicts.length > 0 && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
+          <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
+          <div>
+            <p className="font-medium">
+              {conflicts.length === 1
+                ? "1 existing booking on this date"
+                : `${conflicts.length} existing bookings on this date`}
+            </p>
+            <p className="text-xs text-amber-700 mt-0.5">
+              Booked slots:{" "}
+              {conflicts.map((c: any, i: number) => (
+                <span key={c.id}>
+                  {c.startTime}–{c.endTime}
+                  {c.jobCardId ? (
+                    <span className="font-medium"> (JC #{c.jobCardId})</span>
+                  ) : null}
+                  {i < conflicts.length - 1 ? ", " : ""}
+                </span>
+              ))}
+            </p>
+          </div>
+        </div>
+      )}
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading slots…</p>
       ) : (slots as any[]).length === 0 ? (

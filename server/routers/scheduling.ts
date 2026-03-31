@@ -6,6 +6,7 @@ import {
   deleteAvailability,
   getAvailabilityByUserAndDate,
   getAvailableSlots,
+  getBookedSlotsForDate,
   getJobCardById,
   getSlotsByTechnicianAndDate,
   getUserById,
@@ -51,6 +52,18 @@ export const schedulingRouter = router({
     )
     .query(async ({ input }) => {
       return getSlotsByTechnicianAndDate(input.technicianId, input.date);
+    }),
+
+  /** Get booked slots for a technician on a date — used for conflict detection in the slot picker */
+  getBookingsForDate: technicianProcedure
+    .input(
+      z.object({
+        technicianId: z.number().int().positive(),
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+      })
+    )
+    .query(async ({ input }) => {
+      return getBookedSlotsForDate(input.technicianId, input.date);
     }),
 
   /** Get only available (unbooked) slots for a technician on a date */

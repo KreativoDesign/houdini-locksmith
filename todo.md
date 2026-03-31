@@ -322,3 +322,13 @@
 - [x] SlotPicker: assigned technician marked "(assigned)" in dropdown
 - [x] JobCardDetail: passes job departmentId and departmentName into SlotPicker
 - [x] TypeScript clean (0 errors), 80 tests still passing
+
+## Phase 31: Slot Picker Conflict Warning
+- [x] getBookedSlotsForDate db helper added to db.ts
+- [x] scheduling.getBookingsForDate tRPC procedure added to scheduling router
+- [x] SlotPicker: queries existing bookings when technician + date are selected
+- [x] SlotPicker: yellow warning banner shows count and time ranges of conflicting bookings
+- [x] SlotPicker: conflicting slots show linked job card ID (JC #N) for easy reference
+- [x] Warning auto-clears when date or technician changes to a conflict-free selection
+- [x] Current job's own slot excluded from conflict count
+- [x] TypeScript clean (0 errors), 80 tests still passing
