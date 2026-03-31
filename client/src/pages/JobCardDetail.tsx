@@ -597,6 +597,9 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
   const [signerName, setSignerName] = useState("");
   const [signerRole, setSignerRole] = useState("");
   const [padEmpty, setPadEmpty] = useState(true);
+  // Preview confirmation state
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null);
 
   const { data: existingSig } = trpc.signatures.getByJobCard.useQuery(
     { jobCardId },
@@ -608,12 +611,16 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
       toast.success("Signature captured successfully");
       utils.jobCards.get.invalidate({ id: jobCardId });
       utils.signatures.getByJobCard.invalidate({ jobCardId });
+      setPreviewOpen(false);
       setCaptureOpen(false);
+      setPreviewDataUrl(null);
     },
     onError: (err) => toast.error(err.message),
   });
 
-  const handleCapture = () => {
+  /** Step 1 — called when the user clicks "Submit Signature" in the draw dialog.
+   *  Captures the canvas data URL and opens the preview confirmation dialog. */
+  const handlePreview = () => {
     const dataUrl = sigPadRef.current?.getDataUrl();
     if (!dataUrl) {
       toast.error("Please draw a signature first");
@@ -623,19 +630,35 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
       toast.error("Please enter the signer's name");
       return;
     }
+    setPreviewDataUrl(dataUrl);
+    setPreviewOpen(true);
+  };
+
+  /** Step 2 — called when the user confirms the preview and triggers the upload. */
+  const handleConfirmUpload = () => {
+    if (!previewDataUrl || !signerName.trim()) return;
     captureMutation.mutate({
       jobCardId,
-      signatureDataUrl: dataUrl,
+      signatureDataUrl: previewDataUrl,
       signerName: signerName.trim(),
       signerRole: signerRole.trim() || undefined,
       ipAddress: undefined,
     });
   };
 
+  /** Re-draw — close the preview and return to the canvas. */
+  const handleRedraw = () => {
+    setPreviewOpen(false);
+    setPreviewDataUrl(null);
+    // Re-open the draw dialog (it stays mounted)
+  };
+
   const handleOpenCapture = () => {
     setSignerName("");
     setSignerRole("");
     setPadEmpty(true);
+    setPreviewDataUrl(null);
+    setPreviewOpen(false);
     setCaptureOpen(true);
   };
 
@@ -754,16 +777,85 @@ function SignatureSection({ jobCardId, jobStatus, requiresSignature, isSigned }:
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCaptureOpen(false)} disabled={captureMutation.isPending}>
+            <Button variant="outline" onClick={() => setCaptureOpen(false)}>
               Cancel
             </Button>
             <Button
-              disabled={padEmpty || !signerName.trim() || captureMutation.isPending}
-              onClick={handleCapture}
+              disabled={padEmpty || !signerName.trim()}
+              onClick={handlePreview}
+              className="gap-2"
+            >
+              <PenLine className="w-4 h-4" />
+              Review Signature
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preview / confirmation dialog */}
+      <Dialog open={previewOpen} onOpenChange={(o) => { if (!o && !captureMutation.isPending) handleRedraw(); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-green-600" /> Confirm Signature
+            </DialogTitle>
+            <DialogDescription>
+              Please review the signature below. If it looks correct, click <strong>Confirm &amp; Upload</strong> to save it. Otherwise click <strong>Re-draw</strong> to try again.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Signature preview */}
+            <div className="rounded-xl border-2 border-dashed border-muted bg-white overflow-hidden">
+              {previewDataUrl ? (
+                <img
+                  src={previewDataUrl}
+                  alt="Signature preview"
+                  className="w-full h-40 object-contain p-3"
+                />
+              ) : (
+                <div className="h-40 flex items-center justify-center text-muted-foreground text-sm">
+                  No signature captured
+                </div>
+              )}
+            </div>
+
+            {/* Signer details recap */}
+            <div className="rounded-lg bg-muted/50 px-4 py-3 space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Signed by</span>
+                <span className="font-medium text-foreground">{signerName}</span>
+              </div>
+              {signerRole && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Role</span>
+                  <span className="font-medium text-foreground">{signerRole}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Date &amp; time</span>
+                <span className="font-medium text-foreground">{format(new Date(), "dd MMM yyyy, HH:mm")}</span>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={handleRedraw}
+              disabled={captureMutation.isPending}
+              className="gap-2"
+            >
+              <PenLine className="w-4 h-4" />
+              Re-draw
+            </Button>
+            <Button
+              onClick={handleConfirmUpload}
+              disabled={captureMutation.isPending || !previewDataUrl}
               className="gap-2"
             >
               <ShieldCheck className="w-4 h-4" />
-              {captureMutation.isPending ? "Saving…" : "Confirm Signature"}
+              {captureMutation.isPending ? "Uploading…" : "Confirm & Upload"}
             </Button>
           </DialogFooter>
         </DialogContent>

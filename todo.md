@@ -237,3 +237,9 @@
 - [x] Password strength hints updated on Register and ChangePassword pages
 - [x] Server-side validation updated (authService + auth router zod schemas)
 - [x] TypeScript clean (0 errors), 75 tests still passing
+
+## Phase 21: Signature Confirmation Dialog
+- [x] After drawing, "Submit Signature" opens a preview dialog showing the captured image
+- [x] Dialog has "Confirm & Upload" and "Re-draw" buttons
+- [x] Confirming triggers the S3 upload; re-drawing returns to the canvas
+- [x] TypeScript clean, 75 tests still passing
