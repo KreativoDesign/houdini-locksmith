@@ -65,24 +65,24 @@ export default function AdminDashboard() {
       label: "Open Enquiries",
       value: (enquiries as any)?.rows ? (enquiries as any).rows.filter((e: any) => e.status === "new" || e.status === "in_review").length : Array.isArray(enquiries) ? (enquiries as any[]).filter((e: any) => e.status === "new" || e.status === "in_review").length : 0,
       icon: ClipboardList,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
       path: "/enquiries",
     },
     {
       label: "Active Technicians",
       value: allUsers.filter((u: any) => u.role === "technician" && u.isActive).length,
       icon: Wrench,
-      color: "text-green-600",
-      bg: "bg-green-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
       path: "/team",
     },
     {
       label: "Departments",
       value: depts.filter((d: any) => d.isActive).length,
       icon: Building2,
-      color: "text-purple-600",
-      bg: "bg-purple-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
       path: "/departments",
     },
   ];
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
             onClick={() => setLocation(stat.path)}
             className="text-left"
           >
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-[3px] border-l-primary overflow-hidden">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center`}>

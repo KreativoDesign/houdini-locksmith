@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, UserPlus, Shield } from "lucide-react";
+import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, UserPlus, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 function getInviteTokenFromUrl(): string | null {
@@ -103,76 +103,88 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-sidebar flex-col justify-between p-12">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <Lock className="w-5 h-5 text-primary-foreground" />
-          </div>
+      {/* ── Left panel: dark + mascot ──────────────────────────────────────── */}
+      <div
+        className="hidden lg:flex lg:w-[45%] flex-col relative overflow-hidden"
+        style={{ background: "linear-gradient(160deg, #0a0f0a 0%, #0d1a0d 50%, #0a1205 100%)" }}
+      >
+        {/* Subtle radial glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 60% at 50% 55%, oklch(0.73 0.22 130 / 0.18) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* Top: brand name */}
+        <div className="relative z-10 px-10 pt-10 flex items-center gap-3">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-logo_e1c5aaa1.jpeg"
+            alt="Houdini Locksmith logo"
+            className="w-10 h-10 rounded-xl object-cover"
+          />
           <div>
-            <p className="font-bold text-sidebar-foreground text-lg leading-none">Houdini</p>
-            <p className="text-xs text-sidebar-foreground/60 mt-0.5">Locksmith & Security</p>
+            <p className="font-bold text-white text-lg leading-none tracking-tight">Houdini</p>
+            <p className="text-xs text-white/50 mt-0.5 tracking-wide">Locksmith & Security</p>
           </div>
         </div>
 
-        <div className="space-y-6">
+        {/* Centre: mascot image */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-logo_e1c5aaa1.jpeg"
+            alt="Houdini mascot holding the logo"
+            className="w-64 h-auto object-contain drop-shadow-2xl"
+            style={{ filter: "drop-shadow(0 0 40px oklch(0.73 0.22 130 / 0.5))" }}
+          />
+        </div>
+
+        {/* Bottom: contextual instructions */}
+        <div className="relative z-10 px-10 pb-10 space-y-5">
           {isFirstUser ? (
             <>
-              <h1 className="text-4xl font-bold text-sidebar-foreground leading-tight">
-                Welcome to Houdini.<br />
-                <span className="text-primary">Let's get you set up.</span>
-              </h1>
-              <p className="text-sidebar-foreground/70 text-lg leading-relaxed">
-                You're the first person to register. Your account will automatically be created as
-                the system <strong className="text-primary">Administrator</strong> with full access
-                to all modules.
-              </p>
-              <div className="bg-sidebar-accent rounded-xl p-5 space-y-3">
-                <p className="text-sm font-semibold text-sidebar-foreground">As Admin you can:</p>
+              <div>
+                <h2 className="text-xl font-bold text-white leading-snug">Welcome to Houdini.</h2>
+                <p className="text-sm text-white/55 mt-1">You're the first user — your account will be set up as Administrator.</p>
+              </div>
+              <ul className="space-y-2.5">
                 {[
                   "Invite Managers and Technicians",
                   "Manage all departments and job cards",
                   "Approve pricing and view audit logs",
                   "Configure the entire system",
                 ].map((item) => (
-                  <div key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                    <span className="text-sm text-sidebar-foreground/70">{item}</span>
-                  </div>
+                  <li key={item} className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "oklch(0.73 0.22 130)" }} />
+                    <span className="text-sm text-white/70">{item}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </>
           ) : (
             <>
-              <h1 className="text-4xl font-bold text-sidebar-foreground leading-tight">
-                Join the team.<br />
-                <span className="text-primary">Get to work.</span>
-              </h1>
-              <p className="text-sidebar-foreground/70 text-lg leading-relaxed">
-                Create your account to access the Houdini operations platform.
-                Your role and department will be pre-configured by your administrator.
-              </p>
-              <div className="bg-sidebar-accent rounded-xl p-5 space-y-3">
-                <p className="text-sm font-semibold text-sidebar-foreground">Account security</p>
+              <div>
+                <h2 className="text-xl font-bold text-white leading-snug">Join the team. Get to work.</h2>
+                <p className="text-sm text-white/55 mt-1">Create your account to access the Houdini operations platform.</p>
+              </div>
+              <ul className="space-y-2.5">
                 {[
                   "Passwords are bcrypt-hashed (cost 12)",
                   "Sessions expire after 7 days",
-                  "Account locks after 5 failed attempts",
                   "All logins are audit-logged",
+                  "Your role is pre-configured by your admin",
                 ].map((item) => (
-                  <div key={item} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                    <span className="text-sm text-sidebar-foreground/70">{item}</span>
-                  </div>
+                  <li key={item} className="flex items-start gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "oklch(0.73 0.22 130)" }} />
+                    <span className="text-sm text-white/70">{item}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </>
           )}
+          <p className="text-white/25 text-xs pt-2">© {new Date().getFullYear()} Houdini Locksmith & Security</p>
         </div>
-
-        <p className="text-sidebar-foreground/40 text-sm">
-          © {new Date().getFullYear()} Houdini Locksmith & Security
-        </p>
       </div>
 
       {/* Right panel — form */}
@@ -180,9 +192,11 @@ export default function Register() {
         <div className="w-full max-w-md space-y-7">
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-              <Lock className="w-4 h-4 text-primary-foreground" />
-            </div>
+            <img
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-logo_e1c5aaa1.jpeg"
+              alt="Houdini logo"
+              className="w-10 h-10 rounded-xl object-cover"
+            />
             <span className="font-bold text-foreground text-lg">Houdini Locksmith</span>
           </div>
 

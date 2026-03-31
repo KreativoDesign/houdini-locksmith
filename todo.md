@@ -391,3 +391,11 @@
 - [x] Mobile top bar: replaced Lock icon with mascot logo image
 - [x] Auth-required screen: replaced Lock icon with mascot logo image
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 38: Brand Polish
+- [x] Register page: dark left panel with logo-holding mascot centred + contextual instructions (first-user vs invite modes), right panel with register form
+- [x] Favicon: generated 32x32 PNG, 180x180 apple-touch-icon, and .ico from mascot logo; uploaded to CDN; linked in index.html
+- [x] App title: set to "Houdini Locksmith" in index.html
+- [x] theme-color meta tag set to #0a0f0a (matches dark panel)
+- [x] Dashboard stat cards: all four icons unified to lime-green (text-primary / bg-primary/10) + border-l-[3px] border-l-primary accent stripe
+- [x] TypeScript clean (0 errors), 82 tests still passing
