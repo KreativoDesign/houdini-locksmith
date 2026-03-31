@@ -278,3 +278,10 @@
 - [x] Job card quick-add panel replaced with live catalogue query (falls back to empty state)
 - [x] Inactive catalogue items hidden from quick-add but visible in admin settings
 - [x] TypeScript clean, 80 tests still passing
+
+## Phase 25: Group Quick-Add Panel by Type
+- [x] Group catalogue items by type (Service, Labour, Part, Other) in the quick-add panel
+- [x] Each group has a labelled section header with icon and item count
+- [x] Groups are collapsible (click header to toggle)
+- [x] Groups with zero active items are hidden
+- [x] TypeScript clean, 80 tests still passing

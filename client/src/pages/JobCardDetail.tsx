@@ -336,6 +336,25 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
   const { data: catalogueItems = [] } = trpc.catalogue.list.useQuery({ activeOnly: true });
   const [catalogueOpen, setCatalogueOpen] = useState(false);
   const [cataloguePrices, setCataloguePrices] = useState<Record<number, string>>({});
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+
+  // Group items by type, preserving sort order within each group
+  const catalogueByType = useMemo(() => {
+    const order = ["service", "labour", "part", "other"] as const;
+    const groups: Record<string, any[]> = { service: [], labour: [], part: [], other: [] };
+    (catalogueItems as any[]).forEach((item: any) => {
+      const key = item.type in groups ? item.type : "other";
+      groups[key].push(item);
+    });
+    return order.filter((t) => groups[t].length > 0).map((t) => ({ type: t, items: groups[t] }));
+  }, [catalogueItems]);
+
+  const TYPE_GROUP_META: Record<string, { label: string; icon: React.ElementType; color: string }> = {
+    service: { label: "Services", icon: Wrench,   color: "text-green-600" },
+    labour:  { label: "Labour",   icon: Timer,    color: "text-orange-600" },
+    part:    { label: "Parts",    icon: Package,  color: "text-blue-600" },
+    other:   { label: "Other",    icon: FileText, color: "text-gray-500" },
+  };
 
   // Initialise editable prices when catalogue loads
   const cataloguePricesRef = useMemo(() => {
@@ -393,42 +412,71 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
             <Zap className="w-3 h-3" /> Quick-add Pricing Catalogue
           </p>
-          {(catalogueItems as any[]).length === 0 ? (
+          {catalogueByType.length === 0 ? (
             <p className="text-xs text-muted-foreground italic">
               No active catalogue items. Ask an admin to add items in Settings → Pricing Catalogue.
             </p>
           ) : (
-            <div className="space-y-1.5">
-              {(catalogueItems as any[]).map((item: any) => (
-                <div key={item.id} className="flex items-center gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{item.name}</p>
-                    {item.description && (
-                      <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+            <div className="space-y-3">
+              {catalogueByType.map(({ type, items: groupItems }) => {
+                const meta = TYPE_GROUP_META[type] ?? TYPE_GROUP_META.other;
+                const GroupIcon = meta.icon;
+                const isCollapsed = collapsedGroups[type] ?? false;
+                return (
+                  <div key={type}>
+                    {/* Group header */}
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-1.5 mb-1.5 group"
+                      onClick={() => setCollapsedGroups((s) => ({ ...s, [type]: !isCollapsed }))}
+                    >
+                      <GroupIcon className={`w-3 h-3 ${meta.color}`} />
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${meta.color}`}>
+                        {meta.label}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">({groupItems.length})</span>
+                      <span className="ml-auto text-muted-foreground text-[10px]">
+                        {isCollapsed ? "▶" : "▼"}
+                      </span>
+                    </button>
+                    {/* Group items */}
+                    {!isCollapsed && (
+                      <div className="space-y-1.5 pl-1">
+                        {groupItems.map((item: any) => (
+                          <div key={item.id} className="flex items-center gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium truncate">{item.name}</p>
+                              {item.description && (
+                                <p className="text-[10px] text-muted-foreground truncate">{item.description}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-xs text-muted-foreground">R</span>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={cataloguePrices[item.id] ?? cataloguePricesRef[item.id] ?? parseFloat(item.defaultPrice).toFixed(2)}
+                                onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.id]: e.target.value }))}
+                                className="h-7 w-24 text-xs"
+                              />
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 text-xs px-2"
+                                disabled={createMutation.isPending}
+                                onClick={() => handleQuickAdd(item)}
+                              >
+                                <Plus className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-xs text-muted-foreground">R</span>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={cataloguePrices[item.id] ?? cataloguePricesRef[item.id] ?? parseFloat(item.defaultPrice).toFixed(2)}
-                      onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.id]: e.target.value }))}
-                      className="h-7 w-24 text-xs"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-7 text-xs px-2"
-                      disabled={createMutation.isPending}
-                      onClick={() => handleQuickAdd(item)}
-                    >
-                      <Plus className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
