@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useLocation, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -58,6 +58,7 @@ import {
   MessageSquare,
   Send,
   PenLine,
+  Share2,
   ShieldCheck,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -1434,6 +1435,24 @@ export default function JobCardDetail() {
     onError: (err) => toast.error(err.message),
   });
 
+  // ── Client portal link ──────────────────────────────────────────────────────
+  const [portalLinkCopied, setPortalLinkCopied] = useState(false);
+  const portalLinkQuery = trpc.clientPortal.getLink.useQuery(
+    { jobCardId: jobId },
+    { enabled: isManager }
+  );
+  const generatePortalLink = trpc.clientPortal.generateLink.useMutation({
+    onSuccess: ({ url }) => {
+      navigator.clipboard.writeText(url).then(() => {
+        setPortalLinkCopied(true);
+        setTimeout(() => setPortalLinkCopied(false), 2500);
+      });
+      toast.success("Client portal link copied to clipboard");
+      utils.clientPortal.getLink.invalidate({ jobCardId: jobId });
+    },
+    onError: (err) => toast.error(`Failed to generate link: ${err.message}`),
+  });
+
   const pdfMutation = trpc.jobCards.generatePdf.useMutation({
     onSuccess: ({ url, jobNumber }) => {
       // Open the PDF in a new tab for download
@@ -1523,6 +1542,34 @@ export default function JobCardDetail() {
         </div>
         {/* Status action buttons */}
         <div className="flex gap-2 flex-wrap justify-end">
+          {/* Share client portal link (managers only) */}
+          {isManager && (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={generatePortalLink.isPending}
+              onClick={() =>
+                generatePortalLink.mutate({
+                  jobCardId: jobId,
+                  origin: window.location.origin,
+                })
+              }
+              className="gap-1.5 border-primary/40 text-primary hover:bg-primary/10"
+            >
+              {generatePortalLink.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : portalLinkCopied ? (
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              ) : (
+                <Share2 className="w-3.5 h-3.5" />
+              )}
+              {portalLinkCopied
+                ? "Link Copied!"
+                : portalLinkQuery.data
+                ? "Refresh & Copy Link"
+                : "Share Client Link"}
+            </Button>
+          )}
           {/* Download PDF */}
           <Button
             size="sm"

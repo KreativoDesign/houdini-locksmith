@@ -11,6 +11,9 @@ import { useAuth } from "./_core/hooks/useAuth";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
+// Public pages (no auth required)
+import ClientPortal from "./pages/ClientPortal";
+
 // Dashboard pages (role-specific)
 import AdminDashboard from "./pages/AdminDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
@@ -286,6 +289,9 @@ function Router() {
           </AppShell>
         </Route>
       ))}
+
+      {/* ── Public client portal (no auth required) ── */}
+      <Route path="/portal/:token" component={ClientPortal} />
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

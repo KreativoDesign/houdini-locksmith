@@ -454,3 +454,19 @@ export const pricingCatalogue = mysqlTable("pricingCatalogue", {
 });
 export type PricingCatalogueItem = typeof pricingCatalogue.$inferSelect;
 export type InsertPricingCatalogueItem = typeof pricingCatalogue.$inferInsert;
+
+// ─────────────────────────────────────────────
+// CLIENT PORTAL TOKENS  (public read-only job status links)
+// ─────────────────────────────────────────────
+export const clientPortalTokens = mysqlTable("clientPortalTokens", {
+  id: int("id").autoincrement().primaryKey(),
+  /** The job card this token grants read-only access to */
+  jobCardId: int("jobCardId").notNull().references(() => jobCards.id),
+  /** Cryptographically random 32-byte hex token */
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  /** Optional expiry — null means never expires */
+  expiresAt: timestamp("expiresAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type ClientPortalToken = typeof clientPortalTokens.$inferSelect;
+export type InsertClientPortalToken = typeof clientPortalTokens.$inferInsert;

@@ -399,3 +399,12 @@
 - [x] theme-color meta tag set to #0a0f0a (matches dark panel)
 - [x] Dashboard stat cards: all four icons unified to lime-green (text-primary / bg-primary/10) + border-l-[3px] border-l-primary accent stripe
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 39: Manager Branding + Client Portal
+- [x] Manager dashboard stat cards: unified to lime-green icons + border-l-primary accent stripe
+- [x] DB schema: clientPortalTokens table (id, jobCardId, token, expiresAt, createdAt) — migration pushed
+- [x] Backend: clientPortal.generateLink (manager-protected mutation), clientPortal.getLink (manager-protected query)
+- [x] Backend: clientPortal.getJobStatus public procedure (64-char token, returns job status, timeline, slot, client, technician, signature, photos, pricing summary)
+- [x] Frontend: /portal/:token — public page with branded header, status timeline, scheduled slot, signature, photo grid, pricing summary
+- [x] JobCardDetail: "Share Client Link" button (managers only) — generates/refreshes token, copies URL to clipboard with visual feedback
+- [x] TypeScript clean (0 errors), 82 tests still passing

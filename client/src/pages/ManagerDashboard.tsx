@@ -52,16 +52,16 @@ export default function ManagerDashboard() {
       label: "Awaiting Pricing",
       value: awaitingPricing.length,
       icon: DollarSign,
-      color: "text-orange-600",
-      bg: "bg-orange-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
       path: "/pricing",
     },
     {
       label: "Open Enquiries",
       value: openEnquiries.length,
       icon: ClipboardList,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
       path: "/enquiries",
     },
     {
@@ -76,8 +76,8 @@ export default function ManagerDashboard() {
       label: "Unread Alerts",
       value: unread,
       icon: TrendingUp,
-      color: "text-purple-600",
-      bg: "bg-purple-50",
+      color: "text-primary",
+      bg: "bg-primary/10",
       path: "/notifications",
     },
   ];
@@ -103,7 +103,7 @@ export default function ManagerDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <button key={stat.label} onClick={() => setLocation(stat.path)} className="text-left">
-            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-[3px] border-l-primary overflow-hidden">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center`}>

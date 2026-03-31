@@ -16,6 +16,7 @@ import { documentsRouter } from "./routers/documents";
 import { notificationsRouter } from "./routers/notifications";
 import { catalogueRouter } from "./routers/catalogue";
 import { localAuthRouter } from "./routers/auth";
+import { clientPortalRouter } from "./routers/clientPortal";
 
 export const appRouter = router({
   system: systemRouter,
@@ -70,6 +71,9 @@ export const appRouter = router({
 
   /** Admin-configurable pricing catalogue for quick-add job items */
   catalogue: catalogueRouter,
+
+  /** Public read-only client portal (token-based, no auth required) */
+  clientPortal: clientPortalRouter,
 });
 
 export type AppRouter = typeof appRouter;
