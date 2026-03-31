@@ -1,0 +1,59 @@
+{
+  "name": "Houdini Locksmith & Security",
+  "short_name": "Houdini",
+  "description": "Field management app for Houdini Locksmith & Security — job cards, scheduling, signatures, and client portal.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0a0f0a",
+  "background_color": "#0a0f0a",
+  "lang": "en",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pwa-icon-192_4c387917.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pwa-icon-512_b155e5b3.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pwa-icon-maskable-512_07db44a2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "My Jobs",
+      "short_name": "Jobs",
+      "description": "View your assigned job cards",
+      "url": "/jobs",
+      "icons": [
+        {
+          "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pwa-icon-192_4c387917.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "New Enquiry",
+      "short_name": "Enquiry",
+      "description": "Create a new client enquiry",
+      "url": "/enquiries/new",
+      "icons": [
+        {
+          "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pwa-icon-192_4c387917.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

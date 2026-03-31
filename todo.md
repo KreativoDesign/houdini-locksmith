@@ -408,3 +408,14 @@
 - [x] Frontend: /portal/:token — public page with branded header, status timeline, scheduled slot, signature, photo grid, pricing summary
 - [x] JobCardDetail: "Share Client Link" button (managers only) — generates/refreshes token, copies URL to clipboard with visual feedback
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 40: PWA / Home Screen Install
+- [x] Generated PWA icons: 192x192, 512x512, maskable 512x512 (with safe-zone padding on near-black background)
+- [x] Uploaded all three icons to CDN
+- [x] manifest.json: name, short_name, icons (any + maskable), theme_color, background_color, display=standalone, shortcuts (My Jobs, New Enquiry)
+- [x] sw.js: cache-first for static assets, network-first for API calls, SPA navigation fallback to cached index.html, offline.html fallback
+- [x] offline.html: branded offline page with mascot icon and "Try again" button
+- [x] index.html: manifest link, apple-mobile-web-app meta tags, SW registration script
+- [x] PWAInstallPrompt component: captures beforeinstallprompt, shows floating banner above mobile nav with Install + Dismiss, session-storage dismissal memory
+- [x] Mounted globally in main.tsx
+- [x] TypeScript clean (0 errors), 82 tests still passing
