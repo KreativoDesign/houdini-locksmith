@@ -429,3 +429,16 @@
 - [x] JobCardDetail share button: dialog with expiry selector (7/14/30/never); toast shows "sent to client" when emailSent=true
 - [x] lineTotal.toFixed runtime error fixed (parseFloat guard)
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 42: PDF Rebrand
+- [x] Audit current pdfGenerator.ts structure and layout
+- [x] Header: near-black (#0a0f0a) background, mascot logo (CDN) left, company name in lime-green, job number badge in lime-green right
+- [x] Green accent strip at bottom of header bar
+- [x] Section headings: dark background strip with lime-green left accent bar + white label
+- [x] Items table header: lime-green background with dark text
+- [x] Alternating row accent: lime-green 2px left bar on odd rows
+- [x] Grand total row: lime-green background with dark text
+- [x] Status badge: colour-coded per status
+- [x] Signature box: light green tint with lime-green left accent
+- [x] Footer: near-black background with lime-green top accent strip, company name + job number
+- [x] TypeScript clean (0 errors), 82 tests still passing
