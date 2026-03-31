@@ -292,3 +292,8 @@
 - [x] Quantity resets to 1 after item is successfully added
 - [x] handleQuickAdd passes the selected quantity to createMutation
 - [x] TypeScript clean, 80 tests still passing
+
+## Phase 27: Live Line Total in Quick-Add Panel
+- [x] Show qty × price total (R xx.xx) next to each item's + button
+- [x] Total updates live as qty or price changes
+- [x] TypeScript clean, 80 tests still passing

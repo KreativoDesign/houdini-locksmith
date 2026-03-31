@@ -501,6 +501,10 @@ function JobItemsPanel({ jobCardId, jobStatus }: { jobCardId: number; jobStatus:
                                   onChange={(e) => setCataloguePrices((p) => ({ ...p, [item.id]: e.target.value }))}
                                   className="h-7 w-20 text-xs"
                                 />
+                                {/* Live line total */}
+                                <span className="text-xs font-semibold text-foreground tabular-nums min-w-[4rem] text-right">
+                                  R {(qty * getCataloguePrice(item)).toFixed(2)}
+                                </span>
                                 <Button
                                   size="sm"
                                   variant="outline"
