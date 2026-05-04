@@ -18,6 +18,7 @@ import { catalogueRouter } from "./routers/catalogue";
 import { localAuthRouter } from "./routers/auth";
 import { clientPortalRouter } from "./routers/clientPortal";
 import { pushRouter } from "./routers/push";
+import { quotesRouter } from "./routers/quotes";
 
 export const appRouter = router({
   system: systemRouter,
@@ -78,6 +79,9 @@ export const appRouter = router({
 
   /** Public read-only client portal (token-based, no auth required) */
   clientPortal: clientPortalRouter,
+
+  /** Standalone quote system for admin/manager creation and client acceptance */
+  quotes: quotesRouter,
 });
 
 export type AppRouter = typeof appRouter;

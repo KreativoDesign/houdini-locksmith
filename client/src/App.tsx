@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 
 // Public pages (no auth required)
 import ClientPortal from "./pages/ClientPortal";
+import PublicQuoteView from "./pages/PublicQuoteView";
 
 // Dashboard pages (role-specific)
 import AdminDashboard from "./pages/AdminDashboard";
@@ -45,6 +46,9 @@ import JobCardForm from "./pages/JobCardForm";
 // Pricing page
 import Pricing from "./pages/Pricing";
 import PricingCatalogue from "./pages/PricingCatalogue";
+
+// Quotes page
+import QuoteBuilder from "./pages/QuoteBuilder";
 
 // Schedule page
 import SchedulePage from "./pages/Schedule";
@@ -281,6 +285,13 @@ function Router() {
         </AppShell>
       </Route>
 
+      {/* ── Quotes (admin/manager only) ── */}
+      <Route path="/admin/quotes/new">
+        <AppShell>
+          <ProtectedRoute component={QuoteBuilder} roles={["admin", "manager"]} />
+        </AppShell>
+      </Route>
+
       {/* Placeholder routes — show "coming soon" */}
       {["/reports", "/settings", "/notifications"].map((path) => (
         <Route key={path} path={path}>
@@ -292,6 +303,9 @@ function Router() {
 
       {/* ── Public client portal (no auth required) ── */}
       <Route path="/portal/:token" component={ClientPortal} />
+
+      {/* ── Public quote view (no auth required) ── */}
+      <Route path="/quotes/:token" component={PublicQuoteView} />
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />

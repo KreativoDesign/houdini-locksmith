@@ -218,4 +218,99 @@ export const clientPortalRouter = router({
         jobCardId: job.id,
       };
     }),
+
+  /**
+   * Get a quote by public token (public access)
+   */
+  getQuoteByToken: publicProcedure
+    .input(z.object({ token: z.string() }))
+    .query(async ({ input }) => {
+      const { getQuoteToken, getQuoteById, getQuoteItemsByQuoteId } = await import("../db");
+      
+      const quoteToken = await getQuoteToken(input.token);
+      if (!quoteToken) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "This quote link is invalid or has expired.",
+        });
+      }
+
+      const quote = await getQuoteById(quoteToken.quoteId);
+      if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
+
+      const items = await getQuoteItemsByQuoteId(quote.id);
+
+      return { quote, items };
+    }),
+
+  /**
+   * Accept a quote (public access)
+   */
+  acceptQuote: publicProcedure
+    .input(z.object({ token: z.string() }))
+    .mutation(async ({ input }) => {
+      const { getQuoteToken, getQuoteById, updateQuote } = await import("../db");
+      
+      const quoteToken = await getQuoteToken(input.token);
+      if (!quoteToken) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "This quote link is invalid or has expired.",
+        });
+      }
+
+      const quote = await getQuoteById(quoteToken.quoteId);
+      if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
+
+      if (quote.status === "accepted") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Quote already accepted" });
+      }
+
+      if (quote.status === "rejected") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Quote has been rejected" });
+      }
+
+      await updateQuote(quote.id, {
+        status: "accepted",
+        acceptedAt: new Date(),
+      });
+
+      return { success: true };
+    }),
+
+  /**
+   * Reject a quote (public access)
+   */
+  rejectQuote: publicProcedure
+    .input(z.object({ token: z.string(), reason: z.string().optional() }))
+    .mutation(async ({ input }) => {
+      const { getQuoteToken, getQuoteById, updateQuote } = await import("../db");
+      
+      const quoteToken = await getQuoteToken(input.token);
+      if (!quoteToken) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "This quote link is invalid or has expired.",
+        });
+      }
+
+      const quote = await getQuoteById(quoteToken.quoteId);
+      if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
+
+      if (quote.status === "accepted") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Quote already accepted" });
+      }
+
+      if (quote.status === "rejected") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Quote already rejected" });
+      }
+
+      await updateQuote(quote.id, {
+        status: "rejected",
+        rejectedAt: new Date(),
+        rejectionReason: input.reason || null,
+      });
+
+      return { success: true };
+    }),
 });

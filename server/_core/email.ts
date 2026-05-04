@@ -385,3 +385,149 @@ export async function sendClientPortalEmail(params: ClientPortalEmailParams): Pr
     return false;
   }
 }
+
+
+// ─────────────────────────────────────────────
+// QUOTE EMAIL
+// ─────────────────────────────────────────────
+
+export type SendQuoteEmailParams = {
+  /** Recipient email address */
+  to: string;
+  /** Client full name */
+  clientName: string;
+  /** Quote number, e.g. QT-2026-0001 */
+  quoteNumber: string;
+  /** Public URL to view the quote */
+  quoteUrl: string;
+  /** Quote items */
+  items: Array<{ name: string; quantity: number; unitPrice: string; lineTotal: string }>;
+  /** Total amount in ZAR */
+  total: string;
+  /** VAT amount in ZAR */
+  vat: string;
+  /** Grand total including VAT in ZAR */
+  grandTotal: string;
+  /** Optional expiry date */
+  expiresAt?: Date | null;
+};
+
+function buildQuoteEmailHtml(p: SendQuoteEmailParams): string {
+  const expiryText = p.expiresAt
+    ? `<p style="margin:0 0 16px;font-size:13px;color:#dc2626;"><strong>⏰ This quote expires on ${formatDate(p.expiresAt)}</strong></p>`
+    : "";
+
+  const itemsHtml = p.items
+    .map(
+      (item) =>
+        `<tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:12px 0;font-size:14px;color:#3f3f46;">${item.name}</td>
+          <td style="padding:12px 0;text-align:center;font-size:14px;color:#3f3f46;">${item.quantity}</td>
+          <td style="padding:12px 0;text-align:right;font-size:14px;color:#3f3f46;">R ${parseFloat(item.unitPrice).toFixed(2)}</td>
+          <td style="padding:12px 0;text-align:right;font-size:14px;color:#3f3f46;font-weight:600;">R ${parseFloat(item.lineTotal).toFixed(2)}</td>
+        </tr>`
+    )
+    .join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote — ${p.quoteNumber}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <!-- Header -->
+        <tr><td style="background:#0a0f0a;padding:28px 32px;">
+          <p style="margin:0;font-size:20px;font-weight:700;color:#84cc16;">🔐 Houdini Locksmith &amp; Security</p>
+          <p style="margin:4px 0 0;font-size:13px;color:#a1a1aa;">Quote Request</p>
+        </td></tr>
+        <!-- Content -->
+        <tr><td style="padding:32px;">
+          <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">Hi <strong>${p.clientName}</strong>,</p>
+          <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#3f3f46;">
+            We've prepared a quote for your service request. Please review the details below and let us know if you'd like to proceed.
+          </p>
+          ${expiryText}
+          <!-- Quote Details -->
+          <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:24px 0;">
+            <p style="margin:0 0 8px;font-size:12px;font-weight:600;color:#71717a;text-transform:uppercase;">Quote Number</p>
+            <p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#18181b;">${p.quoteNumber}</p>
+          </div>
+          <!-- Items Table -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border-collapse:collapse;">
+            <tr style="border-bottom:2px solid #84cc16;">
+              <th style="padding:12px 0;text-align:left;font-size:12px;font-weight:700;color:#0a0f0a;text-transform:uppercase;">Item</th>
+              <th style="padding:12px 0;text-align:center;font-size:12px;font-weight:700;color:#0a0f0a;text-transform:uppercase;">Qty</th>
+              <th style="padding:12px 0;text-align:right;font-size:12px;font-weight:700;color:#0a0f0a;text-transform:uppercase;">Unit Price</th>
+              <th style="padding:12px 0;text-align:right;font-size:12px;font-weight:700;color:#0a0f0a;text-transform:uppercase;">Total</th>
+            </tr>
+            ${itemsHtml}
+          </table>
+          <!-- Totals -->
+          <div style="margin:24px 0;border-top:1px solid #e5e7eb;padding-top:16px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+              <tr>
+                <td style="padding:8px 0;text-align:right;font-size:14px;color:#3f3f46;">Subtotal:</td>
+                <td style="padding:8px 0 8px 16px;text-align:right;font-size:14px;color:#3f3f46;font-weight:600;">R ${parseFloat(p.total).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;text-align:right;font-size:14px;color:#3f3f46;">VAT (15%):</td>
+                <td style="padding:8px 0 8px 16px;text-align:right;font-size:14px;color:#3f3f46;font-weight:600;">R ${parseFloat(p.vat).toFixed(2)}</td>
+              </tr>
+              <tr style="border-top:2px solid #84cc16;">
+                <td style="padding:12px 0;text-align:right;font-size:15px;font-weight:700;color:#0a0f0a;">Grand Total:</td>
+                <td style="padding:12px 0 12px 16px;text-align:right;font-size:15px;font-weight:700;color:#0a0f0a;">R ${parseFloat(p.grandTotal).toFixed(2)}</td>
+              </tr>
+            </table>
+          </div>
+          <!-- CTA -->
+          <div style="text-align:center;margin:32px 0;">
+            <a href="${p.quoteUrl}" style="display:inline-block;background:#84cc16;color:#0a0f0a;font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;">Review &amp; Accept Quote</a>
+          </div>
+          <p style="margin:0 0 8px;font-size:13px;color:#71717a;">Or copy and paste this link:</p>
+          <p style="margin:0 0 24px;font-size:12px;color:#a1a1aa;word-break:break-all;font-family:monospace;background:#f4f4f5;padding:10px 12px;border-radius:6px;">${p.quoteUrl}</p>
+          <p style="margin:0;font-size:13px;color:#71717a;line-height:1.6;">If you have any questions, please contact us and reference quote number <strong>${p.quoteNumber}</strong>.</p>
+        </td></tr>
+        <!-- Footer -->
+        <tr><td style="background:#f4f4f5;padding:20px 32px;border-top:1px solid #e4e4e7;">
+          <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;">Houdini Locksmith &amp; Security · Automated notification<br/>Please do not reply to this email.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendQuoteEmail(params: SendQuoteEmailParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping quote email.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping quote email.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Quote ${params.quoteNumber} from Houdini Locksmith & Security`,
+      html: buildQuoteEmailHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending quote email:", error);
+      return false;
+    }
+    console.log(`[Email] Quote email sent to ${params.to} for quote ${params.quoteNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send quote email:", err);
+    return false;
+  }
+}

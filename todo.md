@@ -475,3 +475,27 @@
 - [ ] New Enquiry button in mobile bottom nav (TechnicianMobileApp) + desktop sidebar
 - [ ] New Enquiry dialog/page accessible from bottom nav
 - [ ] TypeScript clean, all tests passing
+
+
+## Phase 31: Standalone Quote System
+- [x] Database: quotes, quoteItems, quoteTokens tables with proper relations
+- [x] Backend: Quote CRUD helper functions (create, list, get, update, delete)
+- [x] Backend: tRPC procedures for admin quote management (create, list, get, update, delete, send)
+- [x] Backend: sendQuoteEmail helper function integrated with Resend
+- [x] Backend: Public quote acceptance/rejection procedures in clientPortal router
+- [x] Frontend: QuoteBuilder page with form, items dialog, totals summary
+- [x] Frontend: Client selection dropdown with contact info preview
+- [x] Frontend: Quote items table with add/remove, line total calculation
+- [x] Frontend: Quote-level discounts (fixed + percentage)
+- [x] Frontend: Expiry date selector (7/14/30 days or never)
+- [x] Frontend: Create & Send Quote button with toast notifications
+- [x] Frontend: PublicQuoteView page for public quote links
+- [x] Frontend: Quote details display with items table and VAT calculation
+- [x] Frontend: Accept quote button with confirmation
+- [x] Frontend: Reject quote with reason form
+- [x] Frontend: Expiry warning and status badges (draft/sent/accepted/rejected/expired)
+- [x] Frontend: Admin dashboard quick action "New Quote" button
+- [x] Routing: /admin/quotes/new (admin/manager only, protected)
+- [x] Routing: /quotes/:token (public, no auth required)
+- [x] TypeScript: All compilation clean (0 errors)
+- [x] Tests: All 82 vitest tests passing

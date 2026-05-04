@@ -488,3 +488,60 @@ export const pushSubscriptions = mysqlTable("pushSubscriptions", {
 });
 export type PushSubscriptionRow = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscriptionRow = typeof pushSubscriptions.$inferInsert;
+
+
+// ─────────────────────────────────────────────
+// QUOTES  (Standalone quotes for customers)
+// ─────────────────────────────────────────────
+export const quotes = mysqlTable("quotes", {
+  id: int("id").autoincrement().primaryKey(),
+  quoteNumber: varchar("quoteNumber", { length: 20 }).notNull().unique(),
+  clientId: int("clientId").notNull().references(() => clients.id),
+  createdById: int("createdById").notNull().references(() => users.id),
+  status: mysqlEnum("status", ["draft", "sent", "accepted", "rejected", "expired"]).default("draft").notNull(),
+  description: text("description"),
+  total: varchar("total", { length: 20 }).notNull().default("0.00"),
+  vat: varchar("vat", { length: 20 }).notNull().default("0.00"),
+  grandTotal: varchar("grandTotal", { length: 20 }).notNull().default("0.00"),
+  discount: varchar("discount", { length: 20 }).notNull().default("0.00"),
+  discountPercent: int("discountPercent").default(0).notNull(),
+  expiresAt: timestamp("expiresAt"),
+  sentAt: timestamp("sentAt"),
+  acceptedAt: timestamp("acceptedAt"),
+  rejectedAt: timestamp("rejectedAt"),
+  rejectionReason: text("rejectionReason"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type Quote = typeof quotes.$inferSelect;
+export type InsertQuote = typeof quotes.$inferInsert;
+
+// ─────────────────────────────────────────────
+// QUOTE ITEMS  (Line items in a quote)
+// ─────────────────────────────────────────────
+export const quoteItems = mysqlTable("quoteItems", {
+  id: int("id").autoincrement().primaryKey(),
+  quoteId: int("quoteId").notNull().references(() => quotes.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  type: mysqlEnum("type", ["part", "service", "labour", "other"]).default("service").notNull(),
+  quantity: int("quantity").default(1).notNull(),
+  unitPrice: varchar("unitPrice", { length: 20 }).notNull().default("0.00"),
+  discountPercent: int("discountPercent").default(0).notNull(),
+  lineTotal: varchar("lineTotal", { length: 20 }).notNull().default("0.00"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type QuoteItem = typeof quoteItems.$inferSelect;
+export type InsertQuoteItem = typeof quoteItems.$inferInsert;
+
+// ─────────────────────────────────────────────
+// QUOTE TOKENS  (Public read-only quote links)
+// ─────────────────────────────────────────────
+export const quoteTokens = mysqlTable("quoteTokens", {
+  id: int("id").autoincrement().primaryKey(),
+  quoteId: int("quoteId").notNull().references(() => quotes.id, { onDelete: "cascade" }),
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type QuoteToken = typeof quoteTokens.$inferSelect;
+export type InsertQuoteToken = typeof quoteTokens.$inferInsert;

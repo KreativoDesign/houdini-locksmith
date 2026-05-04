@@ -31,6 +31,12 @@ import {
   InsertClientPortalToken,
   PushSubscriptionRow,
   InsertPushSubscriptionRow,
+  Quote,
+  InsertQuote,
+  QuoteItem,
+  InsertQuoteItem,
+  QuoteToken,
+  InsertQuoteToken,
   clientPortalTokens,
   clients,
   departments,
@@ -42,6 +48,9 @@ import {
   jobPricing,
   notifications,
   pricingCatalogue,
+  quotes,
+  quoteItems,
+  quoteTokens,
   signatures,
   timeSlots,
   users,
@@ -77,6 +86,18 @@ export async function generateJobNumber(): Promise<string> {
     .from(jobCards);
   const count = (result[0]?.count ?? 0) + 1;
   return `JC-${year}-${String(count).padStart(4, "0")}`;
+}
+
+/** Generate a sequential quote number like QT-2026-0001 */
+export async function generateQuoteNumber(): Promise<string> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const year = new Date().getFullYear();
+  const result = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(quotes);
+  const count = (result[0]?.count ?? 0) + 1;
+  return `QT-${year}-${String(count).padStart(4, "0")}`;
 }
 
 // ─────────────────────────────────────────────
@@ -920,4 +941,133 @@ export async function getPushSubscriptionsForUserIds(userIds: number[]): Promise
     .select()
     .from(pushSubscriptions)
     .where(inArray(pushSubscriptions.userId, userIds));
+}
+
+
+// ─────────────────────────────────────────────
+// QUOTES
+// ─────────────────────────────────────────────
+
+export async function createQuote(data: InsertQuote): Promise<Quote> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(quotes).values(data);
+  const id = result[0].insertId;
+  const quote = await db.select().from(quotes).where(eq(quotes.id, id)).limit(1);
+  return quote[0]!;
+}
+
+export async function getQuoteById(id: number): Promise<Quote | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(quotes).where(eq(quotes.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getQuoteByNumber(quoteNumber: string): Promise<Quote | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(quotes).where(eq(quotes.quoteNumber, quoteNumber)).limit(1);
+  return result[0];
+}
+
+export async function listQuotes(filters?: {
+  clientId?: number;
+  status?: Quote["status"];
+  createdById?: number;
+}): Promise<Quote[]> {
+  const db = await getDb();
+  if (!db) return [];
+  const conditions = [];
+  if (filters?.clientId) conditions.push(eq(quotes.clientId, filters.clientId));
+  if (filters?.status) conditions.push(eq(quotes.status, filters.status));
+  if (filters?.createdById) conditions.push(eq(quotes.createdById, filters.createdById));
+  return db
+    .select()
+    .from(quotes)
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(desc(quotes.createdAt));
+}
+
+export async function updateQuote(id: number, data: Partial<InsertQuote>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(quotes).set(data).where(eq(quotes.id, id));
+}
+
+// ─────────────────────────────────────────────
+// QUOTE ITEMS
+// ─────────────────────────────────────────────
+
+export async function createQuoteItem(data: InsertQuoteItem): Promise<QuoteItem> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(quoteItems).values(data);
+  const id = result[0].insertId;
+  const item = await db.select().from(quoteItems).where(eq(quoteItems.id, id)).limit(1);
+  return item[0]!;
+}
+
+export async function getQuoteItemsByQuoteId(quoteId: number): Promise<QuoteItem[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(quoteItems).where(eq(quoteItems.quoteId, quoteId)).orderBy(quoteItems.createdAt);
+}
+
+export async function updateQuoteItem(id: number, data: Partial<InsertQuoteItem>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(quoteItems).set(data).where(eq(quoteItems.id, id));
+}
+
+export async function deleteQuoteItem(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(quoteItems).where(eq(quoteItems.id, id));
+}
+
+// ─────────────────────────────────────────────
+// QUOTE TOKENS
+// ─────────────────────────────────────────────
+
+export async function upsertQuoteToken(
+  quoteId: number,
+  expiresAt?: Date | null
+): Promise<string> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const token = require("crypto").randomBytes(32).toString("hex") as string;
+  // Delete any existing token for this quote first
+  await db.delete(quoteTokens).where(eq(quoteTokens.quoteId, quoteId));
+  await db.insert(quoteTokens).values({
+    quoteId,
+    token,
+    expiresAt: expiresAt ?? null,
+  } as InsertQuoteToken);
+  return token;
+}
+
+export async function getQuoteToken(token: string): Promise<QuoteToken | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(quoteTokens)
+    .where(eq(quoteTokens.token, token))
+    .limit(1);
+  const row = result[0];
+  if (!row) return undefined;
+  if (row.expiresAt && row.expiresAt < new Date()) return undefined;
+  return row;
+}
+
+export async function getQuoteTokenByQuoteId(quoteId: number): Promise<QuoteToken | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(quoteTokens)
+    .where(eq(quoteTokens.quoteId, quoteId))
+    .limit(1);
+  return result[0];
 }
