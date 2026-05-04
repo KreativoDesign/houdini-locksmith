@@ -1,53 +1,53 @@
 {
-  "version": "7",
+  "version": "5",
   "dialect": "mysql",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1774440938532,
-      "tag": "0000_cynical_lucky_pierre",
+      "when": 1777920000000,
+      "tag": "0000_init",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "5",
-      "when": 1774441144733,
-      "tag": "0001_fixed_meggan",
+      "when": 1777920100000,
+      "tag": "0001_create_base_tables",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "5",
-      "when": 1774442004577,
-      "tag": "0002_quick_ben_urich",
+      "when": 1777920200000,
+      "tag": "0002_add_fields",
       "breakpoints": true
     },
     {
       "idx": 3,
       "version": "5",
-      "when": 1774446049617,
-      "tag": "0003_organic_selene",
+      "when": 1777920300000,
+      "tag": "0003_add_more_fields",
       "breakpoints": true
     },
     {
       "idx": 4,
       "version": "5",
-      "when": 1774993949775,
+      "when": 1777920400000,
       "tag": "0004_youthful_black_crow",
       "breakpoints": true
     },
     {
       "idx": 5,
       "version": "5",
-      "when": 1775000050319,
+      "when": 1777920500000,
       "tag": "0005_living_quicksilver",
       "breakpoints": true
     },
     {
       "idx": 6,
       "version": "5",
-      "when": 1776365624637,
+      "when": 1777920600000,
       "tag": "0006_amused_the_spike",
       "breakpoints": true
     },
@@ -63,6 +63,13 @@
       "version": "5",
       "when": 1777925336942,
       "tag": "0008_flaky_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1777925872377,
+      "tag": "0009_cute_tempest",
       "breakpoints": true
     }
   ]

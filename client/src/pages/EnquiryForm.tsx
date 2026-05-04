@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Save, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
+import { getServiceTypesForDepartment, SERVICE_TYPE_LABELS } from "@/const/departmentServiceTypes";
 
 type ClientMode = "existing" | "new";
 
@@ -87,6 +88,17 @@ export default function EnquiryForm() {
       });
     }
   }, [existing, isEdit]);
+
+  // Get available service types for selected department
+  const availableServiceTypes = getServiceTypesForDepartment(form.departmentId);
+
+  // Reset service type when department changes if current type is not available
+  const handleDepartmentChange = (v: string) => {
+    const newDeptId = v === "none" ? "" : v;
+    const availableTypes = getServiceTypesForDepartment(newDeptId);
+    const newServiceType = availableTypes.includes(form.serviceType) ? form.serviceType : availableTypes[0];
+    setForm((p) => ({ ...p, departmentId: newDeptId, serviceType: newServiceType }));
+  };
 
   // ── Mutations ─────────────────────────────────────────────────────────────
   const createClientMutation = trpc.clients.create.useMutation({
@@ -348,7 +360,7 @@ export default function EnquiryForm() {
               <Label>Department</Label>
               <Select
                 value={form.departmentId || "none"}
-                onValueChange={(v) => setForm((p) => ({ ...p, departmentId: v === "none" ? "" : v }))}
+                onValueChange={handleDepartmentChange}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select department…" />
@@ -366,16 +378,17 @@ export default function EnquiryForm() {
               <Select
                 value={form.serviceType}
                 onValueChange={(v) => setForm((p) => ({ ...p, serviceType: v }))}
+                disabled={!form.departmentId}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder={!form.departmentId ? "Select department first" : "Select service type…"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="locksmithing">Locksmithing</SelectItem>
-                  <SelectItem value="security">Security</SelectItem>
-                  <SelectItem value="diagnostics">Diagnostics</SelectItem>
-                  <SelectItem value="workshop">Workshop</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  {availableServiceTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {SERVICE_TYPE_LABELS[type]}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

@@ -538,3 +538,12 @@
 - [x] Update Enquiries page to only show pending enquiries
 - [x] Add optional "View Archived" toggle or separate page for archived enquiries
 - [x] TypeScript clean and tests passing
+
+
+## Phase 35: Service Type Filtering by Department
+- [x] Define department-to-service-type mapping (schema or config)
+- [x] Create backend query to get service types for selected department
+- [x] Update EnquiryForm to conditionally show service types based on department
+- [x] Disable service type field until department is selected
+- [x] Reset service type when department changes
+- [x] TypeScript clean and tests passing
