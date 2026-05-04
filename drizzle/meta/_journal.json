@@ -71,6 +71,20 @@
       "when": 1777925872377,
       "tag": "0009_cute_tempest",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1777926093355,
+      "tag": "0010_futuristic_venus",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1777926157736,
+      "tag": "0011_chunky_infant_terrible",
+      "breakpoints": true
     }
   ]
 }

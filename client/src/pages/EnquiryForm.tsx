@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Save, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
-import { getServiceTypesForDepartment, SERVICE_TYPE_LABELS } from "@/const/departmentServiceTypes";
+import { getServiceTypesForDepartment, SERVICE_TYPE_LABELS } from "@/lib/departmentServiceTypesStorage";
 
 type ClientMode = "existing" | "new";
 
@@ -90,12 +90,12 @@ export default function EnquiryForm() {
   }, [existing, isEdit]);
 
   // Get available service types for selected department
-  const availableServiceTypes = getServiceTypesForDepartment(form.departmentId);
+  const availableServiceTypes = getServiceTypesForDepartment(form.departmentId) as any[];
 
   // Reset service type when department changes if current type is not available
   const handleDepartmentChange = (v: string) => {
     const newDeptId = v === "none" ? "" : v;
-    const availableTypes = getServiceTypesForDepartment(newDeptId);
+    const availableTypes = getServiceTypesForDepartment(newDeptId) as any[];
     const newServiceType = availableTypes.includes(form.serviceType) ? form.serviceType : availableTypes[0];
     setForm((p) => ({ ...p, departmentId: newDeptId, serviceType: newServiceType }));
   };
@@ -384,9 +384,9 @@ export default function EnquiryForm() {
                   <SelectValue placeholder={!form.departmentId ? "Select department first" : "Select service type…"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableServiceTypes.map((type) => (
+                  {availableServiceTypes.map((type: any) => (
                     <SelectItem key={type} value={type}>
-                      {SERVICE_TYPE_LABELS[type]}
+                      {SERVICE_TYPE_LABELS[type as keyof typeof SERVICE_TYPE_LABELS]}
                     </SelectItem>
                   ))}
                 </SelectContent>

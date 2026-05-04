@@ -547,3 +547,14 @@
 - [x] Disable service type field until department is selected
 - [x] Reset service type when department changes
 - [x] TypeScript clean and tests passing
+
+
+## Phase 36: Department Service Types Settings Page
+- [x] Create localStorage-based storage utility for department service types
+- [x] Build DepartmentServiceSettings page with department list and checkboxes
+- [x] Add save, reset, export, and import buttons
+- [x] Add routing /admin/settings/departments (admin only)
+- [x] Integrate into admin settings navigation
+- [x] Update EnquiryForm to use storage-based service types
+- [x] Test configuration persistence and UI updates
+- [x] TypeScript clean and tests passing
