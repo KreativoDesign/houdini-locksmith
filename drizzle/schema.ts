@@ -470,3 +470,21 @@ export const clientPortalTokens = mysqlTable("clientPortalTokens", {
 });
 export type ClientPortalToken = typeof clientPortalTokens.$inferSelect;
 export type InsertClientPortalToken = typeof clientPortalTokens.$inferInsert;
+
+// ─────────────────────────────────────────────
+// PUSH SUBSCRIPTIONS  (Web Push / PWA notifications)
+// ─────────────────────────────────────────────
+export const pushSubscriptions = mysqlTable("pushSubscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  /** The user who owns this subscription */
+  userId: int("userId").notNull().references(() => users.id),
+  /** PushSubscription.endpoint — unique per browser/device */
+  endpoint: text("endpoint").notNull(),
+  /** PushSubscription.keys.p256dh (base64url) */
+  p256dh: text("p256dh").notNull(),
+  /** PushSubscription.keys.auth (base64url) */
+  auth: text("auth").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type PushSubscriptionRow = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscriptionRow = typeof pushSubscriptions.$inferInsert;

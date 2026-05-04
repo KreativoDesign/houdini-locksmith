@@ -442,3 +442,19 @@
 - [x] Signature box: light green tint with lime-green left accent
 - [x] Footer: near-black background with lime-green top accent strip, company name + job number
 - [x] TypeScript clean (0 errors), 82 tests still passing
+
+## Phase 43: Web Push Notifications for Technicians (Backend Foundation)
+- [x] VAPID keys generated and stored as secrets
+- [x] web-push npm package installed + @types/web-push
+- [x] pushSubscriptions DB table created and migrated
+- [x] push.subscribe procedure (protected)
+- [x] push.unsubscribe procedure (protected)
+- [x] push.getPublicKey procedure (public)
+- [x] push.listSubscriptions procedure (protected)
+- [x] Server helper sendPushToUser and sendPushToUsers in server/_core/push.ts
+- [ ] Wire sendPushToUser into assignTechnician procedure
+- [ ] Service worker: handle push event and notificationclick
+- [ ] Frontend: PushPermissionPrompt component
+- [ ] TechnicianMobileApp profile tab: Enable Notifications button
+- [ ] PWAInstallPrompt: request notification permission
+- [x] TypeScript clean (0 errors)

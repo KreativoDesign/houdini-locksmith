@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, lte, or, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lte, or, sql, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   Client,
@@ -29,6 +29,8 @@ import {
   PricingCatalogueItem,
   ClientPortalToken,
   InsertClientPortalToken,
+  PushSubscriptionRow,
+  InsertPushSubscriptionRow,
   clientPortalTokens,
   clients,
   departments,
@@ -43,6 +45,7 @@ import {
   signatures,
   timeSlots,
   users,
+  pushSubscriptions,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -863,4 +866,58 @@ export async function getClientPortalTokenByJobCard(jobCardId: number): Promise<
     .where(eq(clientPortalTokens.jobCardId, jobCardId))
     .limit(1);
   return result[0];
+}
+
+// ─────────────────────────────────────────────
+// PUSH SUBSCRIPTIONS
+// ─────────────────────────────────────────────
+export async function upsertPushSubscription(
+  userId: number,
+  subscription: { endpoint: string; keys: { p256dh: string; auth: string } }
+): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db
+    .insert(pushSubscriptions)
+    .values({
+      userId,
+      endpoint: subscription.endpoint,
+      p256dh: subscription.keys.p256dh,
+      auth: subscription.keys.auth,
+    })
+    .onDuplicateKeyUpdate({
+      set: {
+        endpoint: subscription.endpoint,
+        p256dh: subscription.keys.p256dh,
+        auth: subscription.keys.auth,
+      },
+    });
+  return result[0].insertId || userId;
+}
+
+export async function deletePushSubscription(userId: number, endpoint: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db
+    .delete(pushSubscriptions)
+    .where(and(eq(pushSubscriptions.userId, userId), eq(pushSubscriptions.endpoint, endpoint)));
+}
+
+export async function getPushSubscriptionsForUser(userId: number): Promise<PushSubscriptionRow[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.userId, userId));
+}
+
+export async function getPushSubscriptionsForUserIds(userIds: number[]): Promise<PushSubscriptionRow[]> {
+  const db = await getDb();
+  if (!db) return [];
+  if (userIds.length === 0) return [];
+  return await db
+    .select()
+    .from(pushSubscriptions)
+    .where(inArray(pushSubscriptions.userId, userIds));
 }

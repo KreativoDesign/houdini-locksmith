@@ -17,6 +17,7 @@ import { notificationsRouter } from "./routers/notifications";
 import { catalogueRouter } from "./routers/catalogue";
 import { localAuthRouter } from "./routers/auth";
 import { clientPortalRouter } from "./routers/clientPortal";
+import { pushRouter } from "./routers/push";
 
 export const appRouter = router({
   system: systemRouter,
@@ -31,6 +32,9 @@ export const appRouter = router({
    * Manager: auditLog (own entries only)
    */
   auth: localAuthRouter,
+
+  /** Web Push notifications for PWA */
+  push: pushRouter,
 
   // ─────────────────────────────────────────────
   // CORE MODULES
