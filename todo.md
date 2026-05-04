@@ -589,3 +589,11 @@
 - [x] Include quote header, items, totals, and terms
 - [x] Test PDF generation and download
 - [x] TypeScript clean and tests passing
+
+
+## Phase 41: Quotes Tab in Sidebar
+- [x] Add Quotes menu item to AppShell sidebar navigation
+- [x] Create submenu with "New Quote" and "View All Quotes" options
+- [x] Add appropriate icons (FileText or ReceiptText for quotes)
+- [x] Test navigation and verify routing works
+- [x] TypeScript clean and tests passing

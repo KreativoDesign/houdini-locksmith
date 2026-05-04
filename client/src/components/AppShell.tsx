@@ -49,6 +49,7 @@ import {
   LayoutDashboard,
   LogOut,
   PanelLeft,
+  ReceiptText,
   Settings,
   ShieldCheck,
   Users,
@@ -68,9 +69,10 @@ import { NotificationsBell } from "./NotificationsDrawer";
 interface MenuItem {
   icon: React.ElementType;
   label: string;
-  path: string;
+  path?: string;
   roles: Array<"admin" | "manager" | "technician">;
   badge?: string;
+  submenu?: Array<{ label: string; path: string }>;
 }
 
 const ALL_MENU_ITEMS: MenuItem[] = [
@@ -133,6 +135,15 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     label: "Settings",
     path: "/settings",
     roles: ["admin"],
+  },
+  {
+    icon: ReceiptText,
+    label: "Quotes",
+    roles: ["admin", "manager"],
+    submenu: [
+      { label: "New Quote", path: "/quotes/create" },
+      { label: "View All Quotes", path: "/admin/quotes" },
+    ],
   },
 ];
 
@@ -250,13 +261,43 @@ function InnerSidebar({
             <SidebarMenu className="px-2 space-y-0.5">
               {visibleItems.map((item) => {
                 const isActive =
-                  location === item.path ||
-                  (item.path !== "/dashboard" && location.startsWith(item.path));
+                  item.path
+                    ? location === item.path ||
+                      (item.path !== "/dashboard" && location.startsWith(item.path))
+                    : false;
+
+                if (item.submenu) {
+                  return (
+                    <div key={item.label}>
+                      <SidebarMenuItem>
+                        <div className="flex items-center gap-2 px-2 py-2 text-sm font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
+                          <item.icon className="h-4 w-4 shrink-0" />
+                          <span>{item.label}</span>
+                        </div>
+                      </SidebarMenuItem>
+                      {item.submenu.map((subitem) => {
+                        const isSubActive = location === subitem.path;
+                        return (
+                          <SidebarMenuItem key={subitem.path} className="ml-4">
+                            <SidebarMenuButton
+                              isActive={isSubActive}
+                              onClick={() => setLocation(subitem.path)}
+                              className="h-8 font-normal transition-all text-sm"
+                            >
+                              <span className={isSubActive ? "font-medium" : ""}>{subitem.label}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+
                 return (
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton
-                      isActive={isActive}
-                      onClick={() => setLocation(item.path)}
+                      isActive={isActive || false}
+                      onClick={() => item.path && setLocation(item.path)}
                       tooltip={item.label}
                       className="h-9 font-normal transition-all"
                     >
@@ -390,8 +431,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   // Derive the active page title from the current path
   const activeItem = ALL_MENU_ITEMS.find(
     (item) =>
-      location === item.path ||
-      (item.path !== "/dashboard" && location.startsWith(item.path))
+      item.path &&
+      (location === item.path ||
+        (item.path !== "/dashboard" && location.startsWith(item.path)))
   );
 
   return (
