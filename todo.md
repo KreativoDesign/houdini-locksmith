@@ -458,3 +458,20 @@
 - [x] TechnicianMobileApp profile tab: PushPermissionPrompt wired in bordered card
 - [x] jobCards.assign procedure: wire sendPushToUser to notify technician of new job
 - [x] TypeScript clean (0 errors), 82 tests passing
+
+
+## Phase 44: Quote Workflow (Enquiry → Quote → Email → Client Dashboard)
+- [ ] Add quotes table to Drizzle schema (id, enquiryId, jobCardId, clientId, status, items, total, expiresAt, createdAt, sentAt)
+- [ ] Quote CRUD procedures: create, list, get, update, delete (manager/admin)
+- [ ] Enquiry-to-quote conversion: enquiries.convertToQuote procedure
+- [ ] Quote status transitions: draft → sent → accepted / rejected
+- [ ] sendQuoteEmail helper in email.ts (branded HTML with quote items, total, client link)
+- [ ] quotes.sendToClient procedure: generates token, sends email, updates sentAt
+- [ ] Admin QuoteBuilder page: form to create/edit quote, add items (parts/services), calculate total, send button
+- [ ] Quote item table in QuoteBuilder (name, qty, unit price, discount %, line total)
+- [ ] Client quote dashboard: list of received quotes with status badges, accept/reject buttons
+- [ ] Public quote view page: /quote/:token (no login) showing quote details, accept/reject buttons, expiry date
+- [ ] Enquiry list: hide enquiries that have been converted to job card or quote
+- [ ] New Enquiry button in mobile bottom nav (TechnicianMobileApp) + desktop sidebar
+- [ ] New Enquiry dialog/page accessible from bottom nav
+- [ ] TypeScript clean, all tests passing
