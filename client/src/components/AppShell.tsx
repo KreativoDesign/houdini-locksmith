@@ -129,18 +129,6 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     roles: ["admin"],
   },
   {
-    icon: ShieldCheck,
-    label: "Audit Log",
-    path: "/audit",
-    roles: ["admin"],
-  },
-  {
-    icon: Zap,
-    label: "Pricing Catalogue",
-    path: "/settings/catalogue",
-    roles: ["admin"],
-  },
-  {
     icon: Settings,
     label: "Settings",
     path: "/settings",

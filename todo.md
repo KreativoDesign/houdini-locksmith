@@ -572,3 +572,11 @@
 - [x] Add Pricing Catalogue menu item to Settings page
 - [x] Test navigation and verify routing works
 - [x] TypeScript clean and tests passing
+
+
+## Phase 39: Audit Log in Settings and Sidebar Cleanup
+- [x] Add Audit Log menu item to Settings page
+- [x] Remove Pricing Catalogue from sidebar navigation
+- [x] Remove Audit Log from sidebar navigation
+- [x] Test navigation and verify routing works
+- [x] TypeScript clean and tests passing
