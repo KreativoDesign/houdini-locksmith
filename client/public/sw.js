@@ -113,3 +113,49 @@ self.addEventListener('fetch', (event) => {
     fetch(request).catch(() => caches.match(request))
   );
 });
+
+// ─── Push Notifications ───────────────────────────────────────────────────────
+self.addEventListener('push', (event) => {
+  if (!event.data) return;
+
+  try {
+    const data = event.data.json();
+    const options = {
+      body: data.body || 'New notification',
+      icon: '/favicon-192x192.png',
+      badge: '/favicon-192x192.png',
+      tag: data.tag || 'houdini-notification',
+      requireInteraction: data.requireInteraction || false,
+      data: data.data || {},
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'Houdini Locksmith', options)
+    );
+  } catch (err) {
+    console.error('Push notification error:', err);
+  }
+});
+
+// ─── Notification Click ───────────────────────────────────────────────────────
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const urlToOpen = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Check if the app is already open
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // If not open, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});

@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { sendPushToUser } from "../_core/push";
 import {
   createJobCard,
   generateJobNumber,
@@ -178,6 +179,20 @@ export const jobCardsRouter = router({
         entityType: "job_card",
         entityId: input.id,
         userId: input.technicianId,
+      });
+
+      // Send push notification to the assigned technician
+      await sendPushToUser(input.technicianId, {
+        title: "New Job Assigned",
+        body: `Job ${job.jobNumber} has been assigned to you.`,
+        icon: "/icon-192x192.png",
+        badge: "/icon-192x192.png",
+        tag: `job-${input.id}`,
+        data: {
+          jobId: input.id.toString(),
+          jobNumber: job.jobNumber,
+          url: `/jobs/${input.id}`,
+        },
       });
 
       return { success: true };

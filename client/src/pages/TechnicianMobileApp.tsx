@@ -40,6 +40,7 @@ import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import NotificationsBell from "@/components/NotificationsDrawer";
+import { PushPermissionPrompt } from "@/components/PushPermissionPrompt";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -488,6 +489,11 @@ function ProfileTab() {
           <Wrench className="w-3 h-3" />
           Technician
         </Badge>
+      </div>
+
+      {/* Push Notifications */}
+      <div className="mx-4 mb-4 rounded-xl border border-border bg-card p-4">
+        <PushPermissionPrompt />
       </div>
 
       {/* Actions */}

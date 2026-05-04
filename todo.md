@@ -443,7 +443,7 @@
 - [x] Footer: near-black background with lime-green top accent strip, company name + job number
 - [x] TypeScript clean (0 errors), 82 tests still passing
 
-## Phase 43: Web Push Notifications for Technicians (Backend Foundation)
+## Phase 43: Web Push Notifications for Technicians
 - [x] VAPID keys generated and stored as secrets
 - [x] web-push npm package installed + @types/web-push
 - [x] pushSubscriptions DB table created and migrated
@@ -452,9 +452,9 @@
 - [x] push.getPublicKey procedure (public)
 - [x] push.listSubscriptions procedure (protected)
 - [x] Server helper sendPushToUser and sendPushToUsers in server/_core/push.ts
-- [ ] Wire sendPushToUser into assignTechnician procedure
-- [ ] Service worker: handle push event and notificationclick
-- [ ] Frontend: PushPermissionPrompt component
-- [ ] TechnicianMobileApp profile tab: Enable Notifications button
-- [ ] PWAInstallPrompt: request notification permission
-- [x] TypeScript clean (0 errors)
+- [x] Service worker: handle push event, show notification with job title + action URL
+- [x] Service worker: handle notificationclick, navigate to /jobs/:id
+- [x] PushPermissionPrompt component: request permission, subscribe, show status (sonner toast feedback)
+- [x] TechnicianMobileApp profile tab: PushPermissionPrompt wired in bordered card
+- [x] jobCards.assign procedure: wire sendPushToUser to notify technician of new job
+- [x] TypeScript clean (0 errors), 82 tests passing
