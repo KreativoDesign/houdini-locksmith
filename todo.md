@@ -558,3 +558,10 @@
 - [x] Update EnquiryForm to use storage-based service types
 - [x] Test configuration persistence and UI updates
 - [x] TypeScript clean and tests passing
+
+
+## Phase 37: Settings Sidebar Navigation
+- [ ] Find admin settings sidebar component
+- [ ] Add Department Service Types link to settings menu
+- [ ] Test navigation and verify routing works
+- [ ] TypeScript clean and tests passing

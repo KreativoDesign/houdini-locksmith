@@ -54,6 +54,7 @@ import QuoteDetails from "./pages/QuoteDetails";
 
 // Settings pages
 import DepartmentServiceSettings from "./pages/DepartmentServiceSettings";
+import Settings from "./pages/Settings";
 
 // Schedule page
 import SchedulePage from "./pages/Schedule";
@@ -314,8 +315,15 @@ function Router() {
         </AppShell>
       </Route>
 
+      {/* Settings page */}
+      <Route path="/settings">
+        <AppShell>
+          <ProtectedRoute component={Settings} />
+        </AppShell>
+      </Route>
+
       {/* Placeholder routes — show "coming soon" */}
-      {["/reports", "/settings", "/notifications"].map((path) => (
+      {["/reports", "/notifications"].map((path) => (
         <Route key={path} path={path}>
           <AppShell>
             <ProtectedRoute component={PlaceholderPage} />
