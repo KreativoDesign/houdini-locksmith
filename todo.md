@@ -565,3 +565,10 @@
 - [ ] Add Department Service Types link to settings menu
 - [ ] Test navigation and verify routing works
 - [ ] TypeScript clean and tests passing
+
+
+## Phase 38: Pricing Catalogue in Settings Menu
+- [x] Verify existing pricing catalogue page route
+- [x] Add Pricing Catalogue menu item to Settings page
+- [x] Test navigation and verify routing works
+- [x] TypeScript clean and tests passing

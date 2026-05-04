@@ -9,6 +9,7 @@ import {
   Users,
   FileText,
   Sliders,
+  DollarSign,
   ChevronRight,
 } from "lucide-react";
 
@@ -51,6 +52,14 @@ const SETTINGS_MENU: SettingsMenuItem[] = [
     description: "View system activity and changes",
     icon: <FileText className="h-5 w-5" />,
     href: "/admin/audit",
+    roles: ["admin"],
+  },
+  {
+    id: "catalogue",
+    label: "Pricing Catalogue",
+    description: "Manage pricing items and service rates",
+    icon: <DollarSign className="h-5 w-5" />,
+    href: "/settings/catalogue",
     roles: ["admin"],
   },
 ];
@@ -125,6 +134,12 @@ export default function Settings() {
                 onClick={() => navigate("/admin/settings/departments")}
               >
                 Department Service Types
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/settings/catalogue")}
+              >
+                Pricing Catalogue
               </Button>
               <Button
                 variant="outline"
