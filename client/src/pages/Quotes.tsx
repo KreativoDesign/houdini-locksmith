@@ -37,6 +37,7 @@ import {
 import {
   CheckCircle2,
   Clock,
+  Edit2,
   Loader2,
   MoreHorizontal,
   Plus,
@@ -241,7 +242,8 @@ export default function Quotes() {
                               <DropdownMenuItem
                                 onClick={() => navigate(`/admin/quotes/${quote.id}`)}
                               >
-                                View Details
+                                <Edit2 className="w-4 h-4 mr-2" />
+                                View & Edit
                               </DropdownMenuItem>
                               {quote.status === "sent" && (
                                 <DropdownMenuItem

@@ -511,3 +511,20 @@
 - [x] Add routing /admin/quotes (admin/manager only)
 - [x] Integrate "View All Quotes" link to AdminDashboard
 - [x] TypeScript clean and tests passing
+
+
+## Phase 33: Quote Details Page for Admins
+- [x] Create QuoteDetails page with view/edit mode toggle
+- [x] Display quote header (number, client, status, dates)
+- [x] Show quote items table with line totals
+- [x] Display quote totals (subtotal, discount, VAT, grand total)
+- [x] Implement edit mode for quote description
+- [x] Implement quote item editing (add, update, delete)
+- [x] Add status dropdown to manually change quote status
+- [x] Add discount editing (fixed + percentage)
+- [x] Add expiry date picker
+- [x] Implement save changes button with validation
+- [x] Add back button and navigation
+- [x] Add routing /admin/quotes/:id (admin/manager only)
+- [x] Integrate "View Details" link from Quotes dashboard
+- [x] TypeScript clean and tests passing

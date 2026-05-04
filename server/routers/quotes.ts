@@ -318,6 +318,83 @@ export const quotesRouter = router({
     }),
 
   /**
+   * Get a single quote by ID with items and client info
+   */
+  get: protectedProcedure
+    .input(z.object({ id: z.number().int() }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const quote = await getQuoteById(input.id);
+      if (!quote) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const items = await getQuoteItemsByQuoteId(quote.id);
+      const client = quote.clientId ? await getClientById(quote.clientId) : null;
+
+      return {
+        ...quote,
+        items,
+        client: client
+          ? {
+              id: client.id,
+              firstName: client.firstName,
+              lastName: client.lastName,
+              email: client.email,
+              phone: client.phone,
+            }
+          : null,
+      };
+    }),
+
+  /**
+   * Create a quote item
+   */
+  createItem: protectedProcedure
+    .input(
+      z.object({
+        quoteId: z.number().int(),
+        name: z.string().min(1),
+        type: z.enum(["part", "service", "labour", "other"]),
+        quantity: z.number().min(0.5),
+        unitPrice: z.string().regex(/^\d+(\.\d{1,2})?$/),
+        discountPercent: z.number().int().min(0).max(100).default(0),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const quote = await getQuoteById(input.quoteId);
+      if (!quote) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return createQuoteItem({
+        quoteId: input.quoteId,
+        name: input.name,
+        type: input.type,
+        quantity: input.quantity,
+        unitPrice: input.unitPrice,
+        discountPercent: input.discountPercent,
+      });
+    }),
+
+  /**
+   * Delete a quote item
+   */
+  deleteItem: protectedProcedure
+    .input(z.object({ id: z.number().int() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      await deleteQuoteItem(input.id);
+      return { success: true };
+    }),
+
+  /**
    * Accept a quote (client-facing, public)
    */
   accept: publicProcedure
