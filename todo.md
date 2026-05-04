@@ -528,3 +528,13 @@
 - [x] Add routing /admin/quotes/:id (admin/manager only)
 - [x] Integrate "View Details" link from Quotes dashboard
 - [x] TypeScript clean and tests passing
+
+
+## Phase 34: Enquiry Archiving on Job Card Conversion
+- [x] Add archived boolean field to enquiries table (default false)
+- [x] Run database migration (pnpm db:push)
+- [x] Update enquiry-to-job-card conversion to set archived = true
+- [x] Update enquiries.list procedure to filter out archived enquiries
+- [x] Update Enquiries page to only show pending enquiries
+- [x] Add optional "View Archived" toggle or separate page for archived enquiries
+- [x] TypeScript clean and tests passing

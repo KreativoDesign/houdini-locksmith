@@ -100,6 +100,7 @@ export const enquiries = mysqlTable("enquiries", {
   serviceType: mysqlEnum("serviceType", ["locksmithing", "security", "diagnostics", "workshop", "other"]).default("other"),
   assignedToId: int("assignedToId").references(() => users.id),
   convertedToJobCardId: int("convertedToJobCardId"), // populated after conversion
+  archived: boolean("archived").default(false).notNull(), // archived when converted to job card
   notes: text("notes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

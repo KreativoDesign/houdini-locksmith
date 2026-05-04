@@ -189,10 +189,11 @@ export const enquiriesRouter = router({
         requiresSignature: input.requiresSignature,
       });
 
-      // Mark enquiry as converted and link to job card
+      // Mark enquiry as converted, link to job card, and archive it
       await updateEnquiry(input.enquiryId, {
         status: "converted",
         convertedToJobCardId: jobCardId,
+        archived: true,
       });
 
       // Notify owner

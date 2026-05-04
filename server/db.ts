@@ -316,10 +316,15 @@ export async function listEnquiries(filters?: {
   search?: string;
   limit?: number;
   offset?: number;
+  includeArchived?: boolean;
 }) {
   const db = await getDb();
   if (!db) return [];
   const conditions: ReturnType<typeof eq>[] = [];
+  // Exclude archived enquiries by default
+  if (!filters?.includeArchived) {
+    conditions.push(eq(enquiries.archived, false));
+  }
   if (filters?.status) conditions.push(eq(enquiries.status, filters.status as Enquiry['status']));
   if (filters?.clientId) conditions.push(eq(enquiries.clientId, filters.clientId));
   if (filters?.departmentId) conditions.push(eq(enquiries.departmentId, filters.departmentId));
@@ -340,6 +345,7 @@ export async function listEnquiries(filters?: {
       serviceType: enquiries.serviceType,
       assignedToId: enquiries.assignedToId,
       convertedToJobCardId: enquiries.convertedToJobCardId,
+      archived: enquiries.archived,
       notes: enquiries.notes,
       createdAt: enquiries.createdAt,
       updatedAt: enquiries.updatedAt,
