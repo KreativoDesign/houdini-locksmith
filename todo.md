@@ -580,3 +580,12 @@
 - [x] Remove Audit Log from sidebar navigation
 - [x] Test navigation and verify routing works
 - [x] TypeScript clean and tests passing
+
+
+## Phase 40: Quote PDF Export
+- [x] Create PDF generation helper function for quotes
+- [x] Add Download PDF button to Quote Details page
+- [x] Implement professional PDF styling and formatting
+- [x] Include quote header, items, totals, and terms
+- [x] Test PDF generation and download
+- [x] TypeScript clean and tests passing

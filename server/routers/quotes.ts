@@ -16,6 +16,7 @@ import {
 } from "../db";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { sendQuoteEmail } from "../_core/email";
+import { generateQuotePdf } from "../pdfGenerators/quotePdf";
 
 // ─────────────────────────────────────────────
 // SCHEMAS
@@ -412,5 +413,57 @@ export const quotesRouter = router({
     .mutation(async ({ input }) => {
       // This is handled by the public quote router
       throw new TRPCError({ code: "NOT_IMPLEMENTED" });
+    }),
+
+  /**
+   * Download quote as PDF (admin-only)
+   */
+  downloadPdf: protectedProcedure
+    .input(z.object({ id: z.number().int() }))
+    .query(async ({ input, ctx }) => {
+      const quote = await getQuoteById(input.id);
+      if (!quote) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Quote not found" });
+      }
+
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only admins can download quotes" });
+      }
+
+      const items = await getQuoteItemsByQuoteId(input.id);
+      const client = quote.clientId ? await getClientById(quote.clientId) : null;
+
+      const subtotal = items.reduce((sum, item) => sum + (item.quantity * parseFloat(item.unitPrice)), 0);
+      const discountFixed = parseFloat(quote.discount || "0");
+      const discountPercent = quote.discountPercent || 0;
+      const discountAmount = discountFixed + (subtotal * discountPercent) / 100;
+      const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+      const vat = discountedSubtotal * 0.15;
+      const total = discountedSubtotal + vat;
+
+      const pdfStream = generateQuotePdf({
+        quoteNumber: quote.quoteNumber,
+        clientName: client ? `${client.firstName} ${client.lastName}` : "Unknown Client",
+        clientEmail: client?.email || undefined,
+        clientPhone: client?.phone || undefined,
+        issueDate: new Date(quote.createdAt),
+        expiryDate: quote.expiresAt ? new Date(quote.expiresAt) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        items: items.map((item) => ({
+          description: item.name,
+          quantity: item.quantity,
+          unitPrice: parseFloat(item.unitPrice),
+          total: item.quantity * parseFloat(item.unitPrice),
+        })),
+        subtotal,
+        discountFixed,
+        discountPercentage: discountPercent,
+        discountedSubtotal,
+        vat,
+        total,
+        notes: quote.description || undefined,
+        companyName: "Houdini Locksmith & Security",
+      });
+
+      return pdfStream as any;
     }),
 });

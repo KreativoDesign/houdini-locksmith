@@ -41,6 +41,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Clock,
+  Download,
   Edit2,
   Loader2,
   Plus,
@@ -110,6 +111,36 @@ export default function QuoteDetails() {
   const quote = quoteQuery.data as any;
 
   // Initialize edited quote when data loads
+  const handleDownloadPdf = async () => {
+    if (!quote) {
+      toast.error("Quote not loaded");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/trpc/quotes.downloadPdf?input=${encodeURIComponent(JSON.stringify({ id: quote.id }))}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to download PDF");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Quote-${quote.quoteNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("PDF downloaded successfully");
+    } catch (err) {
+      console.error("Failed to download PDF:", err);
+      toast.error("Failed to download PDF");
+    }
+  };
+
   const handleEditMode = () => {
     if (quote) {
       setEditedQuote({
@@ -257,12 +288,20 @@ export default function QuoteDetails() {
             </p>
           </div>
         </div>
-        {!isEditing && (
-          <Button onClick={handleEditMode} className="gap-2">
-            <Edit2 className="w-4 h-4" />
-            Edit Quote
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {!isEditing && (
+            <>
+              <Button onClick={handleDownloadPdf} variant="outline" className="gap-2">
+                <Download className="w-4 h-4" />
+                Download PDF
+              </Button>
+              <Button onClick={handleEditMode} className="gap-2">
+                <Edit2 className="w-4 h-4" />
+                Edit Quote
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Status & Dates */}
