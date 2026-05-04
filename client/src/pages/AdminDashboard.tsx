@@ -206,7 +206,7 @@ export default function AdminDashboard() {
                 { label: "New Enquiry", icon: PlusCircle, path: "/enquiries/new", color: "text-blue-600" },
                 { label: "New Job Card", icon: Briefcase, path: "/jobs/new", color: "text-primary" },
                 { label: "New Quote", icon: ClipboardList, path: "/admin/quotes/new", color: "text-amber-600" },
-                { label: "Invite Team Member", icon: Users, path: "/team/invite", color: "text-green-600" },
+                { label: "View All Quotes", icon: ClipboardList, path: "/admin/quotes", color: "text-amber-600" },
               ].map((action) => (
                 <button
                   key={action.label}

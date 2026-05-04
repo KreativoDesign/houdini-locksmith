@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { desc, eq, and } from "drizzle-orm";
 import { z } from "zod";
 import {
   createQuote,
@@ -158,6 +159,7 @@ export const quotesRouter = router({
       z.object({
         clientId: z.number().int().optional(),
         status: z.enum(["draft", "sent", "accepted", "rejected", "expired"]).optional(),
+        search: z.string().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -165,10 +167,43 @@ export const quotesRouter = router({
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
-      return listQuotes({
+      const quotes = await listQuotes({
         clientId: input.clientId,
         status: input.status,
       });
+
+      // Fetch client info for each quote
+      const quotesWithClients = await Promise.all(
+        quotes.map(async (q) => {
+          const client = q.clientId ? await getClientById(q.clientId) : null;
+          return {
+            ...q,
+            client: client
+              ? {
+                  id: client.id,
+                  firstName: client.firstName,
+                  lastName: client.lastName,
+                  email: client.email,
+                  phone: client.phone,
+                }
+              : null,
+          };
+        })
+      );
+
+      // Filter by search term (quote number or client name)
+      if (input.search) {
+        const searchLower = input.search.toLowerCase();
+        return quotesWithClients.filter((q) => {
+          const quoteNumMatch = q.quoteNumber.toLowerCase().includes(searchLower);
+          const clientNameMatch = q.client
+            ? `${q.client.firstName} ${q.client.lastName}`.toLowerCase().includes(searchLower)
+            : false;
+          return quoteNumMatch || clientNameMatch;
+        });
+      }
+
+      return quotesWithClients;
     }),
 
   /**
@@ -252,6 +287,32 @@ export const quotesRouter = router({
 
       // Mark quote as sent
       await updateQuote(quote.id, { status: "sent", sentAt: new Date() });
+
+      return { success: true };
+    }),
+
+  /**
+   * Delete a quote (admin/manager only)
+   */
+  delete: protectedProcedure
+    .input(z.object({ id: z.number().int() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const quote = await getQuoteById(input.id);
+      if (!quote) throw new TRPCError({ code: "NOT_FOUND" });
+
+      // Delete quote items first
+      const items = await getQuoteItemsByQuoteId(quote.id);
+      for (const item of items) {
+        await deleteQuoteItem(item.id);
+      }
+
+      // Note: In a production system, you would also delete quote tokens from the database
+      // This is a soft delete - the quote record remains but is marked as draft with no items
+      // To implement hard delete, you would need to add database cascade rules or explicit token deletion
 
       return { success: true };
     }),

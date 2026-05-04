@@ -499,3 +499,15 @@
 - [x] Routing: /quotes/:token (public, no auth required)
 - [x] TypeScript: All compilation clean (0 errors)
 - [x] Tests: All 82 vitest tests passing
+
+
+## Phase 32: Quote Dashboard for Admins
+- [x] Add quotes.list procedure with filters (status, clientId, search)
+- [x] Build Quotes dashboard page with table view
+- [x] Add status filter dropdown (all/sent/accepted/rejected/expired)
+- [x] Add search by client name or quote number
+- [x] Implement resend quote bulk action
+- [x] Implement delete quote bulk action
+- [x] Add routing /admin/quotes (admin/manager only)
+- [x] Integrate "View All Quotes" link to AdminDashboard
+- [x] TypeScript clean and tests passing

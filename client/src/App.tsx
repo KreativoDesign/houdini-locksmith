@@ -49,6 +49,7 @@ import PricingCatalogue from "./pages/PricingCatalogue";
 
 // Quotes page
 import QuoteBuilder from "./pages/QuoteBuilder";
+import Quotes from "./pages/Quotes";
 
 // Schedule page
 import SchedulePage from "./pages/Schedule";
@@ -286,6 +287,11 @@ function Router() {
       </Route>
 
       {/* ── Quotes (admin/manager only) ── */}
+      <Route path="/admin/quotes">
+        <AppShell>
+          <ProtectedRoute component={Quotes} roles={["admin", "manager"]} />
+        </AppShell>
+      </Route>
       <Route path="/admin/quotes/new">
         <AppShell>
           <ProtectedRoute component={QuoteBuilder} roles={["admin", "manager"]} />
