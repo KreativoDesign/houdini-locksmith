@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 // Public pages (no auth required)
+import Landing from "./pages/Landing";
 import ClientPortal from "./pages/ClientPortal";
 import PublicQuoteView from "./pages/PublicQuoteView";
 
@@ -165,9 +166,14 @@ function Router() {
         <AuthRoute component={Register} />
       </Route>
 
-      {/* Root → smart redirect */}
+      {/* Root → show landing for unauthenticated, redirect for authenticated */}
       <Route path="/">
-        <DashboardRedirect />
+        {(() => {
+          const { user, loading } = useAuth();
+          if (loading) return null;
+          if (!user) return <Landing />;
+          return <DashboardRedirect />;
+        })()}
       </Route>
       <Route path="/dashboard">
         <DashboardRedirect />
