@@ -108,21 +108,21 @@ export default function Quotes() {
   }, [quotes]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold">Quotes</h1>
-          <p className="text-muted-foreground mt-1">Manage all customer quotes</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Quotes</h1>
+          <p className="text-muted-foreground text-sm mt-1">Manage all customer quotes</p>
         </div>
-        <Button onClick={() => navigate("/admin/quotes/new")} className="gap-2 bg-lime-600 hover:bg-lime-700">
+        <Button onClick={() => navigate("/admin/quotes/new")} className="gap-2 bg-lime-600 hover:bg-lime-700 w-full sm:w-auto">
           <Plus className="w-4 h-4" />
           New Quote
         </Button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
         {[
           { label: "Total", value: stats.total, color: "bg-slate-100 text-slate-700" },
           { label: "Sent", value: stats.sent, color: "bg-blue-100 text-blue-700" },
@@ -131,9 +131,9 @@ export default function Quotes() {
           { label: "Expired", value: stats.expired, color: "bg-orange-100 text-orange-700" },
         ].map((stat) => (
           <Card key={stat.label}>
-            <CardContent className="p-4">
-              <p className="text-2xl font-bold">{stat.value}</p>
-              <p className={`text-xs font-medium mt-1 ${stat.color} px-2 py-1 rounded w-fit`}>
+            <CardContent className="p-3 sm:p-4">
+              <p className="text-xl sm:text-2xl font-bold">{stat.value}</p>
+              <p className={`text-xs font-medium mt-1 ${stat.color} px-2 py-0.5 rounded w-fit`}>
                 {stat.label}
               </p>
             </CardContent>
@@ -143,18 +143,19 @@ export default function Quotes() {
 
       {/* Filters */}
       <Card>
-        <CardContent className="p-4 space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <CardContent className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
             <div>
-              <label className="text-sm font-semibold mb-2 block">Search</label>
+              <label className="text-xs sm:text-sm font-semibold mb-2 block">Search</label>
               <Input
-                placeholder="Search by quote number or client name..."
+                placeholder="Search by quote number or client..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="text-sm"
               />
             </div>
             <div>
-              <label className="text-sm font-semibold mb-2 block">Status</label>
+              <label className="text-xs sm:text-sm font-semibold mb-2 block">Status</label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
                   <SelectValue />

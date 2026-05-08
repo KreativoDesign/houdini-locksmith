@@ -92,11 +92,11 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-0">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">
             Good {getGreeting()}, {user?.name?.split(" ")[0] ?? "Admin"}
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((stat: any) => (
           <button
             key={stat.label}
@@ -137,9 +137,9 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Recent job cards */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-3 md:space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-foreground">Recent Job Cards</h2>
             <Button variant="ghost" size="sm" onClick={() => setLocation("/jobs")} className="text-xs">
@@ -201,11 +201,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Right column */}
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {/* Quick actions */}
           <div>
-            <h2 className="text-base font-semibold text-foreground mb-4">Quick Actions</h2>
-            <div className="space-y-2.5">
+            <h2 className="text-base font-semibold text-foreground mb-3 md:mb-4">Quick Actions</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 md:space-y-2.5">
               {[
                 { label: "New Enquiry", icon: PlusCircle, path: "/enquiries/new", color: "text-blue-600", bg: "bg-blue-50 hover:bg-blue-100" },
                 { label: "New Job Card", icon: Briefcase, path: "/jobs/new", color: "text-emerald-600", bg: "bg-emerald-50 hover:bg-emerald-100" },
@@ -215,13 +215,13 @@ export default function AdminDashboard() {
                 <button
                   key={action.label}
                   onClick={() => setLocation(action.path)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-left font-medium group ${action.bg}`}
+                  className={`flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg transition-all duration-200 text-center sm:text-left font-medium group ${action.bg}`}
                 >
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/70 group-hover:bg-white transition-colors">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/70 group-hover:bg-white transition-colors shrink-0">
                     <action.icon className={`w-4 h-4 ${action.color}`} />
                   </div>
-                  <span className="text-sm font-medium text-foreground flex-1">{action.label}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-muted-foreground/70 transition-colors" />
+                  <span className="text-xs sm:text-sm font-medium text-foreground flex-1">{action.label}</span>
+                  <ArrowRight className="hidden sm:block w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-muted-foreground/70 transition-colors" />
                 </button>
               ))}
             </div>
@@ -229,7 +229,7 @@ export default function AdminDashboard() {
 
           {/* Notifications */}
           <div>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
               <h2 className="text-base font-semibold text-foreground">Notifications</h2>
               {unreadCount > 0 && (
                 <Badge className="bg-primary text-primary-foreground text-xs">
@@ -273,7 +273,7 @@ export default function AdminDashboard() {
             <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
             {allUsers.slice(0, 8).map((u: any) => {
               const roleInfo = {
                 admin: { label: "Admin", className: "bg-red-100 text-red-700" },

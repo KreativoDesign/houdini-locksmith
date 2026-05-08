@@ -114,17 +114,17 @@ export default function Enquiries() {
   });
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Enquiries</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Enquiries</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
             {total} enquir{total !== 1 ? "ies" : "y"}
             {presetClientId ? " for this client" : ""}
           </p>
         </div>
-        <Button onClick={() => navigate("/enquiries/new")} className="gap-2">
+        <Button onClick={() => navigate("/enquiries/new")} className="gap-2 w-full sm:w-auto">
           <Plus className="h-4 w-4" />
           New Enquiry
         </Button>
@@ -132,19 +132,19 @@ export default function Enquiries() {
 
       {/* Filters */}
       <Card>
-        <CardContent className="pt-4 pb-4">
-          <div className="flex flex-wrap gap-3">
-            <div className="relative flex-1 min-w-[200px]">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+            <div className="relative flex-1 min-w-[150px] sm:min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search subject or client…"
                 value={search}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="pl-9"
+                className="pl-9 text-sm"
               />
             </div>
             <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(0); }}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-full sm:w-[150px]">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -156,7 +156,7 @@ export default function Enquiries() {
               </SelectContent>
             </Select>
             <Select value={serviceFilter} onValueChange={(v) => { setServiceFilter(v); setPage(0); }}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-full sm:w-[160px]">
                 <SelectValue placeholder="All Services" />
               </SelectTrigger>
               <SelectContent>
