@@ -606,3 +606,12 @@
 - [x] Implement loading state and error handling
 - [x] Add success toast notification
 - [x] TypeScript clean and tests passing
+
+
+## Phase 43: Quote Count Badge on Sidebar
+- [x] Create countPendingQuotes procedure in quotes router
+- [x] Update AppShell to fetch pending quote count
+- [x] Add badge to Quotes menu item showing count
+- [x] Implement real-time updates when quotes are created/updated
+- [x] Style badge with appropriate color (red for pending)
+- [x] TypeScript clean and tests passing

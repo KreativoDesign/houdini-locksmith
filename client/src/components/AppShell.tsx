@@ -13,6 +13,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { trpc } from "@/lib/trpc";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -180,8 +181,19 @@ function InnerSidebar({
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
 
+  // Fetch pending quote count
+  const pendingQuotesQuery = trpc.quotes.countPending.useQuery(undefined, {
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+
   const role = (user?.role ?? "technician") as "admin" | "manager" | "technician";
-  const visibleItems = ALL_MENU_ITEMS.filter((item) => item.roles.includes(role));
+  const visibleItems = ALL_MENU_ITEMS.map((item) => {
+    // Add badge to Quotes item if user is admin or manager and there are pending quotes
+    if (item.label === "Quotes" && (role === "admin" || role === "manager") && pendingQuotesQuery.data?.count) {
+      return { ...item, badge: `${pendingQuotesQuery.data.count}` };
+    }
+    return item;
+  }).filter((item) => item.roles.includes(role));
   const roleBadge = ROLE_BADGE[role];
 
   // Resize drag

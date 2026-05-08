@@ -516,4 +516,10 @@ export const quotesRouter = router({
 
       return { success: true, message: "Quote email sent successfully" };
     }),
+
+  // Count pending quotes (sent status)
+  countPending: protectedProcedure.query(async ({ ctx }) => {
+    const quotes = await listQuotes({ status: "sent" });
+    return { count: quotes.length };
+  }),
 });
