@@ -466,4 +466,54 @@ export const quotesRouter = router({
 
       return pdfStream as any;
     }),
+
+  // Email quote to client
+  emailQuote: protectedProcedure
+    .input(z.object({ id: z.number().int() }))
+    .mutation(async ({ ctx, input }) => {
+      // Get quote with client info
+      const quote = await getQuoteById(input.id);
+      if (!quote) throw new Error("Quote not found");
+
+      const client = await getClientById(quote.clientId);
+      if (!client || !client.email) throw new Error("Client email not found");
+
+      // Get quote items
+      const items = await getQuoteItemsByQuoteId(input.id);
+
+      // Calculate totals
+      const subtotal = items.reduce(
+        (sum, item) => sum + item.quantity * parseFloat(item.unitPrice),
+        0
+      );
+      const discountFixed = parseFloat(quote.discount || "0");
+      const discountPercent = quote.discountPercent || 0;
+      const discountedSubtotal =
+        subtotal - discountFixed - (subtotal * discountPercent) / 100;
+      const vat = discountedSubtotal * 0.15;
+      const total = discountedSubtotal + vat;
+
+      // Send email with quote details
+      const clientName = `${client.firstName} ${client.lastName}`;
+      const quoteUrl = `${process.env.VITE_FRONTEND_FORGE_API_URL || "https://houdinilock-rhvefken.manus.space"}/quote/${quote.quoteNumber}`;
+      
+      await sendQuoteEmail({
+        to: client.email,
+        clientName: clientName,
+        quoteNumber: quote.quoteNumber,
+        quoteUrl: quoteUrl,
+        items: items.map((item) => ({
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          lineTotal: (item.quantity * parseFloat(item.unitPrice)).toFixed(2),
+        })),
+        total: subtotal.toFixed(2),
+        vat: vat.toFixed(2),
+        grandTotal: total.toFixed(2),
+        expiresAt: quote.expiresAt,
+      });
+
+      return { success: true, message: "Quote email sent successfully" };
+    }),
 });

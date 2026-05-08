@@ -44,6 +44,7 @@ import {
   Download,
   Edit2,
   Loader2,
+  Mail,
   Plus,
   Save,
   Trash2,
@@ -103,10 +104,13 @@ export default function QuoteDetails() {
     discountPercent: 0,
   });
 
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  
   const quoteQuery = trpc.quotes.get.useQuery({ id: quoteId });
   const updateMutation = trpc.quotes.update.useMutation();
   const deleteItemMutation = trpc.quotes.deleteItem.useMutation();
   const createItemMutation = trpc.quotes.createItem.useMutation();
+  const emailMutation = trpc.quotes.emailQuote.useMutation();
 
   const quote = quoteQuery.data as any;
 
@@ -138,6 +142,24 @@ export default function QuoteDetails() {
     } catch (err) {
       console.error("Failed to download PDF:", err);
       toast.error("Failed to download PDF");
+    }
+  };
+
+  const handleEmailQuote = async () => {
+    if (!quote) {
+      toast.error("Quote not loaded");
+      return;
+    }
+
+    setIsEmailLoading(true);
+    try {
+      await emailMutation.mutateAsync({ id: quote.id });
+      toast.success("Quote email sent successfully");
+    } catch (err) {
+      console.error("Failed to email quote:", err);
+      toast.error("Failed to send quote email");
+    } finally {
+      setIsEmailLoading(false);
     }
   };
 
@@ -294,6 +316,14 @@ export default function QuoteDetails() {
               <Button onClick={handleDownloadPdf} variant="outline" className="gap-2">
                 <Download className="w-4 h-4" />
                 Download PDF
+              </Button>
+              <Button onClick={handleEmailQuote} variant="outline" className="gap-2" disabled={isEmailLoading}>
+                {isEmailLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Mail className="w-4 h-4" />
+                )}
+                Email Quote
               </Button>
               <Button onClick={handleEditMode} className="gap-2">
                 <Edit2 className="w-4 h-4" />

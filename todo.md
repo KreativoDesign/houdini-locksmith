@@ -597,3 +597,12 @@
 - [x] Add appropriate icons (FileText or ReceiptText for quotes)
 - [x] Test navigation and verify routing works
 - [x] TypeScript clean and tests passing
+
+
+## Phase 42: Email Quote Button
+- [x] Create emailQuote procedure in quotes router
+- [x] Generate PDF and send via email using Resend
+- [x] Add Email Quote button to Quote Details page
+- [x] Implement loading state and error handling
+- [x] Add success toast notification
+- [x] TypeScript clean and tests passing
