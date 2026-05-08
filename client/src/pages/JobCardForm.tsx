@@ -161,7 +161,6 @@ export default function JobCardForm() {
                   <SelectValue placeholder="Select client (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No client</SelectItem>
                   {((clients as any).rows ?? clients as any[]).map((c: any) => (
                     <SelectItem key={c.id} value={String(c.id)}>
                       {c.name}
@@ -198,7 +197,6 @@ export default function JobCardForm() {
                   <SelectValue placeholder="Assign later" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Assign later</SelectItem>
                   {(technicians as any[]).map((t: any) => (
                     <SelectItem key={t.id} value={String(t.id)}>
                       {t.name ?? t.email}
