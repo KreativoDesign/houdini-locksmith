@@ -51,7 +51,7 @@ const SETTINGS_MENU: SettingsMenuItem[] = [
     label: "Audit Log",
     description: "View system activity and changes",
     icon: <FileText className="h-5 w-5" />,
-    href: "/admin/audit",
+    href: "/audit",
     roles: ["admin"],
   },
   {
