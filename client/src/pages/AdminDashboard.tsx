@@ -57,32 +57,36 @@ export default function AdminDashboard() {
       label: "Total Jobs",
       value: jobs.length,
       icon: Briefcase,
-      color: "text-primary",
-      bg: "bg-primary/10",
+      color: "text-emerald-600",
+      bg: "bg-gradient-to-br from-emerald-50 to-emerald-100",
+      borderColor: "border-l-emerald-500",
       path: "/jobs",
     },
     {
       label: "Open Enquiries",
       value: (enquiries as any)?.rows ? (enquiries as any).rows.filter((e: any) => e.status === "new" || e.status === "in_review").length : Array.isArray(enquiries) ? (enquiries as any[]).filter((e: any) => e.status === "new" || e.status === "in_review").length : 0,
       icon: ClipboardList,
-      color: "text-primary",
-      bg: "bg-primary/10",
+      color: "text-blue-600",
+      bg: "bg-gradient-to-br from-blue-50 to-blue-100",
+      borderColor: "border-l-blue-500",
       path: "/enquiries",
     },
     {
       label: "Active Technicians",
       value: allUsers.filter((u: any) => u.role === "technician" && u.isActive).length,
       icon: Wrench,
-      color: "text-primary",
-      bg: "bg-primary/10",
+      color: "text-orange-600",
+      bg: "bg-gradient-to-br from-orange-50 to-orange-100",
+      borderColor: "border-l-orange-500",
       path: "/team",
     },
     {
       label: "Departments",
       value: depts.filter((d: any) => d.isActive).length,
       icon: Building2,
-      color: "text-primary",
-      bg: "bg-primary/10",
+      color: "text-purple-600",
+      bg: "bg-gradient-to-br from-purple-50 to-purple-100",
+      borderColor: "border-l-purple-500",
       path: "/departments",
     },
   ];
@@ -109,24 +113,24 @@ export default function AdminDashboard() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
+        {stats.map((stat: any) => (
           <button
             key={stat.label}
             onClick={() => setLocation(stat.path)}
-            className="text-left"
+            className="text-left group"
           >
-            <Card className="hover:shadow-md transition-shadow cursor-pointer border-l-[3px] border-l-primary overflow-hidden">
+            <Card className={`hover:shadow-lg transition-all duration-300 cursor-pointer border-l-[4px] ${stat.borderColor} overflow-hidden ${stat.bg}`}>
               <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`w-9 h-9 rounded-lg ${stat.bg} flex items-center justify-center`}>
-                    <stat.icon className={`w-4.5 h-4.5 ${stat.color}`} />
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-11 h-11 rounded-xl bg-white/60 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
-                  <ArrowRight className="w-4 h-4 text-muted-foreground/40" />
+                  <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-muted-foreground/60 transition-colors" />
                 </div>
-                <p className="text-2xl font-bold text-foreground">
+                <p className="text-3xl font-bold text-foreground">
                   {jobsQuery.isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : stat.value}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                <p className="text-xs text-muted-foreground/70 mt-2 font-medium">{stat.label}</p>
               </CardContent>
             </Card>
           </button>
@@ -200,22 +204,24 @@ export default function AdminDashboard() {
         <div className="space-y-4">
           {/* Quick actions */}
           <div>
-            <h2 className="text-base font-semibold text-foreground mb-3">Quick Actions</h2>
-            <div className="space-y-2">
+            <h2 className="text-base font-semibold text-foreground mb-4">Quick Actions</h2>
+            <div className="space-y-2.5">
               {[
-                { label: "New Enquiry", icon: PlusCircle, path: "/enquiries/new", color: "text-blue-600" },
-                { label: "New Job Card", icon: Briefcase, path: "/jobs/new", color: "text-primary" },
-                { label: "New Quote", icon: ClipboardList, path: "/admin/quotes/new", color: "text-amber-600" },
-                { label: "View All Quotes", icon: ClipboardList, path: "/admin/quotes", color: "text-amber-600" },
+                { label: "New Enquiry", icon: PlusCircle, path: "/enquiries/new", color: "text-blue-600", bg: "bg-blue-50 hover:bg-blue-100" },
+                { label: "New Job Card", icon: Briefcase, path: "/jobs/new", color: "text-emerald-600", bg: "bg-emerald-50 hover:bg-emerald-100" },
+                { label: "New Quote", icon: ClipboardList, path: "/admin/quotes/new", color: "text-amber-600", bg: "bg-amber-50 hover:bg-amber-100" },
+                { label: "View All Quotes", icon: ClipboardList, path: "/admin/quotes", color: "text-purple-600", bg: "bg-purple-50 hover:bg-purple-100" },
               ].map((action) => (
                 <button
                   key={action.label}
                   onClick={() => setLocation(action.path)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left"
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-left font-medium group ${action.bg}`}
                 >
-                  <action.icon className={`w-4 h-4 ${action.color} shrink-0`} />
-                  <span className="text-sm font-medium text-foreground">{action.label}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40 ml-auto" />
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/70 group-hover:bg-white transition-colors">
+                    <action.icon className={`w-4 h-4 ${action.color}`} />
+                  </div>
+                  <span className="text-sm font-medium text-foreground flex-1">{action.label}</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-muted-foreground/70 transition-colors" />
                 </button>
               ))}
             </div>
