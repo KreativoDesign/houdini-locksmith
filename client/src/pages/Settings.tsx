@@ -43,7 +43,7 @@ const SETTINGS_MENU: SettingsMenuItem[] = [
     label: "Team Management",
     description: "Manage team members and roles",
     icon: <Users className="h-5 w-5" />,
-    href: "/admin/team",
+    href: "/team",
     roles: ["admin"],
   },
   {
@@ -143,7 +143,7 @@ export default function Settings() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => navigate("/admin/team")}
+                onClick={() => navigate("/team")}
               >
                 Team Management
               </Button>
