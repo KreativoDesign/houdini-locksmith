@@ -531,3 +531,380 @@ export async function sendQuoteEmail(params: SendQuoteEmailParams): Promise<bool
     return false;
   }
 }
+
+
+// ─────────────────────────────────────────────
+// QUOTE ACCEPTANCE EMAIL
+// ─────────────────────────────────────────────
+
+export type QuoteAcceptanceEmailParams = {
+  to: string;
+  clientName: string;
+  quoteNumber: string;
+  total: string;
+};
+
+function buildQuoteAcceptanceHtml(p: QuoteAcceptanceEmailParams): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote Accepted</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb;">
+  <table style="width: 100%; max-width: 600px; margin: 0 auto; background: white; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #1f2937;">Quote Accepted</h2>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">Thank you for accepting our quote.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151;">Hi ${p.clientName},</p>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151; line-height: 1.6;">We're pleased to confirm that we have received your acceptance of quote <strong>${p.quoteNumber}</strong>.</p>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151; line-height: 1.6;">An invoice for <strong>R ${p.total}</strong> will be generated and sent to you shortly. We will proceed with the work as discussed.</p>
+        <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.6;">If you have any questions, please don't hesitate to contact us.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; background: #f3f4f6; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; font-size: 12px; color: #6b7280; text-align: center;">Houdini Locksmith & Security · Automated notification<br/>Please do not reply to this email.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendQuoteAcceptanceEmail(params: QuoteAcceptanceEmailParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping quote acceptance email.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping quote acceptance email.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Quote ${params.quoteNumber} Accepted - Houdini Locksmith & Security`,
+      html: buildQuoteAcceptanceHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending quote acceptance email:", error);
+      return false;
+    }
+    console.log(`[Email] Quote acceptance email sent to ${params.to} for quote ${params.quoteNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send quote acceptance email:", err);
+    return false;
+  }
+}
+
+// ─────────────────────────────────────────────
+// QUOTE REJECTION EMAIL
+// ─────────────────────────────────────────────
+
+export type QuoteRejectionEmailParams = {
+  to: string;
+  clientName: string;
+  quoteNumber: string;
+  reason?: string;
+};
+
+function buildQuoteRejectionHtml(p: QuoteRejectionEmailParams): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote Rejected</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb;">
+  <table style="width: 100%; max-width: 600px; margin: 0 auto; background: white; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #1f2937;">Quote Rejected</h2>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">We have received your rejection of the quote.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151;">Hi ${p.clientName},</p>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151; line-height: 1.6;">Thank you for your feedback regarding quote <strong>${p.quoteNumber}</strong>. We have recorded your rejection.</p>
+        ${p.reason ? `<p style="margin: 0 0 16px; font-size: 14px; color: #374151; line-height: 1.6;"><strong>Your feedback:</strong><br/>${p.reason}</p>` : ''}
+        <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.6;">If you would like to discuss this further or would like us to provide an alternative quote, please don't hesitate to contact us.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; background: #f3f4f6; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; font-size: 12px; color: #6b7280; text-align: center;">Houdini Locksmith & Security · Automated notification<br/>Please do not reply to this email.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendQuoteRejectionEmail(params: QuoteRejectionEmailParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping quote rejection email.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping quote rejection email.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Quote ${params.quoteNumber} Rejected - Houdini Locksmith & Security`,
+      html: buildQuoteRejectionHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending quote rejection email:", error);
+      return false;
+    }
+    console.log(`[Email] Quote rejection email sent to ${params.to} for quote ${params.quoteNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send quote rejection email:", err);
+    return false;
+  }
+}
+
+
+// ─────────────────────────────────────────────
+// PENDING PRICING REMINDER EMAIL (to managers)
+// ─────────────────────────────────────────────
+
+export type PendingPricingReminderParams = {
+  to: string;
+  managerName: string;
+  jobNumber: string;
+  jobTitle: string;
+  clientName: string;
+  daysOverdue: number;
+};
+
+function buildPendingPricingReminderHtml(p: PendingPricingReminderParams): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing Reminder</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb;">
+  <table style="width: 100%; max-width: 600px; margin: 0 auto; background: white; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #1f2937;">Pricing Reminder</h2>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">Job awaiting pricing for ${p.daysOverdue} day(s)</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151;">Hi ${p.managerName},</p>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151; line-height: 1.6;">This is a reminder that job <strong>${p.jobNumber}</strong> (${p.jobTitle}) for client <strong>${p.clientName}</strong> is awaiting pricing.</p>
+        <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.6;">Please log in to the admin dashboard to provide pricing for this job.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; background: #f3f4f6; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; font-size: 12px; color: #6b7280; text-align: center;">Houdini Locksmith & Security · Automated reminder<br/>Please do not reply to this email.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendPendingPricingReminder(params: PendingPricingReminderParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping pending pricing reminder.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping pending pricing reminder.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Reminder: Job ${params.jobNumber} Awaiting Pricing`,
+      html: buildPendingPricingReminderHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending pending pricing reminder:", error);
+      return false;
+    }
+    console.log(`[Email] Pending pricing reminder sent to ${params.to} for job ${params.jobNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send pending pricing reminder:", err);
+    return false;
+  }
+}
+
+// ─────────────────────────────────────────────
+// PENDING QUOTE ACCEPTANCE REMINDER (to clients)
+// ─────────────────────────────────────────────
+
+export type PendingQuoteReminderParams = {
+  to: string;
+  clientName: string;
+  quoteNumber: string;
+  quoteUrl: string;
+  daysOverdue: number;
+};
+
+function buildPendingQuoteReminderHtml(p: PendingQuoteReminderParams): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote Reminder</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb;">
+  <table style="width: 100%; max-width: 600px; margin: 0 auto; background: white; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #1f2937;">Quote Reminder</h2>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">Your quote is awaiting your response</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151;">Hi ${p.clientName},</p>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151; line-height: 1.6;">We wanted to follow up on quote <strong>${p.quoteNumber}</strong> that was sent to you ${p.daysOverdue} day(s) ago.</p>
+        <p style="margin: 0 0 24px; font-size: 14px; color: #374151; line-height: 1.6;">Please review and let us know if you would like to proceed with the work.</p>
+        <div style="text-align:center;margin:32px 0;">
+          <a href="${p.quoteUrl}" style="display:inline-block;background:#84cc16;color:#0a0f0a;font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;">Review Quote</a>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; background: #f3f4f6; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; font-size: 12px; color: #6b7280; text-align: center;">Houdini Locksmith & Security · Automated reminder<br/>Please do not reply to this email.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendPendingQuoteReminder(params: PendingQuoteReminderParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping pending quote reminder.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping pending quote reminder.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Reminder: Quote ${params.quoteNumber} Awaiting Your Response`,
+      html: buildPendingQuoteReminderHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending pending quote reminder:", error);
+      return false;
+    }
+    console.log(`[Email] Pending quote reminder sent to ${params.to} for quote ${params.quoteNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send pending quote reminder:", err);
+    return false;
+  }
+}
+
+// ─────────────────────────────────────────────
+// OVERDUE JOB REMINDER (to technicians)
+// ─────────────────────────────────────────────
+
+export type OverdueJobReminderParams = {
+  to: string;
+  technicianName: string;
+  jobNumber: string;
+  jobTitle: string;
+  clientName: string;
+  daysOverdue: number;
+};
+
+function buildOverdueJobReminderHtml(p: OverdueJobReminderParams): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overdue Job Reminder</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb;">
+  <table style="width: 100%; max-width: 600px; margin: 0 auto; background: white; border-collapse: collapse;">
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <h2 style="margin: 0 0 16px; font-size: 24px; font-weight: 700; color: #dc2626;">Overdue Job Reminder</h2>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;">Job is ${p.daysOverdue} day(s) overdue</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; border-bottom: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151;">Hi ${p.technicianName},</p>
+        <p style="margin: 0 0 16px; font-size: 14px; color: #374151; line-height: 1.6;">This is a reminder that job <strong>${p.jobNumber}</strong> (${p.jobTitle}) for client <strong>${p.clientName}</strong> is <strong>${p.daysOverdue} day(s) overdue</strong>.</p>
+        <p style="margin: 0; font-size: 14px; color: #374151; line-height: 1.6;">Please complete this job as soon as possible and update the status in the system.</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 32px; background: #f3f4f6; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0; font-size: 12px; color: #6b7280; text-align: center;">Houdini Locksmith & Security · Automated reminder<br/>Please do not reply to this email.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendOverdueJobReminder(params: OverdueJobReminderParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping overdue job reminder.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping overdue job reminder.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Reminder: Job ${params.jobNumber} is Overdue`,
+      html: buildOverdueJobReminderHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending overdue job reminder:", error);
+      return false;
+    }
+    console.log(`[Email] Overdue job reminder sent to ${params.to} for job ${params.jobNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send overdue job reminder:", err);
+    return false;
+  }
+}

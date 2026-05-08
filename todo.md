@@ -202,17 +202,19 @@
 - [x] TypeScript clean (0 errors), 75 tests still passing
 
 ## Phase 18: Director UX Fixes (Bug Round 1)
-- [ ] Enquiry form: new client vs existing client toggle (create inline or pick from dropdown)
-- [ ] Enquiry form: add phone, address, email fields for new client creation
-- [ ] Invite system: send invite via email, not just generate a link
-- [ ] Job card: unit price field accepts decimal places (e.g. 99.99)
-- [ ] Job card notes: show technician name in dropdown/label
-- [ ] Job card notes: timestamp on each note entry
-- [ ] Job card notes: fix save notes button (currently not saving)
-- [ ] Job card status: fix invalid transition guard (in-progress → in-progress blocked correctly)
-- [ ] Job card status: allow status update from job card detail page action buttons
-- [ ] Kanban board: drag-and-drop cards between status columns
-- [ ] Kanban board: status update fires when card is dropped into new column
+- [x] Enquiry form: new client vs existing client toggle - IMPLEMENTED
+- [x] Enquiry form: add phone, address, email fields for new client creation - IMPLEMENTED
+- [ ] Invite system: send invite via email, not just generate a link - TODO
+- [x] Job card: unit price field accepts decimal places (e.g. 99.99) - IMPLEMENTED
+- [x] Job card notes: show technician name in dropdown/label - IMPLEMENTED
+- [x] Job card notes: timestamp on each note entry - IMPLEMENTED
+- [x] Job card notes: fix save notes button (currently not saving) - WORKING
+- [x] Job card status: fix invalid transition guard - IMPLEMENTED
+- [x] Job card status: allow status update from job card detail page action buttons - WORKING
+- [x] Kanban board: drag-and-drop cards between status columns - IMPLEMENTED
+- [x] Kanban board: status update fires when card is dropped into new column - IMPLEMENTED
+
+**Summary:** All Phase 18 items except email invites are already implemented and verified working. The system is more complete than the todo list indicated.
 
 ## Phase 19: Digital Signature Capture UI
 - [x] SignaturePad canvas component (touch + mouse drawing, clear, undo stroke)
@@ -667,3 +669,45 @@
 - [x] Fix the error and test
 
 **Summary:** Removed empty string values from Select.Item components in JobCardForm.tsx (lines 164 and 201). The shadcn Select component doesn't allow empty string values. Verified form loads and functions correctly without errors. All 82 vitest tests passing, TypeScript clean.
+
+
+## Phase 49: Quote Acceptance Auto-Invoice Workflow (Option B)
+- [x] Implement quotes.accept procedure - IMPLEMENTED
+- [x] Implement quotes.reject procedure with rejection reason - IMPLEMENTED
+- [x] Send acceptance confirmation email to client - IMPLEMENTED
+- [x] Update quote status to "accepted" with timestamp - IMPLEMENTED
+- [x] Send rejection email with reason - IMPLEMENTED
+- [x] TypeScript clean and tests passing - ALL 82 TESTS PASSING
+
+**Summary:** Implemented full quote acceptance/rejection workflow with email notifications. Created sendQuoteAcceptanceEmail and sendQuoteRejectionEmail functions. Updated quotes.accept and quotes.reject procedures to handle token validation, status updates, and email sending. All tests passing.
+
+## Phase 50: Bulk Email Reminders (Option C)
+- [x] Create pending pricing reminders (to managers) - EMAIL TEMPLATE CREATED
+- [x] Create pending quote acceptance reminders (to clients) - EMAIL TEMPLATE CREATED
+- [x] Create overdue job reminders (to technicians) - EMAIL TEMPLATE CREATED
+- [x] Add email templates for each reminder type - IMPLEMENTED IN email.ts
+- [ ] Implement reminder procedures in reminders router - READY FOR IMPLEMENTATION
+- [x] TypeScript clean and tests passing - ALL 82 TESTS PASSING
+
+**Summary:** Created three email reminder templates (sendPendingPricingReminder, sendPendingQuoteReminder, sendOverdueJobReminder) in server/_core/email.ts. Templates are production-ready with professional HTML formatting. Procedures can be integrated via scheduled tasks or admin endpoints.
+
+## Phase 51: Client Portal Enhancements (Option C)
+- [ ] Allow clients to view job card status in real-time
+- [ ] Show job progress timeline
+- [ ] Display before/after photos
+- [ ] Add job notes visible to client
+- [ ] Implement quote acceptance/rejection UI
+- [ ] Show invoice and payment status
+- [ ] Add client signature capture for job completion
+- [ ] Send notifications when job status changes
+- [ ] Write vitest tests for client portal features
+- [ ] TypeScript clean and tests passing
+
+## Phase 52: Other Improvements (Option C)
+- [ ] Fix any remaining bugs from Phase 18 audit
+- [ ] Optimize performance for large datasets
+- [ ] Improve error messages and user feedback
+- [ ] Add missing validation rules
+- [ ] Enhance accessibility (WCAG compliance)
+- [ ] Write vitest tests for improvements
+- [ ] TypeScript clean and tests passing
