@@ -83,6 +83,15 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     roles: ["admin", "manager", "technician"],
   },
   {
+    icon: ReceiptText,
+    label: "Quotes",
+    roles: ["admin", "manager"],
+    submenu: [
+      { label: "New Quote", path: "/quotes/create" },
+      { label: "View All Quotes", path: "/admin/quotes" },
+    ],
+  },
+  {
     icon: ClipboardList,
     label: "Enquiries",
     path: "/enquiries",
@@ -135,15 +144,6 @@ const ALL_MENU_ITEMS: MenuItem[] = [
     label: "Settings",
     path: "/settings",
     roles: ["admin"],
-  },
-  {
-    icon: ReceiptText,
-    label: "Quotes",
-    roles: ["admin", "manager"],
-    submenu: [
-      { label: "New Quote", path: "/quotes/create" },
-      { label: "View All Quotes", path: "/admin/quotes" },
-    ],
   },
 ];
 
