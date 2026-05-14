@@ -186,7 +186,6 @@ Please follow up with this lead as soon as possible.
                     className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
                 </div>
-                <p className="text-center text-sm font-semibold mt-4 text-gray-300">Locksmithing</p>
               </div>
 
               {/* Security - Right */}
@@ -200,7 +199,6 @@ Please follow up with this lead as soon as possible.
                     className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
                 </div>
-                <p className="text-center text-sm font-semibold mt-4 text-gray-300 whitespace-nowrap">Security</p>
               </div>
 
               {/* Diagnostics - Bottom */}
@@ -214,7 +212,6 @@ Please follow up with this lead as soon as possible.
                     className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
                 </div>
-                <p className="text-center text-sm font-semibold mt-4 text-gray-300">Diagnostics</p>
               </div>
             </div>
           </div>
