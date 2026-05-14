@@ -46,6 +46,7 @@ import JobCards from "./pages/JobCards";
 import JobCardDetail from "./pages/JobCardDetail";
 import TechnicianJobDetail from "./pages/TechnicianJobDetail";
 import JobCardForm from "./pages/JobCardForm";
+import Jobs from "./pages/Jobs";
 
 // Pricing page
 import Pricing from "./pages/Pricing";
