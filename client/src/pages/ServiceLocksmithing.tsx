@@ -110,7 +110,7 @@ export default function ServiceLocksmithing() {
                 <div className="flex items-start gap-4">
                   <CheckCircle2 className="w-6 h-6 text-lime-400 flex-shrink-0 mt-1" />
                   <div className="flex-1">
-                    <h4 className="text-xl font-bold mb-2">{service.title}</h4>
+                    <h4 className="text-xl font-bold mb-2 text-white">{service.title}</h4>
                     <p className="text-gray-400 mb-4">{service.description}</p>
                     <ul className="space-y-2">
                       {service.features.map((feature, idx) => (
@@ -156,7 +156,7 @@ export default function ServiceLocksmithing() {
                   <div className="flex justify-center mb-4">
                     <Icon className="w-12 h-12 text-lime-400" />
                   </div>
-                  <h4 className="text-xl font-bold mb-2">{item.title}</h4>
+                  <h4 className="text-xl font-bold mb-2 text-white">{item.title}</h4>
                   <p className="text-gray-400">{item.description}</p>
                 </div>
               );
@@ -200,7 +200,7 @@ export default function ServiceLocksmithing() {
                 key={index}
                 className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition"
               >
-                <h4 className="text-xl font-bold mb-3">{study.title}</h4>
+                <h4 className="text-xl font-bold mb-3 text-white">{study.title}</h4>
                 <p className="text-gray-400 mb-4">{study.description}</p>
                 <div className="pt-4 border-t border-lime-500/20">
                   <p className="text-lime-400 font-semibold">{study.result}</p>
