@@ -179,10 +179,9 @@ Please follow up with this lead as soon as possible.
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
                 <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pasted_file_kfXElO_image_106fd0f5.png" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent_f4c51513.png" 
                     alt="Locksmithing" 
                     className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
-                    style={{filter: 'drop-shadow(0 0 20px rgba(132, 204, 22, 0.5))'}}
                   />
                 </div>
                 <p className="text-center text-sm font-semibold mt-3 text-gray-300">Locksmithing</p>
@@ -192,10 +191,9 @@ Please follow up with this lead as soon as possible.
               <div className="absolute right-0 top-1/2 transform translate-x-8 -translate-y-1/2">
                 <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pasted_file_kfXElO_image_106fd0f5.png" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent_e87806f7.png" 
                     alt="Security Systems" 
                     className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
-                    style={{filter: 'drop-shadow(0 0 20px rgba(132, 204, 22, 0.5))'}}
                   />
                 </div>
                 <p className="text-center text-sm font-semibold mt-3 text-gray-300 whitespace-nowrap">Security</p>
@@ -205,10 +203,9 @@ Please follow up with this lead as soon as possible.
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-8">
                 <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pasted_file_kfXElO_image_106fd0f5.png" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent_ea7907e6.png" 
                     alt="Diagnostics" 
                     className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
-                    style={{filter: 'drop-shadow(0 0 20px rgba(132, 204, 22, 0.5))'}}
                   />
                 </div>
                 <p className="text-center text-sm font-semibold mt-3 text-gray-300">Diagnostics</p>
