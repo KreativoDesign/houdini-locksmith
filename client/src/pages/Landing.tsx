@@ -231,11 +231,13 @@ Please follow up with this lead as soon as possible.
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Locksmithing */}
             <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
-              <div className="mb-6 flex justify-center">
+              <div className="mb-6 flex justify-center relative h-28">
+                {/* Neon glow background */}
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent-YFYMidJ9hgay2EfoBENXQY.webp" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent_f4c51513.png" 
                   alt="Locksmithing" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg"
+                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
                 />
               </div>
               <h3 className="text-2xl font-bold mb-4 text-center">Locksmithing</h3>
@@ -252,11 +254,13 @@ Please follow up with this lead as soon as possible.
 
             {/* Security Systems */}
             <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
-              <div className="mb-6 flex justify-center">
+              <div className="mb-6 flex justify-center relative h-28">
+                {/* Neon glow background */}
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent-SwfAK8Cr3rZ7YZVdNxHMkG.webp" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent_e87806f7.png" 
                   alt="Security Systems" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg"
+                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
                 />
               </div>
               <h3 className="text-2xl font-bold mb-4 text-center">Security Systems</h3>
@@ -273,11 +277,13 @@ Please follow up with this lead as soon as possible.
 
             {/* Diagnostics & Maintenance */}
             <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
-              <div className="mb-6 flex justify-center">
+              <div className="mb-6 flex justify-center relative h-28">
+                {/* Neon glow background */}
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent-m5PYJbveWSzYywHC2VqDBY.webp" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent_ea7907e6.png" 
                   alt="Diagnostics" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg"
+                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
                 />
               </div>
               <h3 className="text-2xl font-bold mb-4 text-center">Diagnostics & Maintenance</h3>
