@@ -47,6 +47,7 @@ import JobCardDetail from "./pages/JobCardDetail";
 import TechnicianJobDetail from "./pages/TechnicianJobDetail";
 import JobCardForm from "./pages/JobCardForm";
 import Jobs from "./pages/Jobs";
+import JobDetail from "./pages/JobDetail";
 
 // Pricing page
 import Pricing from "./pages/Pricing";
@@ -265,19 +266,23 @@ function Router() {
         </AppShell>
       </Route>
 
-      {/* ── Job Cards ── */}
+      {/* ── Job Management ── */}
       <Route path="/jobs">
         <AppShell>
-          <ProtectedRoute component={JobCards} />
+          <ProtectedRoute component={Jobs} roles={["admin", "manager"]} />
         </AppShell>
+      </Route>
+      <Route path="/jobs/:id">
+        {({ params }: any) => (
+          <AppShell>
+            <ProtectedRoute component={() => <JobDetail id={params.id} />} roles={["admin", "manager"]} />
+          </AppShell>
+        )}
       </Route>
       <Route path="/jobs/new">
         <AppShell>
           <ProtectedRoute component={JobCardForm} roles={["admin", "manager"]} />
         </AppShell>
-      </Route>
-      <Route path="/jobs/:id">
-        <JobDetailRoute />
       </Route>
 
       {/* ── Pricing ── */}
