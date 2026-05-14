@@ -42,8 +42,8 @@ export default function ServiceSecurity() {
                 />
               </div>
             </div>
-            <h2 className="text-5xl sm:text-6xl font-bold mb-6">
-              Advanced <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-500">Security Systems</span>
+          <h2 className="text-5xl sm:text-6xl font-bold mb-6 text-white">
+              Expert <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-500">Security</span> Solutions
             </h2>
             <p className="text-xl text-gray-400 mb-8">
               Comprehensive surveillance and alarm systems with 24/7 monitoring and mobile app integration for complete peace of mind
@@ -55,7 +55,7 @@ export default function ServiceSecurity() {
       {/* Services Overview */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-3xl font-bold mb-12">Our Security Solutions</h3>
+           <h3 className="text-3xl font-bold mb-12 text-white">Our Security Services</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               {
@@ -131,7 +131,7 @@ export default function ServiceSecurity() {
       {/* Why Choose Us */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-3xl font-bold mb-12">Why Choose Houdini Security</h3>
+          <h3 className="text-3xl font-bold mb-12 text-white">Why Choose Houdini Security</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
@@ -168,7 +168,7 @@ export default function ServiceSecurity() {
       {/* Case Studies */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-3xl font-bold mb-12">Case Studies</h3>
+          <h3 className="text-3xl font-bold mb-12 text-white">Case Studies</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               {
@@ -214,7 +214,7 @@ export default function ServiceSecurity() {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-4xl font-bold mb-6">Protect What Matters Most</h3>
+          <h3 className="text-4xl font-bold mb-6 text-white">Protect What Matters Most</h3>
           <p className="text-xl text-gray-400 mb-8">
             Let our security experts design a custom system for your property
           </p>
