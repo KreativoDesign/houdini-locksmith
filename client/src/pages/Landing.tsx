@@ -168,7 +168,7 @@ Please follow up with this lead as soon as possible.
               {/* Central mascot */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-real-transparent-ekRGmLCNxaBjMcjtyN6MVb.png" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/WhatsAppImage2026-04-01at00.23.33_9335e76f.jpeg" 
                   alt="Houdini Mascot" 
                   className="w-48 h-48 sm:w-64 sm:h-64 object-contain drop-shadow-2xl animate-pulse"
                 />
@@ -179,9 +179,10 @@ Please follow up with this lead as soon as possible.
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
                 <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent-YFYMidJ9hgay2EfoBENXQY.webp" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pasted_file_kfXElO_image_106fd0f5.png" 
                     alt="Locksmithing" 
                     className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
+                    style={{filter: 'drop-shadow(0 0 20px rgba(132, 204, 22, 0.5))'}}
                   />
                 </div>
                 <p className="text-center text-sm font-semibold mt-3 text-gray-300">Locksmithing</p>
@@ -191,9 +192,10 @@ Please follow up with this lead as soon as possible.
               <div className="absolute right-0 top-1/2 transform translate-x-8 -translate-y-1/2">
                 <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent-SwfAK8Cr3rZ7YZVdNxHMkG.webp" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pasted_file_kfXElO_image_106fd0f5.png" 
                     alt="Security Systems" 
                     className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
+                    style={{filter: 'drop-shadow(0 0 20px rgba(132, 204, 22, 0.5))'}}
                   />
                 </div>
                 <p className="text-center text-sm font-semibold mt-3 text-gray-300 whitespace-nowrap">Security</p>
@@ -203,9 +205,10 @@ Please follow up with this lead as soon as possible.
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-8">
                 <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent-m5PYJbveWSzYywHC2VqDBY.webp" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/pasted_file_kfXElO_image_106fd0f5.png" 
                     alt="Diagnostics" 
                     className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
+                    style={{filter: 'drop-shadow(0 0 20px rgba(132, 204, 22, 0.5))'}}
                   />
                 </div>
                 <p className="text-center text-sm font-semibold mt-3 text-gray-300">Diagnostics</p>
