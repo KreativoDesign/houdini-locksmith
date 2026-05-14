@@ -15,6 +15,9 @@ import Register from "./pages/Register";
 import Landing from "./pages/Landing";
 import ClientPortal from "./pages/ClientPortal";
 import PublicQuoteView from "./pages/PublicQuoteView";
+import ServiceLocksmithing from "./pages/ServiceLocksmithing";
+import ServiceSecurity from "./pages/ServiceSecurity";
+import ServiceDiagnostics from "./pages/ServiceDiagnostics";
 
 // Dashboard pages (role-specific)
 import AdminDashboard from "./pages/AdminDashboard";
@@ -336,6 +339,11 @@ function Router() {
           </AppShell>
         </Route>
       ))}
+
+      {/* ── Service Pages (no auth required) ── */}
+      <Route path="/services/locksmithing" component={ServiceLocksmithing} />
+      <Route path="/services/security" component={ServiceSecurity} />
+      <Route path="/services/diagnostics" component={ServiceDiagnostics} />
 
       {/* ── Public client portal (no auth required) ── */}
       <Route path="/portal/:token" component={ClientPortal} />

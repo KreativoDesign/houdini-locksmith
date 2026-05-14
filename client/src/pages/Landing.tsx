@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +9,7 @@ import { Phone, Mail, MapPin, ArrowRight, Menu, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function Landing() {
+  const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -177,7 +179,10 @@ Please follow up with this lead as soon as possible.
               {/* Circular service icons with drop shadows and neon glow */}
               {/* Locksmithing - Top */}
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-12">
-                <div className="hover:scale-110 transition cursor-pointer relative">
+                <button
+                  onClick={() => setLocation("/services/locksmithing")}
+                  className="hover:scale-110 transition cursor-pointer relative block"
+                >
                   {/* Neon glow background */}
                   <div className="absolute inset-0 rounded-full blur-2xl opacity-60" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.8) 0%, transparent 70%)'}}></div>
                   <img 
@@ -185,12 +190,15 @@ Please follow up with this lead as soon as possible.
                     alt="Locksmithing" 
                     className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
-                </div>
+                </button>
               </div>
 
               {/* Security - Right */}
               <div className="absolute right-0 top-1/2 transform translate-x-10 -translate-y-1/2">
-                <div className="hover:scale-110 transition cursor-pointer relative">
+                <button
+                  onClick={() => setLocation("/services/security")}
+                  className="hover:scale-110 transition cursor-pointer relative block"
+                >
                   {/* Neon glow background */}
                   <div className="absolute inset-0 rounded-full blur-2xl opacity-60" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.8) 0%, transparent 70%)'}}></div>
                   <img 
@@ -198,12 +206,15 @@ Please follow up with this lead as soon as possible.
                     alt="Security Systems" 
                     className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
-                </div>
+                </button>
               </div>
 
               {/* Diagnostics - Bottom */}
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-12">
-                <div className="hover:scale-110 transition cursor-pointer relative">
+                <button
+                  onClick={() => setLocation("/services/diagnostics")}
+                  className="hover:scale-110 transition cursor-pointer relative block"
+                >
                   {/* Neon glow background */}
                   <div className="absolute inset-0 rounded-full blur-2xl opacity-60" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.8) 0%, transparent 70%)'}}></div>
                   <img 
@@ -211,7 +222,7 @@ Please follow up with this lead as soon as possible.
                     alt="Diagnostics" 
                     className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -230,7 +241,10 @@ Please follow up with this lead as soon as possible.
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Locksmithing */}
-            <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
+            <button
+              onClick={() => setLocation("/services/locksmithing")}
+              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
+            >
               <div className="mb-6 flex justify-center relative h-28">
                 {/* Neon glow background */}
                 <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
@@ -250,10 +264,13 @@ Please follow up with this lead as soon as possible.
                 <li>• Emergency lockout assistance</li>
                 <li>• Master key systems</li>
               </ul>
-            </div>
+            </button>
 
             {/* Security Systems */}
-            <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
+            <button
+              onClick={() => setLocation("/services/security")}
+              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
+            >
               <div className="mb-6 flex justify-center relative h-28">
                 {/* Neon glow background */}
                 <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
@@ -273,10 +290,13 @@ Please follow up with this lead as soon as possible.
                 <li>• Access control systems</li>
                 <li>• Mobile app integration</li>
               </ul>
-            </div>
+            </button>
 
             {/* Diagnostics & Maintenance */}
-            <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
+            <button
+              onClick={() => setLocation("/services/diagnostics")}
+              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
+            >
               <div className="mb-6 flex justify-center relative h-28">
                 {/* Neon glow background */}
                 <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
@@ -296,7 +316,7 @@ Please follow up with this lead as soon as possible.
                 <li>• Performance optimization</li>
                 <li>• Emergency repairs</li>
               </ul>
-            </div>
+            </button>
           </div>
         </div>
       </section>
