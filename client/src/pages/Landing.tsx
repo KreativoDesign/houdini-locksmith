@@ -168,56 +168,47 @@ Please follow up with this lead as soon as possible.
               {/* Central mascot */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-transparent-6qhv2s27tRBVoVJE9CrijX.webp" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-real-transparent-ekRGmLCNxaBjMcjtyN6MVb.png" 
                   alt="Houdini Mascot" 
                   className="w-48 h-48 sm:w-64 sm:h-64 object-contain drop-shadow-2xl animate-pulse"
                 />
               </div>
 
-              {/* Circular service icons */}
+              {/* Circular service icons with drop shadows */}
               {/* Locksmithing - Top */}
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-                <div className="bg-slate-800/80 backdrop-blur border border-lime-500/40 rounded-full p-4 hover:border-lime-400 transition group cursor-pointer">
+                <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-3d-FQuPGhiEjxVmXiQgPszvX9.webp" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent-YFYMidJ9hgay2EfoBENXQY.webp" 
                     alt="Locksmithing" 
-                    className="w-16 h-16 object-contain group-hover:scale-110 transition"
+                    className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
                   />
                 </div>
-                <p className="text-center text-sm font-semibold mt-2 text-gray-300">Locksmithing</p>
+                <p className="text-center text-sm font-semibold mt-3 text-gray-300">Locksmithing</p>
               </div>
 
               {/* Security - Right */}
               <div className="absolute right-0 top-1/2 transform translate-x-8 -translate-y-1/2">
-                <div className="bg-slate-800/80 backdrop-blur border border-lime-500/40 rounded-full p-4 hover:border-lime-400 transition group cursor-pointer">
+                <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-3d-Cpoog8RKoadJUYevMgmZDo.webp" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent-SwfAK8Cr3rZ7YZVdNxHMkG.webp" 
                     alt="Security Systems" 
-                    className="w-16 h-16 object-contain group-hover:scale-110 transition"
+                    className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
                   />
                 </div>
-                <p className="text-center text-sm font-semibold mt-2 text-gray-300 whitespace-nowrap">Security</p>
+                <p className="text-center text-sm font-semibold mt-3 text-gray-300 whitespace-nowrap">Security</p>
               </div>
 
               {/* Diagnostics - Bottom */}
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-8">
-                <div className="bg-slate-800/80 backdrop-blur border border-lime-500/40 rounded-full p-4 hover:border-lime-400 transition group cursor-pointer">
+                <div className="hover:scale-110 transition cursor-pointer">
                   <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-3d-jp3f9Fg5YKHwQEiFb8T7gs.webp" 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent-m5PYJbveWSzYywHC2VqDBY.webp" 
                     alt="Diagnostics" 
-                    className="w-16 h-16 object-contain group-hover:scale-110 transition"
+                    className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl"
                   />
                 </div>
-                <p className="text-center text-sm font-semibold mt-2 text-gray-300">Diagnostics</p>
-              </div>
-
-              {/* Left - Additional service indicator */}
-              <div className="absolute left-0 top-1/2 transform -translate-x-8 -translate-y-1/2">
-                <div className="bg-gradient-to-r from-lime-500/20 to-transparent border border-lime-500/30 rounded-full p-3">
-                  <div className="w-12 h-12 rounded-full bg-lime-500/20 flex items-center justify-center">
-                    <span className="text-lime-400 font-bold">+</span>
-                  </div>
-                </div>
+                <p className="text-center text-sm font-semibold mt-3 text-gray-300">Diagnostics</p>
               </div>
             </div>
           </div>
@@ -237,88 +228,64 @@ Please follow up with this lead as soon as possible.
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Locksmithing */}
             <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
-              <div className="mb-6">
+              <div className="mb-6 flex justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-3d-FQuPGhiEjxVmXiQgPszvX9.webp" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent-YFYMidJ9hgay2EfoBENXQY.webp" 
                   alt="Locksmithing" 
-                  className="w-20 h-20 object-contain group-hover:scale-110 transition"
+                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg"
                 />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Locksmithing</h3>
-              <p className="text-gray-400 mb-6">
+              <h3 className="text-2xl font-bold mb-4 text-center">Locksmithing</h3>
+              <p className="text-gray-400 mb-6 text-center">
                 Expert lock installation, repair, and emergency unlocking services for residential and commercial properties.
               </p>
-              <ul className="space-y-3 text-sm text-gray-300">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  Residential locks
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  Commercial systems
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  Emergency lockout
-                </li>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>• Residential lock services</li>
+                <li>• Commercial security locks</li>
+                <li>• Emergency lockout assistance</li>
+                <li>• Master key systems</li>
               </ul>
             </div>
 
             {/* Security Systems */}
             <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
-              <div className="mb-6">
+              <div className="mb-6 flex justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-3d-Cpoog8RKoadJUYevMgmZDo.webp" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent-SwfAK8Cr3rZ7YZVdNxHMkG.webp" 
                   alt="Security Systems" 
-                  className="w-20 h-20 object-contain group-hover:scale-110 transition"
+                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg"
                 />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Security Systems</h3>
-              <p className="text-gray-400 mb-6">
-                Advanced alarm systems, CCTV installation, and smart home integration for complete peace of mind.
+              <h3 className="text-2xl font-bold mb-4 text-center">Security Systems</h3>
+              <p className="text-gray-400 mb-6 text-center">
+                Advanced surveillance and alarm systems with 24/7 monitoring and mobile app integration for complete peace of mind.
               </p>
-              <ul className="space-y-3 text-sm text-gray-300">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  Alarm systems
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  CCTV cameras
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  Smart integration
-                </li>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>• CCTV installation & monitoring</li>
+                <li>• Alarm system design</li>
+                <li>• Access control systems</li>
+                <li>• Mobile app integration</li>
               </ul>
             </div>
 
-            {/* Diagnostics */}
+            {/* Diagnostics & Maintenance */}
             <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group">
-              <div className="mb-6">
+              <div className="mb-6 flex justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-3d-jp3f9Fg5YKHwQEiFb8T7gs.webp" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent-m5PYJbveWSzYywHC2VqDBY.webp" 
                   alt="Diagnostics" 
-                  className="w-20 h-20 object-contain group-hover:scale-110 transition"
+                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg"
                 />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Diagnostics & Maintenance</h3>
-              <p className="text-gray-400 mb-6">
-                Comprehensive system diagnostics, maintenance, and troubleshooting to keep your security running smoothly.
+              <h3 className="text-2xl font-bold mb-4 text-center">Diagnostics & Maintenance</h3>
+              <p className="text-gray-400 mb-6 text-center">
+                Comprehensive system diagnostics and preventive maintenance to ensure your security infrastructure operates at peak performance.
               </p>
-              <ul className="space-y-3 text-sm text-gray-300">
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  System testing
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  Maintenance plans
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-lime-400 rounded-full"></span>
-                  24/7 support
-                </li>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>• System diagnostics</li>
+                <li>• Preventive maintenance</li>
+                <li>• Performance optimization</li>
+                <li>• Emergency repairs</li>
               </ul>
             </div>
           </div>
@@ -327,111 +294,105 @@ Please follow up with this lead as soon as possible.
 
       {/* Contact Section */}
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-              Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-500">Touch</span>
+              Get in Touch
             </h2>
-            <p className="text-xl text-gray-400">Our sales team is ready to help you find the perfect solution</p>
+            <p className="text-xl text-gray-400">Our sales team will respond within 1 hour</p>
           </div>
 
-          <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 sm:p-12">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
-                  <Input
-                    type="text"
-                    placeholder="Your name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder-gray-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
-                  <Input
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder-gray-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Phone</label>
-                  <Input
-                    type="tel"
-                    placeholder="Your phone number"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder-gray-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Service Interest</label>
-                  <select
-                    value={formData.service}
-                    onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-900/50 border border-lime-500/30 focus:border-lime-500 rounded-md text-white"
-                  >
-                    <option value="locksmithing">Locksmithing</option>
-                    <option value="security">Security Systems</option>
-                    <option value="diagnostics">Diagnostics & Maintenance</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Message</label>
-                <Textarea
-                  placeholder="Tell us about your security needs..."
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder-gray-500"
-                  rows={5}
-                  required
-                />
-              </div>
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold py-3 text-lg shadow-lg shadow-lime-500/50"
-              >
-                {isSubmitting ? "Sending..." : "Send Inquiry"}
-              </Button>
-            </form>
-          </div>
-
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <Phone className="w-8 h-8 text-lime-400 mx-auto mb-3" />
-              <p className="text-gray-300">+27 (0) 11 234 5678</p>
+          <form onSubmit={handleSubmit} className="space-y-6 bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Input
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500"
+                required
+              />
+              <Input
+                type="email"
+                placeholder="Your Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500"
+                required
+              />
             </div>
-            <div className="text-center">
-              <Mail className="w-8 h-8 text-lime-400 mx-auto mb-3" />
-              <p className="text-gray-300">info@houdini.co.za</p>
-            </div>
-            <div className="text-center">
-              <MapPin className="w-8 h-8 text-lime-400 mx-auto mb-3" />
-              <p className="text-gray-300">Johannesburg, South Africa</p>
-            </div>
-          </div>
+
+            <Input
+              type="tel"
+              placeholder="Your Phone"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500"
+              required
+            />
+
+            <select
+              value={formData.service}
+              onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+              className="w-full bg-slate-900/50 border border-lime-500/30 focus:border-lime-500 text-white rounded-md px-4 py-2 placeholder:text-gray-500"
+            >
+              <option value="locksmithing">Locksmithing Services</option>
+              <option value="security">Security Systems</option>
+              <option value="diagnostics">Diagnostics & Maintenance</option>
+              <option value="other">Other Services</option>
+            </select>
+
+            <Textarea
+              placeholder="Tell us about your security needs..."
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500 min-h-32"
+              required
+            />
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold shadow-lg shadow-lime-500/50 disabled:opacity-50"
+            >
+              {isSubmitting ? "Sending..." : "Send Inquiry"}
+            </Button>
+          </form>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-lime-500/20 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-400">© 2026 Houdini Locksmith & Security. We Lock Your World. All rights reserved.</p>
+      <footer className="border-t border-lime-500/20 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Contact</h3>
+              <div className="space-y-2 text-gray-400">
+                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> +27 (0) 11 234 5678</p>
+                <p className="flex items-center gap-2"><Mail className="w-4 h-4" /> info@houdini.co.za</p>
+                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Johannesburg, South Africa</p>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg mb-4">Services</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-lime-400 transition">Locksmithing</a></li>
+                <li><a href="#" className="hover:text-lime-400 transition">Security Systems</a></li>
+                <li><a href="#" className="hover:text-lime-400 transition">Maintenance</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg mb-4">Hours</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>Monday - Friday: 7am - 6pm</li>
+                <li>Saturday: 8am - 4pm</li>
+                <li>Sunday: Emergency Only</li>
+                <li>24/7 Emergency Service</li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-lime-500/20 pt-8 text-center text-gray-500">
+            <p>&copy; 2026 Houdini Locksmith & Security. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
