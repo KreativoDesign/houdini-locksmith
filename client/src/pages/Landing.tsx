@@ -116,9 +116,9 @@ Please follow up with this lead as soon as possible.
       </nav>
 
       {/* Hero Section with Circular Service Layout */}
-      <section className="relative py-20 sm:py-32 px-4 sm:px-6 lg:px-8">
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             {/* Left side - Text content */}
             <div className="relative z-10">
               <div className="mb-8">
@@ -166,19 +166,19 @@ Please follow up with this lead as soon as possible.
             </div>
 
             {/* Right side - Circular service layout with mascot */}
-            <div className="relative h-96 sm:h-[600px] flex items-center justify-center">
+            <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] flex items-center justify-center">
               {/* Central mascot */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <img 
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/WhatsAppImage2026-04-01at00.23.33_9335e76f.jpeg" 
                   alt="Houdini Mascot" 
-                  className="w-64 h-64 sm:w-80 sm:h-80 object-contain drop-shadow-2xl animate-pulse"
+                  className="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 object-contain drop-shadow-2xl animate-pulse"
                 />
               </div>
 
               {/* Circular service icons with drop shadows and neon glow */}
               {/* Locksmithing - Top */}
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-12">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8 sm:-translate-y-12">
                 <button
                   onClick={() => setLocation("/services/locksmithing")}
                   className="hover:scale-110 transition cursor-pointer relative block"
@@ -188,13 +188,13 @@ Please follow up with this lead as soon as possible.
                   <img 
                     src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent_f4c51513.png" 
                     alt="Locksmithing" 
-                    className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
                 </button>
               </div>
 
               {/* Security - Right */}
-              <div className="absolute right-0 top-1/2 transform translate-x-10 -translate-y-1/2">
+              <div className="absolute right-0 top-1/2 transform translate-x-6 sm:translate-x-10 -translate-y-1/2">
                 <button
                   onClick={() => setLocation("/services/security")}
                   className="hover:scale-110 transition cursor-pointer relative block"
@@ -204,13 +204,13 @@ Please follow up with this lead as soon as possible.
                   <img 
                     src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent_e87806f7.png" 
                     alt="Security Systems" 
-                    className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
                 </button>
               </div>
 
               {/* Diagnostics - Bottom */}
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-12">
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-8 sm:translate-y-12">
                 <button
                   onClick={() => setLocation("/services/diagnostics")}
                   className="hover:scale-110 transition cursor-pointer relative block"
@@ -220,7 +220,7 @@ Please follow up with this lead as soon as possible.
                   <img 
                     src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent_ea7907e6.png" 
                     alt="Diagnostics" 
-                    className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl relative z-10"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10"
                   />
                 </button>
               </div>
