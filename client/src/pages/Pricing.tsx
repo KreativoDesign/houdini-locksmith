@@ -441,17 +441,7 @@ export default function Pricing() {
                   Approve Pricing
                 </Button>
               )}
-              {canInvoice && (
-                <Button
-                  variant="outline"
-                  onClick={() => invoiceMutation.mutate({ jobCardId })}
-                  disabled={invoiceMutation.isPending}
-                  className="gap-2 border-blue-300 text-blue-700 hover:bg-blue-50"
-                >
-                  {invoiceMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Receipt className="w-4 h-4" />}
-                  Mark as Invoiced
-                </Button>
-              )}
+              {/* Invoice button removed - use generateAndSendInvoice on JobCardDetail instead */}
             </div>
           )}
         </div>

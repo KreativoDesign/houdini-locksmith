@@ -206,3 +206,19 @@
 - [x] TypeScript clean and all 82 tests passing
 
 **Summary:** Comprehensive technician mobile dashboard with three main components. TechnicianDashboard shows assigned jobs with status filtering, stats cards, and quick actions. TechnicianJobDetail provides mobile-optimized job detail view with customer contact info and status updates. TechnicianMobileApp wraps both with mobile-first navigation and responsive design. All routes properly configured in App.tsx.
+
+
+## Phase 66: Required Field Validation for Enquiries & Job Cards
+- [x] Add validation for name and surname in enquiry form
+- [x] Add validation for email address in enquiry form
+- [x] Add validation for cellphone number in enquiry form
+- [x] Add validation for physical address in enquiry form
+- [x] Update CreateJobModal to require all client fields
+- [x] Update CreateNewClientDialog to require all fields
+- [x] Add real-time validation feedback in forms
+- [x] Add error messages for missing required fields
+- [x] Prevent form submission if required fields are empty
+- [x] Test validation on all forms
+- [x] TypeScript clean and all 82 tests passing
+
+**Summary:** Implemented comprehensive required field validation for enquiries and job card creation. Both forms now require name, surname, email address, cellphone number, and physical address before submission. EnquiryForm validates all fields with specific error messages. CreateJobModal includes Create New Customer dialog with all required fields and real-time validation. Submit buttons disabled until all fields filled.

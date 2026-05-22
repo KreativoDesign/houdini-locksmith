@@ -43,6 +43,7 @@ export function CreateJobModal({
     lastName: "",
     email: "",
     phone: "",
+    address: "",
   });
 
   const createJobMutation = trpc.jobCards.create.useMutation();
@@ -51,23 +52,51 @@ export function CreateJobModal({
   const { data: clients, refetch: refetchClients } = trpc.clients.list.useQuery();
   const { data: technicians } = trpc.users.technicians.useQuery();
 
+  // Validate new client form
+  const isNewClientFormValid = () => {
+    return (
+      newClientData.firstName.trim() &&
+      newClientData.lastName.trim() &&
+      newClientData.email.trim() &&
+      newClientData.phone.trim() &&
+      newClientData.address.trim()
+    );
+  };
+
   const handleCreateClient = async () => {
-    if (!newClientData.firstName || !newClientData.lastName || !newClientData.phone) {
-      toast.error("Please fill in first name, last name, and phone");
+    if (!newClientData.firstName?.trim()) {
+      toast.error("First name is required");
+      return;
+    }
+    if (!newClientData.lastName?.trim()) {
+      toast.error("Last name is required");
+      return;
+    }
+    if (!newClientData.email?.trim()) {
+      toast.error("Email address is required");
+      return;
+    }
+    if (!newClientData.phone?.trim()) {
+      toast.error("Cellphone number is required");
+      return;
+    }
+    if (!newClientData.address?.trim()) {
+      toast.error("Physical address is required");
       return;
     }
 
     try {
       const client = await createClientMutation.mutateAsync({
-        firstName: newClientData.firstName,
-        lastName: newClientData.lastName,
-        email: newClientData.email,
-        phone: newClientData.phone,
+        firstName: newClientData.firstName.trim(),
+        lastName: newClientData.lastName.trim(),
+        email: newClientData.email.trim(),
+        phone: newClientData.phone.trim(),
+        address: newClientData.address.trim(),
       });
 
       toast.success("Customer created successfully");
       setFormData({ ...formData, clientId: client.id.toString() });
-      setNewClientData({ firstName: "", lastName: "", email: "", phone: "" });
+      setNewClientData({ firstName: "", lastName: "", email: "", phone: "", address: "" });
       setShowCreateClient(false);
       refetchClients();
     } catch (error) {
@@ -152,7 +181,6 @@ export function CreateJobModal({
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
                   onClick={() => setShowCreateClient(true)}
                   className="w-full gap-2"
                 >
@@ -165,21 +193,28 @@ export function CreateJobModal({
             {/* Job Details */}
             <div>
               <h3 className="font-semibold mb-3">Job Details</h3>
-              <div className="space-y-4">
-                <Input
-                  placeholder="Job Title *"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
-                <Textarea
-                  placeholder="Job Description - Provide detailed information about what needs to be done (this will be visible to the assigned technician)"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  rows={5}
-                />
+              <div className="space-y-3">
+                <div>
+                  <label className="text-sm font-medium">Job Title *</label>
+                  <Input
+                    placeholder="e.g., Emergency Lock Repair"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Description</label>
+                  <Textarea
+                    placeholder="Describe the job details, what the customer needs, and any special instructions..."
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
+                    rows={5}
+                  />
+                </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="text-sm font-medium">Department *</label>
@@ -244,7 +279,7 @@ export function CreateJobModal({
               </div>
             </div>
 
-            {/* Actions */}
+            {/* Action Buttons */}
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
@@ -271,7 +306,7 @@ export function CreateJobModal({
           <DialogHeader>
             <DialogTitle>Create New Customer</DialogTitle>
             <DialogDescription>
-              Add a new customer to the system
+              Add a new customer to the system. All fields are required.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -296,7 +331,7 @@ export function CreateJobModal({
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Email</label>
+              <label className="text-sm font-medium">Email Address *</label>
               <Input
                 type="email"
                 placeholder="john@example.com"
@@ -307,12 +342,22 @@ export function CreateJobModal({
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Phone *</label>
+              <label className="text-sm font-medium">Cellphone Number *</label>
               <Input
                 placeholder="+1 (555) 123-4567"
                 value={newClientData.phone}
                 onChange={(e) =>
                   setNewClientData({ ...newClientData, phone: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Physical Address *</label>
+              <Input
+                placeholder="123 Main Street, City, Country"
+                value={newClientData.address}
+                onChange={(e) =>
+                  setNewClientData({ ...newClientData, address: e.target.value })
                 }
               />
             </div>
@@ -326,7 +371,7 @@ export function CreateJobModal({
               </Button>
               <Button
                 onClick={handleCreateClient}
-                disabled={createClientMutation.isPending}
+                disabled={createClientMutation.isPending || !isNewClientFormValid()}
                 className="bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold"
               >
                 {createClientMutation.isPending ? "Creating..." : "Create Customer"}

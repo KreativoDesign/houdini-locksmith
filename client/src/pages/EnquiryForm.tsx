@@ -130,8 +130,24 @@ export default function EnquiryForm() {
 
     // Validate new client fields if in new mode
     if (!isEdit && clientMode === "new") {
-      if (!newClient.firstName.trim() || !newClient.lastName.trim() || !newClient.phone.trim()) {
-        toast.error("Client first name, last name, and phone are required");
+      if (!newClient.firstName.trim()) {
+        toast.error("Client first name is required");
+        return;
+      }
+      if (!newClient.lastName.trim()) {
+        toast.error("Client last name is required");
+        return;
+      }
+      if (!newClient.email.trim()) {
+        toast.error("Client email address is required");
+        return;
+      }
+      if (!newClient.phone.trim()) {
+        toast.error("Client cellphone number is required");
+        return;
+      }
+      if (!newClient.address.trim()) {
+        toast.error("Client physical address is required");
         return;
       }
     }
@@ -198,6 +214,16 @@ export default function EnquiryForm() {
     if (!form.subject || !form.description) return false;
     if (isEdit) return true;
     if (clientMode === "existing") return !!form.clientId;
+    // For new client mode, validate all required fields
+    if (clientMode === "new") {
+      return (
+        !!newClient.firstName.trim() &&
+        !!newClient.lastName.trim() &&
+        !!newClient.email.trim() &&
+        !!newClient.phone.trim() &&
+        !!newClient.address.trim()
+      );
+    }
     return !!(newClient.firstName.trim() && newClient.lastName.trim() && newClient.phone.trim());
   };
 
