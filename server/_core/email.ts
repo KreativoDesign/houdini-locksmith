@@ -1075,3 +1075,237 @@ export async function sendInvoiceEmail(params: InvoiceEmailParams, pdfBuffer?: B
     return false;
   }
 }
+
+
+// ============================================================================
+// Job Status Workflow Notifications
+// ============================================================================
+
+export type JobAssignedEmailParams = {
+  to: string;
+  technicianName: string;
+  jobNumber: string;
+  jobTitle: string;
+  clientName: string;
+  clientPhone: string;
+  jobDescription?: string;
+  portalUrl: string;
+};
+
+function buildJobAssignedHtml(p: JobAssignedEmailParams): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Job Assignment</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background: #f4f4f5;">
+    <tr>
+      <td align="center" style="padding: 20px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%); padding: 32px; text-align: center;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: white;">New Job Assignment</h1>
+              <p style="margin: 8px 0 0; font-size: 14px; color: rgba(255,255,255,0.9);">Houdini Locksmith & Security</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 24px; font-size: 16px; color: #18181b;">Hi ${p.technicianName},</p>
+              
+              <p style="margin: 0 0 24px; font-size: 15px; color: #52525b; line-height: 1.6;">A new job has been assigned to you. Please review the details below and contact the office if you have any questions.</p>
+
+              <!-- Job Details Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; margin: 24px 0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">JOB NUMBER</p>
+                    <p style="margin: 0 0 20px; font-size: 16px; font-weight: 700; color: #18181b;">${p.jobNumber}</p>
+
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">JOB TITLE</p>
+                    <p style="margin: 0 0 20px; font-size: 15px; color: #18181b;">${p.jobTitle}</p>
+
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">CLIENT</p>
+                    <p style="margin: 0 0 20px; font-size: 15px; color: #18181b;">${p.clientName}</p>
+
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">CLIENT PHONE</p>
+                    <p style="margin: 0 0 20px; font-size: 15px; color: #18181b;"><a href="tel:${p.clientPhone}" style="color: #84cc16; text-decoration: none;">${p.clientPhone}</a></p>
+
+                    ${p.jobDescription ? `
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">JOB DESCRIPTION</p>
+                    <p style="margin: 0; font-size: 14px; color: #52525b; line-height: 1.6;">${p.jobDescription}</p>
+                    ` : ''}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${p.portalUrl}" style="display: inline-block; background: #84cc16; color: #0a0f0a; font-size: 15px; font-weight: 700; padding: 14px 32px; border-radius: 8px; text-decoration: none;">View Job Details</a>
+              </div>
+
+              <p style="margin: 0; font-size: 13px; color: #71717a; line-height: 1.6;">Please log in to the technician portal to view full job details, update status, and mark the job as complete.</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background: #f4f4f5; padding: 20px 32px; border-top: 1px solid #e4e4e7;">
+              <p style="margin: 0; font-size: 12px; color: #a1a1aa; text-align: center;">Houdini Locksmith & Security · Automated notification<br/>Please do not reply to this email.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendJobAssignedEmail(params: JobAssignedEmailParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping job assigned email.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping job assigned email.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `New Job Assignment — ${params.jobNumber}`,
+      html: buildJobAssignedHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending job assigned email:", error);
+      return false;
+    }
+    console.log(`[Email] Job assigned email sent to ${params.to} for job ${params.jobNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send job assigned email:", err);
+    return false;
+  }
+}
+
+export type JobCompletedEmailParams = {
+  to: string;
+  managerName: string;
+  jobNumber: string;
+  jobTitle: string;
+  clientName: string;
+  technicianName: string;
+  completedDate: Date | string;
+  portalUrl: string;
+};
+
+function buildJobCompletedHtml(p: JobCompletedEmailParams): string {
+  const dateStr = formatDate(p.completedDate);
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Completed</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background: #f4f4f5;">
+    <tr>
+      <td align="center" style="padding: 20px;">
+        <table width="600" cellpadding="0" cellspacing="0" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%); padding: 32px; text-align: center;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: white;">Job Completed</h1>
+              <p style="margin: 8px 0 0; font-size: 14px; color: rgba(255,255,255,0.9);">Ready for Pricing & Approval</p>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 24px; font-size: 16px; color: #18181b;">Hi ${p.managerName},</p>
+              
+              <p style="margin: 0 0 24px; font-size: 15px; color: #52525b; line-height: 1.6;">Job ${p.jobNumber} has been completed by ${p.technicianName}. Please review the job details and proceed with pricing.</p>
+
+              <!-- Job Details Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; margin: 24px 0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">JOB NUMBER</p>
+                    <p style="margin: 0 0 20px; font-size: 16px; font-weight: 700; color: #18181b;">${p.jobNumber}</p>
+
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">JOB TITLE</p>
+                    <p style="margin: 0 0 20px; font-size: 15px; color: #18181b;">${p.jobTitle}</p>
+
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">CLIENT</p>
+                    <p style="margin: 0 0 20px; font-size: 15px; color: #18181b;">${p.clientName}</p>
+
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">TECHNICIAN</p>
+                    <p style="margin: 0 0 20px; font-size: 15px; color: #18181b;">${p.technicianName}</p>
+
+                    <p style="margin: 0 0 12px; font-size: 12px; color: #6b7280; font-weight: 600;">COMPLETED DATE</p>
+                    <p style="margin: 0; font-size: 15px; color: #18181b;">${dateStr}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <div style="text-align: center; margin: 32px 0;">
+                <a href="${p.portalUrl}" style="display: inline-block; background: #84cc16; color: #0a0f0a; font-size: 15px; font-weight: 700; padding: 14px 32px; border-radius: 8px; text-decoration: none;">Review & Price Job</a>
+              </div>
+
+              <p style="margin: 0; font-size: 13px; color: #71717a; line-height: 1.6;">Log in to the manager portal to review job details, add pricing, and submit for approval.</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background: #f4f4f5; padding: 20px 32px; border-top: 1px solid #e4e4e7;">
+              <p style="margin: 0; font-size: 12px; color: #a1a1aa; text-align: center;">Houdini Locksmith & Security · Automated notification<br/>Please do not reply to this email.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendJobCompletedEmail(params: JobCompletedEmailParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping job completed email.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping job completed email.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Job Completed — ${params.jobNumber}`,
+      html: buildJobCompletedHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending job completed email:", error);
+      return false;
+    }
+    console.log(`[Email] Job completed email sent to ${params.to} for job ${params.jobNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send job completed email:", err);
+    return false;
+  }
+}

@@ -430,7 +430,7 @@ export default function Pricing() {
               {canSubmit && (
                 <Button
                   variant="outline"
-                  onClick={() => submitMutation.mutate({ jobCardId })}
+                  onClick={() => submitMutation.mutate({ pricingId: pricing.id })}
                   disabled={submitMutation.isPending}
                   className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-50"
                 >
@@ -440,7 +440,7 @@ export default function Pricing() {
               )}
               {canApprove && (
                 <Button
-                  onClick={() => approveMutation.mutate({ jobCardId })}
+                  onClick={() => approveMutation.mutate({ pricingId: pricing.id })}
                   disabled={approveMutation.isPending}
                   className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
                 >

@@ -173,3 +173,19 @@
 - [x] All 82 tests passing
 
 **Summary:** Implemented complete PDF invoice generation using pdf-lib with professional Houdini branding. Invoices include job details, pricing breakdown, VAT calculations, and payment terms. PDFs are generated, stored in S3 for archival, and attached to invoice emails. Updated pricing router to generate and send invoices with PDF attachments. Robust error handling ensures emails are sent even if PDF generation fails.
+
+
+## Phase 64: Job Status Workflow Notifications
+- [x] Create job assigned email template for technicians with professional Houdini branding
+- [x] Create job completed email template for managers with job details
+- [x] Add sendJobAssignedEmail function to email utility
+- [x] Add sendJobCompletedEmail function to email utility
+- [x] Email templates include job number, title, client info, and portal links
+- [x] Professional HTML emails with lime green branding header
+- [x] CTA buttons linking to portal for job details and pricing review
+- [x] Technician receives job assignment with client contact info and description
+- [x] Manager receives job completion notification with technician name
+- [x] Build successful - 0 errors
+- [x] All 82 tests passing
+
+**Summary:** Implemented comprehensive job status workflow notifications. Created professional HTML email templates for job assignments (sent to technicians) and job completions (sent to managers). Both emails include job details, client information, portal links, and call-to-action buttons. Emails feature Houdini branding with lime green header and professional formatting. Ready to integrate with job card procedures.
