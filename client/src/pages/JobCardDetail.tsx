@@ -1469,6 +1469,14 @@ export default function JobCardDetail() {
     onError: (err) => toast.error(`PDF generation failed: ${err.message}`),
   });
 
+  const generateInvoiceMutation = trpc.pricing.generateAndSendInvoice.useMutation({
+    onSuccess: () => {
+      toast.success("Invoice generated and sent to client");
+      utils.pricing.getByJobCard.invalidate({ jobCardId: jobId });
+    },
+    onError: (err) => toast.error(`Failed to send invoice: ${err.message}`),
+  });
+
   if (isLoading) {
     return <div className="flex items-center justify-center h-64 text-muted-foreground">Loading job card…</div>;
   }
@@ -1911,22 +1919,45 @@ export default function JobCardDetail() {
 
           {/* Pricing link */}
           {["awaiting_pricing", "priced"].includes(status) && isManager && (
-            <Card className="border-purple-200 bg-purple-50">
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-purple-600" />
-                    <p className="text-sm font-semibold text-purple-800">
-                      {status === "priced" ? "Job Priced" : "Awaiting Pricing"}
-                    </p>
+            <>
+              <Card className="border-purple-200 bg-purple-50">
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="w-4 h-4 text-purple-600" />
+                      <p className="text-sm font-semibold text-purple-800">
+                        {status === "priced" ? "Job Priced" : "Awaiting Pricing"}
+                      </p>
+                    </div>
+                    <Link href={`/pricing?jobCardId=${jobId}`}
+                      className="text-xs text-purple-700 hover:underline font-medium flex items-center gap-1">
+                      Pricing <ChevronRight className="w-3 h-3" />
+                    </Link>
                   </div>
-                  <Link href={`/pricing?jobCardId=${jobId}`}
-                    className="text-xs text-purple-700 hover:underline font-medium flex items-center gap-1">
-                    Pricing <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+              {status === "priced" && (
+                <Button
+                  size="sm"
+                  variant="default"
+                  disabled={generateInvoiceMutation.isPending}
+                  onClick={() =>
+                    generateInvoiceMutation.mutate({
+                      jobCardId: jobId,
+                      portalUrl: `${window.location.origin}/client-portal?jobId=${jobId}`,
+                      paymentTerms: "Due upon receipt",
+                    })
+                  }
+                  className="w-full gap-1.5 bg-green-600 hover:bg-green-700"
+                >
+                  {generateInvoiceMutation.isPending ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />Sending Invoice…</>
+                  ) : (
+                    <><Mail className="w-3.5 h-3.5 mr-2" />Generate & Email Invoice</>
+                  )}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>

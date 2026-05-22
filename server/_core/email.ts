@@ -908,3 +908,158 @@ export async function sendOverdueJobReminder(params: OverdueJobReminderParams): 
     return false;
   }
 }
+
+
+// ─────────────────────────────────────────────
+// INVOICE EMAIL
+// ─────────────────────────────────────────────
+
+export type InvoiceEmailParams = {
+  /** Recipient email address */
+  to: string;
+  /** Client full name */
+  clientName: string;
+  /** Job card number, e.g. JC-2026-0001 */
+  jobNumber: string;
+  /** Job title / description */
+  jobTitle: string;
+  /** Total invoice amount */
+  totalAmount: number;
+  /** Portal URL for client to view invoice */
+  portalUrl: string;
+  /** Invoice date */
+  invoiceDate: Date | string;
+  /** Payment terms (e.g., "Due upon receipt", "Net 30") */
+  paymentTerms?: string;
+};
+
+function buildInvoiceHtml(p: InvoiceEmailParams): string {
+  const dateStr = formatDate(p.invoiceDate);
+  const paymentTerms = p.paymentTerms || "Due upon receipt";
+  const amountFormatted = p.totalAmount.toFixed(2);
+  
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice — ${p.jobNumber}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,Helvetica,sans-serif;color:#18181b;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background:#0a0f0a;padding:28px 32px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <p style="margin:0;font-size:20px;font-weight:700;color:#84cc16;letter-spacing:-0.3px;">
+                      🔐 Houdini Locksmith &amp; Security
+                    </p>
+                    <p style="margin:4px 0 0;font-size:13px;color:#a1a1aa;">Invoice</p>
+                  </td>
+                  <td align="right">
+                    <span style="display:inline-block;background:#84cc16;color:#0a0f0a;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;">
+                      Invoice Ready
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding:32px;">
+              <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#3f3f46;">Hi <strong>${p.clientName}</strong>,</p>
+              
+              <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#3f3f46;">
+                Your invoice for job <strong>${p.jobNumber}</strong> — <em>${p.jobTitle}</em> — is ready. Please review the details below and proceed with payment according to the payment terms.
+              </p>
+
+              <!-- Invoice Details Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;margin:24px 0;padding:16px;">
+                <tr>
+                  <td style="padding:0 0 12px;">
+                    <p style="margin:0;font-size:12px;color:#6b7280;font-weight:600;">JOB NUMBER</p>
+                    <p style="margin:4px 0 0;font-size:14px;font-weight:700;color:#18181b;">${p.jobNumber}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;">
+                    <p style="margin:0;font-size:12px;color:#6b7280;font-weight:600;">INVOICE DATE</p>
+                    <p style="margin:4px 0 0;font-size:14px;color:#18181b;">${dateStr}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;">
+                    <p style="margin:0;font-size:12px;color:#6b7280;font-weight:600;">TOTAL AMOUNT</p>
+                    <p style="margin:4px 0 0;font-size:18px;font-weight:700;color:#84cc16;">R${amountFormatted}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0 0;">
+                    <p style="margin:0;font-size:12px;color:#6b7280;font-weight:600;">PAYMENT TERMS</p>
+                    <p style="margin:4px 0 0;font-size:14px;color:#18181b;">${paymentTerms}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <div style="text-align:center;margin:32px 0;">
+                <a href="${p.portalUrl}" style="display:inline-block;background:#84cc16;color:#0a0f0a;font-size:15px;font-weight:700;padding:14px 32px;border-radius:8px;text-decoration:none;">View Full Invoice</a>
+              </div>
+
+              <p style="margin:0 0 16px;font-size:13px;color:#71717a;">Or copy and paste this link:</p>
+              <p style="margin:0 0 24px;font-size:12px;color:#a1a1aa;word-break:break-all;font-family:monospace;background:#f4f4f5;padding:10px 12px;border-radius:6px;">${p.portalUrl}</p>
+
+              <p style="margin:0;font-size:13px;color:#71717a;line-height:1.6;">If you have questions about this invoice, please contact us and reference job number <strong>${p.jobNumber}</strong>.</p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background:#f4f4f5;padding:20px 32px;border-top:1px solid #e4e4e7;">
+              <p style="margin:0;font-size:12px;color:#a1a1aa;text-align:center;">Houdini Locksmith &amp; Security · Automated notification<br/>Please do not reply to this email.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+export async function sendInvoiceEmail(params: InvoiceEmailParams): Promise<boolean> {
+  if (!ENV.resendApiKey) {
+    console.warn("[Email] RESEND_API_KEY not configured — skipping invoice email.");
+    return false;
+  }
+  if (!params.to || !params.to.includes("@")) {
+    console.warn("[Email] Invalid recipient — skipping invoice email.");
+    return false;
+  }
+  try {
+    const resend = getResend();
+    const { error } = await resend.emails.send({
+      from: ENV.emailFrom,
+      to: params.to,
+      subject: `Invoice Ready — ${params.jobNumber}`,
+      html: buildInvoiceHtml(params),
+    });
+    if (error) {
+      console.warn("[Email] Resend error sending invoice email:", error);
+      return false;
+    }
+    console.log(`[Email] Invoice email sent to ${params.to} for job ${params.jobNumber}`);
+    return true;
+  } catch (err) {
+    console.warn("[Email] Failed to send invoice email:", err);
+    return false;
+  }
+}

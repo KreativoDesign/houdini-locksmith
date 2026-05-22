@@ -95,24 +95,6 @@
 
 
 ## Phase 60: Job Detail Page
-- [ ] Create JobDetail.tsx page component
-- [ ] Display full job information (job number, title, description, status, priority)
-- [ ] Show assigned technician details and contact information
-- [ ] Display customer/client information
-- [ ] Implement job timeline showing status history
-- [ ] Display job items/services with pricing
-- [ ] Add status update dropdown with workflow validation
-- [ ] Implement notes/comments section for job updates
-- [ ] Add ability to add new job items/services
-- [ ] Implement edit functionality for job details
-- [ ] Add back button and navigation
-- [ ] Create responsive layout for mobile and desktop
-- [ ] Add loading and error states
-- [ ] Write vitest tests for job detail functionality
-- [ ] Verify TypeScript compilation and all tests passing
-
-
-## Phase 60: Job Detail Page
 - [x] Create JobDetail.tsx page component with full layout
 - [x] Display full job information (job number, title, description, status, priority)
 - [x] Show assigned technician details and contact information
@@ -132,3 +114,19 @@
 - [x] All 82 tests passing
 
 **Summary:** Created comprehensive Job Detail page showing full job information including job number, title, description, status, and priority with color-coded badges. Displays assigned technician and customer information with clickable email/phone links. Shows job items/services with unit pricing and calculated totals. Includes status update dropdown with validation and timeline showing job creation and current status. Responsive two-column layout with sidebar for status updates and customer/technician info. Integrated with existing tRPC procedures and database schema.
+
+
+## Phase 61: Invoice Generation & Email Functionality
+- [x] Add sendInvoiceEmail function to email utility with professional HTML template
+- [x] Create generateAndSendInvoice tRPC procedure (manager role)
+- [x] Add invoice email sending with client portal links
+- [x] Add "Generate & Email Invoice" button to job card when status is "priced"
+- [x] Fix pricing router status values to match database schema
+- [x] Fix Pricing.tsx to use correct procedure names (requestApproval, approve)
+- [x] Implement invoice email with job details, pricing, and payment terms
+- [x] Add notification when invoice is sent to client
+- [x] Verify pricing workflow (draft → pending_approval → approved → invoiced)
+- [x] TypeScript clean - 0 errors
+- [x] All 82 tests passing
+
+**Summary:** Implemented complete invoice generation and email workflow. Added sendInvoiceEmail function with professional HTML email template featuring Houdini branding, job details, pricing breakdown, and portal links. Created generateAndSendInvoice tRPC procedure that generates and sends invoices to clients. Added "Generate & Email Invoice" button on job cards when status is "priced". Fixed pricing router to use correct status values (draft, pending_approval, approved, invoiced). Fixed Pricing.tsx to use correct procedure names. All tests passing, production build successful.

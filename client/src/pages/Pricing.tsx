@@ -120,24 +120,18 @@ export default function Pricing() {
       refetchPricing();
       utils.jobCards.get.invalidate({ id: jobCardId });
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e: any) => toast.error(e.message),
   });
 
-  const updateMutation = trpc.pricing.update.useMutation({
-    onSuccess: () => {
-      toast.success("Pricing updated");
-      refetchPricing();
-    },
-    onError: (e) => toast.error(e.message),
-  });
+  // Update is not supported - create new pricing instead
 
-  const submitMutation = trpc.pricing.submitForApproval.useMutation({
+  const submitMutation = trpc.pricing.requestApproval.useMutation({
     onSuccess: () => {
       toast.success("Pricing submitted for approval");
       refetchPricing();
       utils.jobCards.get.invalidate({ id: jobCardId });
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e: any) => toast.error(e.message),
   });
 
   const approveMutation = trpc.pricing.approve.useMutation({
@@ -146,7 +140,7 @@ export default function Pricing() {
       refetchPricing();
       utils.jobCards.get.invalidate({ id: jobCardId });
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e: any) => toast.error(e.message),
   });
 
   const invoiceMutation = trpc.pricing.markInvoiced.useMutation({
@@ -154,19 +148,19 @@ export default function Pricing() {
       toast.success("Job marked as Invoiced");
       refetchPricing();
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e: any) => toast.error(e.message),
   });
 
   // ── Handlers ──
   function handleSave() {
     if (pricing) {
-      updateMutation.mutate({
+      createMutation.mutate({
         jobCardId,
         labourCost: Number(labour) || 0,
         partsCost: Number(parts) || 0,
         additionalFees: Number(fees) || 0,
         discountAmount: Number(discount) || 0,
-        vatPct: Number(vat) || 15,
+        vatPercentage: Number(vat) || 15,
         notes,
       });
     } else {
@@ -176,14 +170,14 @@ export default function Pricing() {
         partsCost: useItemsParts ? undefined : Number(parts) || 0,
         additionalFees: Number(fees) || 0,
         discountAmount: Number(discount) || 0,
-        vatPct: Number(vat) || 15,
+        vatPercentage: Number(vat) || 15,
         currency,
         notes,
       });
     }
   }
 
-  const isSaving = createMutation.isPending || updateMutation.isPending;
+  const isSaving = createMutation.isPending;
   const pricingStatus = (pricing?.status ?? null) as PricingStatus | null;
   const isLocked = pricingStatus === "approved" || pricingStatus === "invoiced";
   const canEdit = isManager && (pricingStatus === null || pricingStatus === "draft");

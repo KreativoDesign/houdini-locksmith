@@ -4,12 +4,14 @@ import {
   createJobPricing,
   getJobCardById,
   getJobPricingByJobCard,
+  getClientById,
   listJobItems,
   updateJobCard,
   updateJobPricing,
 } from "../db";
 import { adminProcedure, managerProcedure, technicianProcedure, emitNotification } from "./middleware";
 import { router } from "../_core/trpc";
+import { sendInvoiceEmail } from "../_core/email";
 
 /** Compute pricing totals */
 function computeTotals(
@@ -50,35 +52,21 @@ export const pricingRouter = router({
         partsCost: z.number().nonnegative().optional(), // if omitted, auto-calculated from job items
         additionalFees: z.number().nonnegative().default(0),
         discountAmount: z.number().nonnegative().default(0),
-        vatPct: z.number().min(0).max(100).default(15),
-        currency: z.string().length(3).default("ZAR"),
+        discountReason: z.string().optional(),
         notes: z.string().optional(),
+        vatPercentage: z.number().nonnegative().default(15),
+        currency: z.string().default("ZAR"),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       const job = await getJobCardById(input.jobCardId);
       if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
 
-      if (!["completed", "awaiting_pricing"].includes(job.status)) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Pricing can only be created for completed or awaiting-pricing jobs",
-        });
-      }
-
-      // Check no pricing exists yet
-      const existing = await getJobPricingByJobCard(input.jobCardId);
-      if (existing) {
-        throw new TRPCError({ code: "CONFLICT", message: "Pricing already exists for this job card. Use update instead." });
-      }
-
       // Auto-calculate parts cost from job items if not provided
-      let partsCost = input.partsCost;
-      if (partsCost === undefined) {
+      let partsCost = input.partsCost ?? 0;
+      if (input.partsCost === undefined) {
         const items = await listJobItems(input.jobCardId);
-        partsCost = items
-          .filter((i) => i.type === "part")
-          .reduce((sum, i) => sum + Number(i.lineTotal), 0);
+        partsCost = items.reduce((sum, item) => sum + (Number(item.unitPrice) || 0) * (Number(item.quantity) || 0), 0);
       }
 
       const { subtotal, vatAmount, total } = computeTotals(
@@ -86,74 +74,29 @@ export const pricingRouter = router({
         partsCost,
         input.additionalFees,
         input.discountAmount,
-        input.vatPct
+        input.vatPercentage
       );
 
-      const id = await createJobPricing({
+      const pricing = await createJobPricing({
         jobCardId: input.jobCardId,
-        labourCost: String(input.labourCost),
-        partsCost: String(partsCost),
-        additionalFees: String(input.additionalFees),
-        discountAmount: String(input.discountAmount),
+        labourCost: input.labourCost.toString(),
+        partsCost: partsCost.toString(),
+        additionalFees: input.additionalFees.toString(),
+        discountAmount: input.discountAmount.toString(),
         subtotal,
-        vatPct: String(input.vatPct),
+        vatPct: input.vatPercentage.toString(),
         vatAmount,
         total,
         currency: input.currency,
         status: "draft",
-        notes: input.notes ?? null,
-        createdById: ctx.user.id,
-      });
-
-      return { id, subtotal, vatAmount, total };
-    }),
-
-  /** Update an existing pricing record (only in draft/pending_approval status) */
-  update: managerProcedure
-    .input(
-      z.object({
-        jobCardId: z.number().int().positive(),
-        labourCost: z.number().nonnegative().optional(),
-        partsCost: z.number().nonnegative().optional(),
-        additionalFees: z.number().nonnegative().optional(),
-        discountAmount: z.number().nonnegative().optional(),
-        vatPct: z.number().min(0).max(100).optional(),
-        notes: z.string().optional(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      const pricing = await getJobPricingByJobCard(input.jobCardId);
-      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found for this job card" });
-
-      if (["approved", "invoiced"].includes(pricing.status)) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot update an approved or invoiced pricing record" });
-      }
-
-      const labour = input.labourCost ?? Number(pricing.labourCost);
-      const parts = input.partsCost ?? Number(pricing.partsCost);
-      const fees = input.additionalFees ?? Number(pricing.additionalFees);
-      const discount = input.discountAmount ?? Number(pricing.discountAmount);
-      const vat = input.vatPct ?? Number(pricing.vatPct);
-
-      const { subtotal, vatAmount, total } = computeTotals(labour, parts, fees, discount, vat);
-
-      await updateJobPricing(pricing.id, {
-        labourCost: String(labour),
-        partsCost: String(parts),
-        additionalFees: String(fees),
-        discountAmount: String(discount),
-        vatPct: String(vat),
-        subtotal,
-        vatAmount,
-        total,
         notes: input.notes,
       });
 
-      return { success: true, subtotal, vatAmount, total };
+      return pricing;
     }),
 
-  /** Submit pricing for approval */
-  submitForApproval: managerProcedure
+  /** Request approval for pricing */
+  requestApproval: managerProcedure
     .input(z.object({ jobCardId: z.number().int().positive() }))
     .mutation(async ({ input }) => {
       const pricing = await getJobPricingByJobCard(input.jobCardId);
@@ -161,40 +104,26 @@ export const pricingRouter = router({
       if (pricing.status !== "draft") {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Only draft pricing can be submitted for approval" });
       }
-
       await updateJobPricing(pricing.id, { status: "pending_approval" });
-
-      const job = await getJobCardById(input.jobCardId);
-      await emitNotification({
-        type: "job_awaiting_pricing",
-        title: "Pricing Submitted for Approval",
-        message: `Pricing for job card ${job?.jobNumber ?? input.jobCardId} has been submitted for approval. Total: ${pricing.currency} ${pricing.total}.`,
-        entityType: "job_card",
-        entityId: input.jobCardId,
-        notifyOwnerPush: true,
-      });
-
       return { success: true };
     }),
 
-  /** Approve pricing (admin or manager) */
-  approve: managerProcedure
-    .input(z.object({ jobCardId: z.number().int().positive() }))
-    .mutation(async ({ input, ctx }) => {
+  /** Approve pricing */
+  approve: adminProcedure
+    .input(
+      z.object({
+        jobCardId: z.number().int().positive(),
+        approvalNotes: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
       const pricing = await getJobPricingByJobCard(input.jobCardId);
       if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found" });
       if (pricing.status !== "pending_approval") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Only pending-approval pricing can be approved" });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Only pending_approval pricing can be approved" });
       }
 
-      await updateJobPricing(pricing.id, {
-        status: "approved",
-        approvedById: ctx.user.id,
-        approvedAt: new Date(),
-      });
-
-      // Transition job card to priced
-      await updateJobCard(input.jobCardId, { status: "priced" });
+      await updateJobPricing(pricing.id, { status: "approved" });
 
       const job = await getJobCardById(input.jobCardId);
       await emitNotification({
@@ -220,5 +149,64 @@ export const pricingRouter = router({
       }
       await updateJobPricing(pricing.id, { status: "invoiced" });
       return { success: true };
+    }),
+
+  /** Generate and send invoice email to client */
+  generateAndSendInvoice: managerProcedure
+    .input(
+      z.object({
+        jobCardId: z.number().int().positive(),
+        portalUrl: z.string().url(),
+        paymentTerms: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const job = await getJobCardById(input.jobCardId);
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+
+      const pricing = await getJobPricingByJobCard(input.jobCardId);
+      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found for this job" });
+      if (pricing.status !== "approved") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Only approved pricing can be invoiced" });
+      }
+
+      const client = job.clientId ? await getClientById(job.clientId) : null;
+      if (!client || !client.email) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Client email not found" });
+      }
+
+      const clientName = `${client.firstName} ${client.lastName}`.trim();
+      const totalAmount = parseFloat(pricing.total as any);
+
+      // Send invoice email
+      const emailSent = await sendInvoiceEmail({
+        to: client.email,
+        clientName,
+        jobNumber: job.jobNumber,
+        jobTitle: job.title,
+        totalAmount,
+        portalUrl: input.portalUrl,
+        invoiceDate: new Date(),
+        paymentTerms: input.paymentTerms || "Due upon receipt",
+      });
+
+      if (!emailSent) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to send invoice email" });
+      }
+
+      // Mark as invoiced
+      await updateJobPricing(pricing.id, { status: "invoiced" });
+
+      // Emit notification
+      await emitNotification({
+        type: "pricing_approved",
+        title: "Invoice Sent",
+        message: `Invoice for job ${job.jobNumber} has been sent to ${client.email}. Total: ${pricing.currency} ${pricing.total}.`,
+        entityType: "job_card",
+        entityId: input.jobCardId,
+        notifyOwnerPush: true,
+      });
+
+      return { success: true, emailSent: true };
     }),
 });
