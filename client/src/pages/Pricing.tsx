@@ -143,13 +143,7 @@ export default function Pricing() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const invoiceMutation = trpc.pricing.markInvoiced.useMutation({
-    onSuccess: () => {
-      toast.success("Job marked as Invoiced");
-      refetchPricing();
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
+  // Removed markInvoiced mutation - use generateAndSendInvoice instead
 
   // ── Handlers ──
   function handleSave() {
@@ -171,7 +165,6 @@ export default function Pricing() {
         additionalFees: Number(fees) || 0,
         discountAmount: Number(discount) || 0,
         vatPercentage: Number(vat) || 15,
-        currency,
         notes,
       });
     }
@@ -430,7 +423,7 @@ export default function Pricing() {
               {canSubmit && (
                 <Button
                   variant="outline"
-                  onClick={() => submitMutation.mutate({ pricingId: pricing.id })}
+                  onClick={() => pricing && submitMutation.mutate({ pricingId: pricing.id })}
                   disabled={submitMutation.isPending}
                   className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-50"
                 >
@@ -440,7 +433,7 @@ export default function Pricing() {
               )}
               {canApprove && (
                 <Button
-                  onClick={() => approveMutation.mutate({ pricingId: pricing.id })}
+                  onClick={() => pricing && approveMutation.mutate({ pricingId: pricing.id })}
                   disabled={approveMutation.isPending}
                   className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
