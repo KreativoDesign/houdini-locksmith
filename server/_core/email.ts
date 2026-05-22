@@ -1035,7 +1035,7 @@ function buildInvoiceHtml(p: InvoiceEmailParams): string {
 </html>`;
 }
 
-export async function sendInvoiceEmail(params: InvoiceEmailParams): Promise<boolean> {
+export async function sendInvoiceEmail(params: InvoiceEmailParams, pdfBuffer?: Buffer): Promise<boolean> {
   if (!ENV.resendApiKey) {
     console.warn("[Email] RESEND_API_KEY not configured — skipping invoice email.");
     return false;
@@ -1046,12 +1046,24 @@ export async function sendInvoiceEmail(params: InvoiceEmailParams): Promise<bool
   }
   try {
     const resend = getResend();
-    const { error } = await resend.emails.send({
+    const emailOptions: any = {
       from: ENV.emailFrom,
       to: params.to,
       subject: `Invoice Ready — ${params.jobNumber}`,
       html: buildInvoiceHtml(params),
-    });
+    };
+
+    // Add PDF attachment if provided
+    if (pdfBuffer) {
+      emailOptions.attachments = [
+        {
+          filename: `Invoice-${params.jobNumber}.pdf`,
+          content: pdfBuffer,
+        },
+      ];
+    }
+
+    const { error } = await resend.emails.send(emailOptions);
     if (error) {
       console.warn("[Email] Resend error sending invoice email:", error);
       return false;

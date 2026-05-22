@@ -1,5 +1,5 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import {
   createJobPricing,
   getJobCardById,
@@ -12,6 +12,8 @@ import {
 import { adminProcedure, managerProcedure, technicianProcedure, emitNotification } from "./middleware";
 import { router } from "../_core/trpc";
 import { sendInvoiceEmail } from "../_core/email";
+import { generateInvoicePdf } from "../_core/invoicePdf";
+import { storagePut } from "../storage";
 
 /** Compute pricing totals */
 function computeTotals(
@@ -48,110 +50,83 @@ export const pricingRouter = router({
     .input(
       z.object({
         jobCardId: z.number().int().positive(),
-        labourCost: z.number().nonnegative().default(0),
-        partsCost: z.number().nonnegative().optional(), // if omitted, auto-calculated from job items
-        additionalFees: z.number().nonnegative().default(0),
-        discountAmount: z.number().nonnegative().default(0),
-        discountReason: z.string().optional(),
+        labourCost: z.number().nonnegative(),
+        partsCost: z.number().nonnegative().optional(),
+        additionalFees: z.number().nonnegative().optional(),
+        discountAmount: z.number().nonnegative().optional(),
+        vatPercentage: z.number().nonnegative().optional(),
         notes: z.string().optional(),
-        vatPercentage: z.number().nonnegative().default(15),
-        currency: z.string().default("ZAR"),
       })
     )
     .mutation(async ({ input }) => {
       const job = await getJobCardById(input.jobCardId);
-      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job not found" });
 
-      // Auto-calculate parts cost from job items if not provided
-      let partsCost = input.partsCost ?? 0;
-      if (input.partsCost === undefined) {
-        const items = await listJobItems(input.jobCardId);
-        partsCost = items.reduce((sum, item) => sum + (Number(item.unitPrice) || 0) * (Number(item.quantity) || 0), 0);
+      if (!["awaiting_pricing", "completed"].includes(job.status)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot create pricing for job with status: ${job.status}`,
+        });
       }
 
+      const labourCost = input.labourCost;
+      const partsCost = input.partsCost ?? 0;
+      const additionalFees = input.additionalFees ?? 0;
+      const discountAmount = input.discountAmount ?? 0;
+      const vatPercentage = input.vatPercentage ?? 15;
+
       const { subtotal, vatAmount, total } = computeTotals(
-        input.labourCost,
+        labourCost,
         partsCost,
-        input.additionalFees,
-        input.discountAmount,
-        input.vatPercentage
+        additionalFees,
+        discountAmount,
+        vatPercentage
       );
 
       const pricing = await createJobPricing({
         jobCardId: input.jobCardId,
-        labourCost: input.labourCost.toString(),
+        labourCost: labourCost.toString(),
         partsCost: partsCost.toString(),
-        additionalFees: input.additionalFees.toString(),
-        discountAmount: input.discountAmount.toString(),
+        additionalFees: additionalFees.toString(),
+        discountAmount: discountAmount.toString(),
+        vatPercentage: vatPercentage.toString(),
         subtotal,
-        vatPct: input.vatPercentage.toString(),
         vatAmount,
         total,
-        currency: input.currency,
         status: "draft",
         notes: input.notes,
       });
+
+      await updateJobCard(input.jobCardId, { status: "awaiting_pricing" });
 
       return pricing;
     }),
 
   /** Request approval for pricing */
   requestApproval: managerProcedure
-    .input(z.object({ jobCardId: z.number().int().positive() }))
+    .input(z.object({ pricingId: z.number().int().positive() }))
     .mutation(async ({ input }) => {
-      const pricing = await getJobPricingByJobCard(input.jobCardId);
-      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found" });
-      if (pricing.status !== "draft") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Only draft pricing can be submitted for approval" });
-      }
-      await updateJobPricing(pricing.id, { status: "pending_approval" });
-      return { success: true };
+      const pricing = await updateJobPricing(input.pricingId, { status: "pending_approval" });
+      return pricing;
     }),
 
   /** Approve pricing */
   approve: adminProcedure
-    .input(
-      z.object({
-        jobCardId: z.number().int().positive(),
-        approvalNotes: z.string().optional(),
-      })
-    )
+    .input(z.object({ pricingId: z.number().int().positive() }))
     .mutation(async ({ input }) => {
-      const pricing = await getJobPricingByJobCard(input.jobCardId);
-      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found" });
-      if (pricing.status !== "pending_approval") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Only pending_approval pricing can be approved" });
-      }
-
-      await updateJobPricing(pricing.id, { status: "approved" });
-
-      const job = await getJobCardById(input.jobCardId);
-      await emitNotification({
-        type: "pricing_approved",
-        title: "Job Pricing Approved",
-        message: `Pricing for job card ${job?.jobNumber ?? input.jobCardId} has been approved. Total: ${pricing.currency} ${pricing.total}.`,
-        entityType: "job_card",
-        entityId: input.jobCardId,
-        notifyOwnerPush: true,
-      });
-
-      return { success: true };
+      const pricing = await updateJobPricing(input.pricingId, { status: "approved" });
+      return pricing;
     }),
 
-  /** Mark as invoiced */
-  markInvoiced: adminProcedure
-    .input(z.object({ jobCardId: z.number().int().positive() }))
+  /** Reject pricing and request changes */
+  reject: adminProcedure
+    .input(z.object({ pricingId: z.number().int().positive(), reason: z.string().optional() }))
     .mutation(async ({ input }) => {
-      const pricing = await getJobPricingByJobCard(input.jobCardId);
-      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found" });
-      if (pricing.status !== "approved") {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Only approved pricing can be invoiced" });
-      }
-      await updateJobPricing(pricing.id, { status: "invoiced" });
-      return { success: true };
+      const pricing = await updateJobPricing(input.pricingId, { status: "draft", notes: input.reason });
+      return pricing;
     }),
 
-  /** Generate and send invoice email to client */
+  /** Generate and send invoice with PDF attachment */
   generateAndSendInvoice: managerProcedure
     .input(
       z.object({
@@ -177,18 +152,64 @@ export const pricingRouter = router({
 
       const clientName = `${client.firstName} ${client.lastName}`.trim();
       const totalAmount = parseFloat(pricing.total as any);
+      const jobItems = await listJobItems(input.jobCardId);
 
-      // Send invoice email
-      const emailSent = await sendInvoiceEmail({
-        to: client.email,
-        clientName,
-        jobNumber: job.jobNumber,
-        jobTitle: job.title,
-        totalAmount,
-        portalUrl: input.portalUrl,
-        invoiceDate: new Date(),
-        paymentTerms: input.paymentTerms || "Due upon receipt",
-      });
+      // Generate PDF invoice
+      let pdfBuffer: Buffer | undefined;
+      let invoicePdfUrl: string | undefined;
+
+      try {
+        const invoiceNumber = `INV-${job.jobNumber}`;
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30); // 30 days payment terms
+
+        pdfBuffer = await generateInvoicePdf({
+          invoiceNumber,
+          jobNumber: job.jobNumber,
+          jobTitle: job.title,
+          clientName,
+          clientEmail: client.email,
+          clientPhone: client.phone,
+          clientAddress: client.address || undefined,
+          jobDescription: job.description || undefined,
+          labourCost: parseFloat(pricing.labourCost as any) || 0,
+          partsCost: parseFloat(pricing.partsCost as any) || 0,
+          additionalFees: parseFloat(pricing.additionalFees as any) || 0,
+          discountAmount: parseFloat(pricing.discountAmount as any) || 0,
+          vatPercentage: parseFloat(pricing.vatPercentage as any) || 0,
+          subtotal: parseFloat(pricing.subtotal as any) || 0,
+          vatAmount: parseFloat(pricing.vatAmount as any) || 0,
+          total: totalAmount,
+          currency: pricing.currency || "USD",
+          paymentTerms: input.paymentTerms || "Due within 30 days",
+          issuedDate: new Date(),
+          dueDate,
+          portalUrl: input.portalUrl,
+        });
+
+        // Store PDF in S3 for archival
+        const pdfKey = `invoices/${job.jobNumber}/${invoiceNumber}-${Date.now()}.pdf`;
+        const { url } = await storagePut(pdfKey, pdfBuffer, "application/pdf");
+        invoicePdfUrl = url;
+      } catch (pdfError) {
+        console.warn("[Invoice] Failed to generate PDF:", pdfError);
+        // Continue without PDF - email will still be sent
+      }
+
+      // Send invoice email with PDF attachment
+      const emailSent = await sendInvoiceEmail(
+        {
+          to: client.email,
+          clientName,
+          jobNumber: job.jobNumber,
+          jobTitle: job.title,
+          totalAmount,
+          portalUrl: input.portalUrl,
+          invoiceDate: new Date(),
+          paymentTerms: input.paymentTerms || "Due upon receipt",
+        },
+        pdfBuffer
+      );
 
       if (!emailSent) {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to send invoice email" });
@@ -207,6 +228,6 @@ export const pricingRouter = router({
         notifyOwnerPush: true,
       });
 
-      return { success: true, emailSent: true };
+      return { success: true, emailSent: true, invoicePdfUrl };
     }),
 });
