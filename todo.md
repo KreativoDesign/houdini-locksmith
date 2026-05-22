@@ -130,3 +130,18 @@
 - [x] All 82 tests passing
 
 **Summary:** Implemented complete invoice generation and email workflow. Added sendInvoiceEmail function with professional HTML email template featuring Houdini branding, job details, pricing breakdown, and portal links. Created generateAndSendInvoice tRPC procedure that generates and sends invoices to clients. Added "Generate & Email Invoice" button on job cards when status is "priced". Fixed pricing router to use correct status values (draft, pending_approval, approved, invoiced). Fixed Pricing.tsx to use correct procedure names. All tests passing, production build successful.
+
+
+## Phase 62: Job Card Client & Description Enhancements
+- [x] Add "Create New Client" option to job creation form with dedicated dialog
+- [x] Implement client creation dialog with first name, last name, email, phone fields
+- [x] Enhanced job description field with helpful placeholder text
+- [x] Job description already exists in database schema (jobCards.description)
+- [x] Description field visible to technicians on job detail page
+- [x] Improved CreateJobModal with two-step client selection (existing or new)
+- [x] Client list auto-refreshes after creating new customer
+- [x] Integrated with existing tRPC procedures (clients.create, jobCards.create)
+- [x] TypeScript clean - 0 errors
+- [x] All 82 tests passing
+
+**Summary:** Enhanced job card creation with ability to create new customers directly from the job form. Added dedicated "Create New Customer" dialog with fields for first name, last name, email, and phone. Improved job description field with larger text area (5 rows) and helpful placeholder text indicating visibility to technicians. Description field already exists in database and is displayed on job detail pages for technician visibility.
