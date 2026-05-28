@@ -21,8 +21,8 @@ export default function Jobs() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: jobs, isLoading, refetch } = trpc.jobCards.list.useQuery({
-    status: statusFilter as any,
-    priority: priorityFilter as any,
+    status: statusFilter && statusFilter !== "all" ? (statusFilter as any) : undefined,
+    priority: priorityFilter && priorityFilter !== "all" ? (priorityFilter as any) : undefined,
   });
 
   const filteredJobs = jobs?.filter(
@@ -41,24 +41,24 @@ export default function Jobs() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Job Management</h1>
-          <p className="text-gray-500 mt-1">Manage and track all service jobs</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Job Management</h1>
+          <p className="text-sm sm:text-base text-gray-500 mt-1">Manage and track all service jobs</p>
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold"
+          className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold h-10 sm:h-auto"
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
           New Job
         </Button>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500">Total Jobs</CardTitle>
@@ -96,28 +96,28 @@ export default function Jobs() {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Filter className="w-5 h-5" />
+          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+            <Filter className="w-4 sm:w-5 h-4 sm:h-5" />
             Filters
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center gap-2">
-              <Search className="w-5 h-5 text-gray-400" />
+        <CardContent className="space-y-3 sm:space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 col-span-1 sm:col-span-2 md:col-span-1">
+              <Search className="w-4 sm:w-5 h-4 sm:h-5 text-gray-400 shrink-0" />
               <Input
-                placeholder="Search by job number, client, or title..."
+                placeholder="Search jobs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1"
+                className="flex-1 h-9 sm:h-10 text-sm"
               />
             </div>
-            <Select value={statusFilter || ""} onValueChange={(v) => setStatusFilter(v || undefined)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by status" />
+            <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? undefined : v)}>
+              <SelectTrigger className="h-9 sm:h-10 text-sm">
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="assigned">Assigned</SelectItem>
                 <SelectItem value="in_progress">In Progress</SelectItem>
@@ -126,12 +126,12 @@ export default function Jobs() {
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={priorityFilter || ""} onValueChange={(v) => setPriorityFilter(v || undefined)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by priority" />
+            <Select value={priorityFilter || "all"} onValueChange={(v) => setPriorityFilter(v === "all" ? undefined : v)}>
+              <SelectTrigger className="h-9 sm:h-10 text-sm">
+                <SelectValue placeholder="Priority" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Priorities</SelectItem>
+                <SelectItem value="all">All Priorities</SelectItem>
                 <SelectItem value="low">Low</SelectItem>
                 <SelectItem value="normal">Normal</SelectItem>
                 <SelectItem value="high">High</SelectItem>

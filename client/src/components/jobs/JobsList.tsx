@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/useMobile";
 
 interface Job {
   id: number;
@@ -29,6 +30,8 @@ export function JobsList({
 }) {
   const [, setLocation] = useLocation();
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const isMobile = useIsMobile();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -81,6 +84,76 @@ export function JobsList({
           <div className="text-center text-gray-500">No jobs found</div>
         </CardContent>
       </Card>
+    );
+  }
+
+  if (isMobile) {
+    return (
+      <div className="space-y-3">
+        {jobs.map((job) => (
+          <Card key={job.id} className="overflow-hidden">
+            <div
+              className="p-4 cursor-pointer hover:bg-accent/50 transition"
+              onClick={() => setExpandedId(expandedId === job.id ? null : job.id)}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-mono text-xs font-bold text-lime-600 bg-lime-50 px-2 py-1 rounded">
+                      {job.jobNumber}
+                    </span>
+                    <Badge className={`${getStatusColor(job.status)} text-xs`}>
+                      {job.status.replace(/_/g, " ")}
+                    </Badge>
+                  </div>
+                  <h3 className="font-semibold text-sm line-clamp-2">{job.title}</h3>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge className={`${getPriorityColor(job.priority)} text-xs`}>
+                      {job.priority}
+                    </Badge>
+                    {job.scheduledDate && (
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(job.scheduledDate).toLocaleDateString()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button className="h-8 w-8 flex items-center justify-center hover:bg-accent rounded transition shrink-0">
+                  {expandedId === job.id ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+            {expandedId === job.id && (
+              <div className="border-t px-4 py-3 bg-muted/30 space-y-3">
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setLocation(`/jobs/${job.id}`)}
+                    className="flex-1"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    View
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setLocation(`/jobs/${job.id}/edit`)}
+                    className="flex-1"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
     );
   }
 

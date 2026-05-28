@@ -49,8 +49,18 @@ export function CreateJobModal({
   const createJobMutation = trpc.jobCards.create.useMutation();
   const createClientMutation = trpc.clients.create.useMutation();
   const { data: departments } = trpc.departments.list.useQuery();
-  const { data: clients, refetch: refetchClients } = trpc.clients.list.useQuery();
-  const { data: technicians } = trpc.users.technicians.useQuery();
+  const { data: clientsData, refetch: refetchClients } = trpc.clients.list.useQuery();
+  const { data: techniciansData } = trpc.users.technicians.useQuery();
+
+  // Normalize data to arrays and filter out undefined entries
+  const clients = Array.isArray(clientsData) ? clientsData : (clientsData as any)?.rows ?? [];
+  const technicians = Array.isArray(techniciansData) ? techniciansData : (techniciansData as any)?.rows ?? [];
+  const deptsList = Array.isArray(departments) ? departments : (departments as any)?.rows ?? [];
+  
+  // Filter out any undefined or null entries
+  const validClients = (clients as any[]).filter((c: any) => c && c.id != null);
+  const validTechnicians = (technicians as any[]).filter((t: any) => t && t.id != null);
+  const validDepts = (deptsList as any[]).filter((d: any) => d && d.id != null);
 
   // Validate new client form
   const isNewClientFormValid = () => {
@@ -145,32 +155,32 @@ export function CreateJobModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create New Job</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl">Create New Job</DialogTitle>
+            <DialogDescription className="text-sm sm:text-base">
               Fill in the job details and customer information
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             {/* Customer Selection */}
             <div>
-              <h3 className="font-semibold mb-3">Customer Information</h3>
-              <div className="space-y-3">
+              <h3 className="font-semibold text-sm sm:text-base mb-2 sm:mb-3">Customer Information</h3>
+              <div className="space-y-2 sm:space-y-3">
                 <div>
-                  <label className="text-sm font-medium">Select Customer *</label>
+                  <label className="text-xs sm:text-sm font-medium">Select Customer *</label>
                   <Select
                     value={formData.clientId}
                     onValueChange={(value) =>
                       setFormData({ ...formData, clientId: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="h-9 sm:h-10 text-sm">
                       <SelectValue placeholder="Select a customer" />
                     </SelectTrigger>
                     <SelectContent>
-                      {clients?.rows?.map((client: any) => (
+                      {validClients.map((client: any) => (
                         <SelectItem key={client.id} value={client.id.toString()}>
                           {client.firstName} {client.lastName} - {client.phone}
                         </SelectItem>
@@ -182,7 +192,7 @@ export function CreateJobModal({
                   type="button"
                   variant="outline"
                   onClick={() => setShowCreateClient(true)}
-                  className="w-full gap-2"
+                  className="w-full gap-2 h-9 sm:h-10 text-sm"
                 >
                   <Plus className="w-4 h-4" />
                   Create New Customer
@@ -192,43 +202,45 @@ export function CreateJobModal({
 
             {/* Job Details */}
             <div>
-              <h3 className="font-semibold mb-3">Job Details</h3>
-              <div className="space-y-3">
+              <h3 className="font-semibold text-sm sm:text-base mb-2 sm:mb-3">Job Details</h3>
+              <div className="space-y-2 sm:space-y-3">
                 <div>
-                  <label className="text-sm font-medium">Job Title *</label>
+                  <label className="text-xs sm:text-sm font-medium">Job Title *</label>
                   <Input
                     placeholder="e.g., Emergency Lock Repair"
                     value={formData.title}
                     onChange={(e) =>
                       setFormData({ ...formData, title: e.target.value })
                     }
+                    className="h-9 sm:h-10 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Description</label>
+                  <label className="text-xs sm:text-sm font-medium">Description</label>
                   <Textarea
                     placeholder="Describe the job details, what the customer needs, and any special instructions..."
                     value={formData.description}
                     onChange={(e) =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    rows={5}
+                    rows={3}
+                    className="text-sm"
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
                   <div>
-                    <label className="text-sm font-medium">Department *</label>
+                    <label className="text-xs sm:text-sm font-medium">Department *</label>
                     <Select
                       value={formData.departmentId}
                       onValueChange={(value) =>
                         setFormData({ ...formData, departmentId: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-9 sm:h-10 text-sm">
                         <SelectValue placeholder="Select department" />
                       </SelectTrigger>
                       <SelectContent>
-                        {departments?.map((dept) => (
+                        {validDepts.map((dept: any) => (
                           <SelectItem key={dept.id} value={dept.id.toString()}>
                             {dept.name}
                           </SelectItem>
@@ -237,14 +249,14 @@ export function CreateJobModal({
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Priority</label>
+                    <label className="text-xs sm:text-sm font-medium">Priority</label>
                     <Select
                       value={formData.priority}
                       onValueChange={(value) =>
                         setFormData({ ...formData, priority: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-9 sm:h-10 text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -256,18 +268,18 @@ export function CreateJobModal({
                     </Select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium">Assign Technician</label>
+                    <label className="text-xs sm:text-sm font-medium">Assign Technician</label>
                     <Select
                       value={formData.assignedTechnicianId}
                       onValueChange={(value) =>
                         setFormData({ ...formData, assignedTechnicianId: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-9 sm:h-10 text-sm">
                         <SelectValue placeholder="Select technician" />
                       </SelectTrigger>
                       <SelectContent>
-                        {technicians?.map((tech: any) => (
+                        {validTechnicians.map((tech: any) => (
                           <SelectItem key={tech.id} value={tech.id.toString()}>
                             {tech.name}
                           </SelectItem>
@@ -280,17 +292,18 @@ export function CreateJobModal({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                className="h-9 sm:h-10 text-sm"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold"
+                className="bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold h-9 sm:h-10 text-sm"
                 disabled={createJobMutation.isPending}
               >
                 {createJobMutation.isPending ? "Creating..." : "Create Job"}
@@ -302,36 +315,38 @@ export function CreateJobModal({
 
       {/* Create New Customer Dialog */}
       <Dialog open={showCreateClient} onOpenChange={setShowCreateClient}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create New Customer</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">Create New Customer</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">
               Add a new customer to the system. All fields are required.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-4">
             <div>
-              <label className="text-sm font-medium">First Name *</label>
+              <label className="text-xs sm:text-sm font-medium">First Name *</label>
               <Input
                 placeholder="John"
                 value={newClientData.firstName}
                 onChange={(e) =>
                   setNewClientData({ ...newClientData, firstName: e.target.value })
                 }
+                className="h-9 sm:h-10 text-sm"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Last Name *</label>
+              <label className="text-xs sm:text-sm font-medium">Last Name *</label>
               <Input
                 placeholder="Doe"
                 value={newClientData.lastName}
                 onChange={(e) =>
                   setNewClientData({ ...newClientData, lastName: e.target.value })
                 }
+                className="h-9 sm:h-10 text-sm"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Email Address *</label>
+              <label className="text-xs sm:text-sm font-medium">Email Address *</label>
               <Input
                 type="email"
                 placeholder="john@example.com"
@@ -339,40 +354,44 @@ export function CreateJobModal({
                 onChange={(e) =>
                   setNewClientData({ ...newClientData, email: e.target.value })
                 }
+                className="h-9 sm:h-10 text-sm"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Cellphone Number *</label>
+              <label className="text-xs sm:text-sm font-medium">Cellphone Number *</label>
               <Input
                 placeholder="+1 (555) 123-4567"
                 value={newClientData.phone}
                 onChange={(e) =>
                   setNewClientData({ ...newClientData, phone: e.target.value })
                 }
+                className="h-9 sm:h-10 text-sm"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Physical Address *</label>
+              <label className="text-xs sm:text-sm font-medium">Physical Address *</label>
               <Input
                 placeholder="123 Main Street, City, Country"
                 value={newClientData.address}
                 onChange={(e) =>
                   setNewClientData({ ...newClientData, address: e.target.value })
                 }
+                className="h-9 sm:h-10 text-sm"
               />
             </div>
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowCreateClient(false)}
+                className="h-9 sm:h-10 text-sm"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleCreateClient}
                 disabled={createClientMutation.isPending || !isNewClientFormValid()}
-                className="bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold"
+                className="bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold h-9 sm:h-10 text-sm"
               >
                 {createClientMutation.isPending ? "Creating..." : "Create Customer"}
               </Button>

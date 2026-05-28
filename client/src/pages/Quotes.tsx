@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/useMobile";
 import {
   Select,
   SelectContent,
@@ -72,6 +73,7 @@ export default function Quotes() {
   const deleteMutation = trpc.quotes.delete.useMutation();
 
   const quotes = quotesQuery.data || [];
+  const isMobile = useIsMobile();
 
   const handleResend = async (quoteId: number) => {
     try {
@@ -188,89 +190,154 @@ export default function Quotes() {
             <div className="text-center py-8">
               <p className="text-muted-foreground">No quotes found</p>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Quote #</TableHead>
-                    <TableHead>Client</TableHead>
-                    <TableHead>Amount (R)</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead>Expires</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {quotes.map((quote: any) => {
-                    const statusConfig = STATUS_CONFIG[quote.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.draft;
-                    const StatusIcon = statusConfig.icon;
-                    const isExpired = quote.expiresAt && new Date(quote.expiresAt) < new Date();
+          ) : isMobile ? (
+            <div className="space-y-3">
+                {quotes.map((quote: any) => {
+                  const statusConfig = STATUS_CONFIG[quote.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.draft;
+                  const StatusIcon = statusConfig.icon;
+                  const isExpired = quote.expiresAt && new Date(quote.expiresAt) < new Date();
 
-                    return (
-                      <TableRow key={quote.id} className="hover:bg-muted/30">
-                        <TableCell className="font-semibold">{quote.quoteNumber}</TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">
-                              {quote.client ? `${quote.client.firstName} ${quote.client.lastName}` : "Unknown"}
-                            </p>
-                            <p className="text-xs text-muted-foreground">{quote.client?.email}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-semibold">R {parseFloat(quote.grandTotal).toFixed(2)}</TableCell>
-                        <TableCell>
-                          <Badge className={statusConfig.color}>
-                            <StatusIcon className="w-3 h-3 mr-1" />
-                            {isExpired ? "Expired" : statusConfig.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {new Date(quote.createdAt).toLocaleDateString("en-ZA")}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {quote.expiresAt ? new Date(quote.expiresAt).toLocaleDateString("en-ZA") : "Never"}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => navigate(`/admin/quotes/${quote.id}`)}
-                              >
-                                <Edit2 className="w-4 h-4 mr-2" />
-                                View & Edit
-                              </DropdownMenuItem>
-                              {quote.status === "sent" && (
+                  return (
+                    <div key={quote.id} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{quote.quoteNumber}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {quote.client ? `${quote.client.firstName} ${quote.client.lastName}` : "Unknown"}
+                          </p>
+                        </div>
+                        <Badge className={statusConfig.color}>
+                          <StatusIcon className="w-3 h-3 mr-1" />
+                          {isExpired ? "Expired" : statusConfig.label}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Amount:</span>
+                        <span className="font-semibold">R {parseFloat(quote.grandTotal).toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Created: {new Date(quote.createdAt).toLocaleDateString("en-ZA")}</span>
+                        <span>Expires: {quote.expiresAt ? new Date(quote.expiresAt).toLocaleDateString("en-ZA") : "Never"}</span>
+                      </div>
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => navigate(`/admin/quotes/${quote.id}`)}
+                          className="flex-1 text-xs h-8"
+                        >
+                          <Edit2 className="w-3 h-3 mr-1" />
+                          View
+                        </Button>
+                        {quote.status === "sent" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setResendConfirm(quote.id)}
+                            className="flex-1 text-xs h-8"
+                          >
+                            <Send className="w-3 h-3 mr-1" />
+                            Resend
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setDeleteConfirm(quote.id)}
+                          className="flex-1 text-xs h-8 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Quote #</TableHead>
+                      <TableHead>Client</TableHead>
+                      <TableHead>Amount (R)</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Expires</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {quotes.map((quote: any) => {
+                      const statusConfig = STATUS_CONFIG[quote.status as keyof typeof STATUS_CONFIG] || STATUS_CONFIG.draft;
+                      const StatusIcon = statusConfig.icon;
+                      const isExpired = quote.expiresAt && new Date(quote.expiresAt) < new Date();
+
+                      return (
+                        <TableRow key={quote.id} className="hover:bg-muted/30">
+                          <TableCell className="font-semibold">{quote.quoteNumber}</TableCell>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">
+                                {quote.client ? `${quote.client.firstName} ${quote.client.lastName}` : "Unknown"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{quote.client?.email}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-semibold">R {parseFloat(quote.grandTotal).toFixed(2)}</TableCell>
+                          <TableCell>
+                            <Badge className={statusConfig.color}>
+                              <StatusIcon className="w-3 h-3 mr-1" />
+                              {isExpired ? "Expired" : statusConfig.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {new Date(quote.createdAt).toLocaleDateString("en-ZA")}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {quote.expiresAt ? new Date(quote.expiresAt).toLocaleDateString("en-ZA") : "Never"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
                                 <DropdownMenuItem
-                                  onClick={() => setResendConfirm(quote.id)}
+                                  onClick={() => navigate(`/admin/quotes/${quote.id}`)}
                                 >
-                                  <Send className="w-4 h-4 mr-2" />
-                                  Resend Quote
+                                  <Edit2 className="w-4 h-4 mr-2" />
+                                  View & Edit
                                 </DropdownMenuItem>
-                              )}
-                              <DropdownMenuItem
-                                onClick={() => setDeleteConfirm(quote.id)}
-                                className="text-red-600"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+                                {quote.status === "sent" && (
+                                  <DropdownMenuItem
+                                    onClick={() => setResendConfirm(quote.id)}
+                                  >
+                                    <Send className="w-4 h-4 mr-2" />
+                                    Resend Quote
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem
+                                  onClick={() => setDeleteConfirm(quote.id)}
+                                  className="text-red-600"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            )
+          }
         </CardContent>
       </Card>
 

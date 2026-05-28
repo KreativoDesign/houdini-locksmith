@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/useMobile";
 import {
   Dialog,
   DialogContent,
@@ -64,6 +65,7 @@ export default function Clients() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager" || isAdmin;
+  const isMobile = useIsMobile();
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -158,16 +160,16 @@ export default function Clients() {
     setForm((prev) => ({ ...prev, [k]: e.target.value }));
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Clients</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Clients</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
             {total} client{total !== 1 ? "s" : ""} in the system
           </p>
         </div>
-        <Button onClick={openCreate} className="gap-2">
+        <Button onClick={openCreate} className="gap-2 w-full sm:w-auto h-9 sm:h-10 text-sm">
           <Plus className="h-4 w-4" />
           New Client
         </Button>
@@ -175,14 +177,14 @@ export default function Clients() {
 
       {/* Search */}
       <Card>
-        <CardContent className="pt-4 pb-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name, email or phone…"
+              placeholder="Search clients…"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-9"
+              className="pl-9 h-9 sm:h-10 text-sm"
             />
           </div>
         </CardContent>
