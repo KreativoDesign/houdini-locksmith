@@ -173,42 +173,49 @@ Both tables include proper foreign key relationships and timestamps. Migration 0
 
 Implemented secure token generation using crypto.randomBytes(32).toString('hex'). All procedures include proper error handling, validation, and access logging. Portal router integrated into main appRouter. Build successful with 0 errors.
 
-### Phase 75.3: Customer Portal UI (Completed)
-- [x] Create `/portal/[token]` route for customer portal
-- [x] Build job status display component (status badge, timeline, technician info)
-- [x] Build invoice display component (line items, totals, payment status)
-- [x] Build payment button component (redirects to PayFast)
-- [x] Add loading/error states and 404 page for invalid tokens
-- [x] Implement responsive design for mobile viewing
+### Phase 75.3: Customer Portal UI (Completed - Using Existing ClientPortal System)
+- [x] Reviewed existing clientPortal system at `/client-portal/:token`
+- [x] Removed broken new portal.ts system (portal router and Portal.tsx page)
+- [x] Confirmed existing clientPortal has all required features:
+  - Job status display with timeline
+  - Quote/invoice viewing
+  - Quote acceptance/rejection
+  - Email notifications already implemented
+  - Responsive design for mobile
+- [x] Fixed Client Dashboard buttons (View Details, View Quote Details, View Full Details)
+- [x] Added proper navigation handlers to all dashboard buttons
+- [x] Build successful with 0 TypeScript errors
 
-**Summary:** Created comprehensive customer portal page at `/portal/[token]` with full job and invoice viewing capabilities. Portal.tsx component includes:
-- Job Status tab showing job details, created date, scheduled date, priority, assigned technician, and status timeline
-- Invoice tab showing quote details, line items, totals, and payment button
-- Tab switching between Job Status and Invoice views
-- Loading states while fetching data from backend
-- Error handling for invalid tokens
-- 404 page for missing portal links
-- Responsive design with gradient background and card-based layout
-- Status badges with color coding (pending=yellow, assigned=blue, in_progress=orange, completed=green, etc.)
-- Timeline view showing job creation and status updates
-- Footer with copyright and contact information
-- Successfully tested with test portal token - all features working correctly
+**Summary:** Removed duplicate/broken portal system and standardized on existing clientPortal implementation which is production-ready. The existing system at `/client-portal/:token` provides:
+- Full job status viewing with timeline
+- Quote and invoice details display
+- Quote acceptance/rejection functionality
+- Email notifications with portal links
+- Responsive design for all devices
+- Proper error handling and 404 pages
+- Access logging and security checks
 
-### Phase 75.4: PayFast Integration
+Fixed Client Dashboard button navigation:
+- "View Quote Details" button now navigates to quote detail page
+- "View Full Details" button now navigates to job detail page
+- All buttons have proper onClick handlers using wouter navigation
+
+### Phase 75.4: PayFast Integration (Ready to Implement)
 - [ ] Set up PayFast API credentials in environment
 - [ ] Create PayFast payment request builder
 - [ ] Implement `payments.initializePayFastPayment(invoiceId, token)` procedure
 - [ ] Create payment success/failure callback handlers
 - [ ] Update invoice status to "paid" after successful payment
 - [ ] Add error handling and logging for payment failures
+- [ ] Wire PayFast integration to clientPortal payment button
+- [ ] Test PayFast sandbox integration
 
-### Phase 75.5: Email Notifications
-- [ ] Create email template for portal link notification
-- [ ] Implement `emails.sendPortalLinkEmail(jobCardId, customerEmail)` procedure
-- [ ] Add portal link generation to job creation workflow
-- [ ] Add portal link to quote acceptance email
-- [ ] Add portal link to invoice ready email
-- [ ] Test email delivery with real customer emails
+### Phase 75.5: Email Notifications (Existing System)
+- [x] Email notifications already implemented in clientPortal system
+- [x] Portal links already sent via email
+- [ ] Verify email delivery with real customer emails
+- [ ] Test email templates with actual data
+- [ ] Monitor email delivery rates
 
 ### Phase 75.6: Testing & Validation
 - [ ] Write tests for link generation procedure
