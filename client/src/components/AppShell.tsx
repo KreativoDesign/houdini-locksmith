@@ -502,7 +502,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        <main className="flex-1 p-5 md:p-6">{children}</main>
+        <main className="flex-1 p-5 md:p-6">
+          {currentView === "admin" && children}
+          {currentView === "technician" && <TechnicianDashboard />}
+          {currentView === "client" && <ClientDashboard />}
+          {currentView === "user" && <FrontendPreview />}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

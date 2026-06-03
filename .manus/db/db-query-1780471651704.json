@@ -1,0 +1,100 @@
+{
+  "query": "SELECT jc.id, jc.jobNumber, jc.title, jc.status, jc.assignedTechnicianId, u.id as techId, u.name as techName FROM jobCards jc LEFT JOIN users u ON jc.assignedTechnicianId = u.id LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute SELECT jc.id, jc.jobNumber, jc.title, jc.status, jc.assignedTechnicianId, u.id as techId, u.name as techName FROM jobCards jc LEFT JOIN users u ON jc.assignedTechnicianId = u.id LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "jobNumber": "JC-2026-0001",
+      "title": "Test",
+      "status": "in_progress",
+      "assignedTechnicianId": "360001",
+      "techId": "360001",
+      "techName": "Tim Robinson"
+    },
+    {
+      "id": "30001",
+      "jobNumber": "JC-2026-0002",
+      "title": "Request",
+      "status": "cancelled",
+      "assignedTechnicianId": "NULL",
+      "techId": "NULL",
+      "techName": "NULL"
+    },
+    {
+      "id": "60001",
+      "jobNumber": "JC-2026-0003",
+      "title": "Gate motor dead",
+      "status": "priced",
+      "assignedTechnicianId": "NULL",
+      "techId": "NULL",
+      "techName": "NULL"
+    },
+    {
+      "id": "90001",
+      "jobNumber": "JC-2026-0004",
+      "title": "IDS panel arming by itself",
+      "status": "in_progress",
+      "assignedTechnicianId": "360001",
+      "techId": "360001",
+      "techName": "Tim Robinson"
+    },
+    {
+      "id": "120001",
+      "jobNumber": "JC-2026-0005",
+      "title": "Test",
+      "status": "priced",
+      "assignedTechnicianId": "360001",
+      "techId": "360001",
+      "techName": "Tim Robinson"
+    },
+    {
+      "id": "120002",
+      "jobNumber": "JC-2026-0006",
+      "title": "Broken lock",
+      "status": "priced",
+      "assignedTechnicianId": "360001",
+      "techId": "360001",
+      "techName": "Tim Robinson"
+    },
+    {
+      "id": "120003",
+      "jobNumber": "JC-2026-0007",
+      "title": "He broke key in lock",
+      "status": "priced",
+      "assignedTechnicianId": "360001",
+      "techId": "360001",
+      "techName": "Tim Robinson"
+    },
+    {
+      "id": "150001",
+      "jobNumber": "JC-2026-0008",
+      "title": "Renault Captur Key Lost",
+      "status": "cancelled",
+      "assignedTechnicianId": "360001",
+      "techId": "360001",
+      "techName": "Tim Robinson"
+    },
+    {
+      "id": "180001",
+      "jobNumber": "JC-2026-0009",
+      "title": "Keypad dead",
+      "status": "priced",
+      "assignedTechnicianId": "360001",
+      "techId": "360001",
+      "techName": "Tim Robinson"
+    },
+    {
+      "id": "210001",
+      "jobNumber": "JC-2026-0010",
+      "title": "Test",
+      "status": "priced",
+      "assignedTechnicianId": "391241",
+      "techId": "391241",
+      "techName": "Sillygoos"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tjobNumber\ttitle\tstatus\tassignedTechnicianId\ttechId\ttechName\n1\tJC-2026-0001\tTest\tin_progress\t360001\t360001\tTim Robinson\n30001\tJC-2026-0002\tRequest\tcancelled\tNULL\tNULL\tNULL\n60001\tJC-2026-0003\tGate motor dead\tpriced\tNULL\tNULL\tNULL\n90001\tJC-2026-0004\tIDS panel arming by itself\tin_progress\t360001\t360001\tTim Robinson\n120001\tJC-2026-0005\tTest\tpriced\t360001\t360001\tTim Robinson\n120002\tJC-2026-0006\tBroken lock\tpriced\t360001\t360001\tTim Robinson\n120003\tJC-2026-0007\tHe broke key in lock\tpriced\t360001\t360001\tTim Robinson\n150001\tJC-2026-0008\tRenault Captur Key Lost\tcancelled\t360001\t360001\tTim Robinson\n180001\tJC-2026-0009\tKeypad dead\tpriced\t360001\t360001\tTim Robinson\n210001\tJC-2026-0010\tTest\tpriced\t391241\t391241\tSillygoos\n",
+  "stderr": "",
+  "execution_time_ms": 274
+}
