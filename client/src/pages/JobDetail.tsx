@@ -25,7 +25,8 @@ export default function JobDetail({ id }: { id: string }) {
     id: jobId,
   });
 
-  const { data: jobItems } = trpc.jobItems.list.useQuery({ jobCardId: jobId });
+  const { data: jobItemsData } = trpc.jobItems.list.useQuery({ jobCardId: jobId });
+  const jobItems = Array.isArray(jobItemsData) ? jobItemsData : (jobItemsData as any)?.rows ?? [];
   const updateStatusMutation = trpc.jobCards.updateStatus.useMutation();
 
   const getStatusColor = (status: string) => {
@@ -182,9 +183,9 @@ export default function JobDetail({ id }: { id: string }) {
             <CardContent>
               {jobItems && jobItems.length > 0 ? (
                 <div className="space-y-3">
-                  {jobItems.map((item) => (
+                  {jobItems.filter((item: any) => item && item.id).map((item: any) => (
                     <div
-                      key={item.id}
+                      key={item?.id || Math.random()}
                       className="flex justify-between items-start p-3 border rounded-lg"
                     >
                       <div>
@@ -209,7 +210,8 @@ export default function JobDetail({ id }: { id: string }) {
                       <span>
                         $
                         {jobItems
-                          .reduce((sum, item) => sum + (Number(item.unitPrice) || 0) * (Number(item.quantity) || 0), 0)
+                          .filter((item: any) => item && item.id)
+                          .reduce((sum: number, item: any) => sum + (Number(item.unitPrice) || 0) * (Number(item.quantity) || 0), 0)
                           .toFixed(2)}
                       </span>
                     </div>

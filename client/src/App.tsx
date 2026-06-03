@@ -273,11 +273,17 @@ function Router() {
         </AppShell>
       </Route>
       <Route path="/jobs/:id">
-        {({ params }: any) => (
-          <AppShell>
-            <ProtectedRoute component={() => <JobDetail id={params.id} />} roles={["admin", "manager"]} />
-          </AppShell>
-        )}
+        {({ params }: any) => {
+          const jobId = params?.id;
+          if (!jobId) {
+            return null; // Let Wouter handle the route mismatch
+          }
+          return (
+            <AppShell>
+              <ProtectedRoute component={() => <JobDetail id={jobId} />} roles={["admin", "manager"]} />
+            </AppShell>
+          );
+        }}
       </Route>
       <Route path="/jobs/new">
         <AppShell>
