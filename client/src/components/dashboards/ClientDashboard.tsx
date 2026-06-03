@@ -12,29 +12,47 @@ import {
   ChevronRight,
   CreditCard,
 } from "lucide-react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
+
+// Default test client ID for admin viewing client dashboard
+const DEFAULT_TEST_CLIENT_ID = 1;
 
 export function ClientDashboard() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [clientId] = useState(DEFAULT_TEST_CLIENT_ID);
 
-  // Fetch quotes for current user
-  const { data: quotesData, isLoading: quotesLoading } = trpc.quotes.list.useQuery({});
+  // Fetch quotes for the specific client
+  const { data: quotesData, isLoading: quotesLoading } = trpc.quotes.getClientQuotes.useQuery(
+    { clientId },
+    { enabled: !!clientId }
+  );
   
-  // Fetch jobs for current user
-  const { data: jobsData, isLoading: jobsLoading } = trpc.jobCards.list.useQuery({});
+  // Fetch jobs for the specific client
+  const { data: jobsData, isLoading: jobsLoading } = trpc.jobCards.getClientJobs.useQuery(
+    { clientId },
+    { enabled: !!clientId }
+  );
 
   // Accept quote mutation (markAsPaid actually marks as accepted)
   const acceptQuoteMutation = trpc.quotes.markAsPaid.useMutation({
     onSuccess: (data) => {
       setSuccessMessage(`Quote ${data.quoteNumber} accepted successfully!`);
-      setTimeout(() => setSuccessMessage(null), 4000);
+      // Refetch quotes after successful mutation
+      trpc.useUtils().quotes.getClientQuotes.invalidate({ clientId });
     },
     onError: (error) => {
       setSuccessMessage(`Error: ${error.message}`);
-      setTimeout(() => setSuccessMessage(null), 4000);
     },
   });
+
+  // Auto-dismiss success message after 4 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
 
   const quotes = Array.isArray(quotesData) ? quotesData : [];
   const jobs = Array.isArray(jobsData) ? jobsData : [];

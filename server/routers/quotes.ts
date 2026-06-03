@@ -543,4 +543,34 @@ export const quotesRouter = router({
       });
       return { success: true, quoteNumber: quote.quoteNumber };
     }),
+
+  /**
+   * Get quotes for a specific client (admin/manager only, for testing/viewing)
+   */
+  getClientQuotes: protectedProcedure
+    .input(z.object({ clientId: z.number().int() }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      const quotes = await listQuotes({ clientId: input.clientId });
+      const quotesWithClients = await Promise.all(
+        quotes.map(async (q) => {
+          const client = q.clientId ? await getClientById(q.clientId) : null;
+          return {
+            ...q,
+            client: client
+              ? {
+                  id: client.id,
+                  firstName: client.firstName,
+                  lastName: client.lastName,
+                  email: client.email,
+                  phone: client.phone,
+                }
+              : null,
+          };
+        })
+      );
+      return quotesWithClients;
+    }),
 });

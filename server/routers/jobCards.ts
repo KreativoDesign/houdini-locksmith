@@ -506,4 +506,14 @@ export const jobCardsRouter = router({
 
       return { success: true };
     }),
+
+  /**
+   * Get jobs for a specific client (admin/manager only, for testing/viewing)
+   */
+  getClientJobs: managerProcedure
+    .input(z.object({ clientId: z.number().int().positive() }))
+    .query(async ({ input }) => {
+      const jobs = await listJobCards({ clientId: input.clientId });
+      return jobs;
+    }),
 });

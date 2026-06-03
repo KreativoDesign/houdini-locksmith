@@ -1,0 +1,166 @@
+{
+  "query": "SELECT COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('users', 'clients') ORDER BY TABLE_NAME, ORDINAL_POSITION;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute SELECT COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_KEY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('users', 'clients') ORDER BY TABLE_NAME, ORDINAL_POSITION;",
+  "rows": [
+    {
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI"
+    },
+    {
+      "COLUMN_NAME": "firstName",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "lastName",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "email",
+      "COLUMN_TYPE": "varchar(320)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "phone",
+      "COLUMN_TYPE": "varchar(30)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "alternatePhone",
+      "COLUMN_TYPE": "varchar(30)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "address",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "city",
+      "COLUMN_TYPE": "varchar(100)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "postalCode",
+      "COLUMN_TYPE": "varchar(20)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "notes",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "isActive",
+      "COLUMN_TYPE": "tinyint(1)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "id",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "PRI"
+    },
+    {
+      "COLUMN_NAME": "openId",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": "UNI"
+    },
+    {
+      "COLUMN_NAME": "name",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "email",
+      "COLUMN_TYPE": "varchar(320)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "loginMethod",
+      "COLUMN_TYPE": "varchar(64)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "role",
+      "COLUMN_TYPE": "enum('admin','manager','technician')",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "createdAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "updatedAt",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "lastSignedIn",
+      "COLUMN_TYPE": "timestamp",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "phone",
+      "COLUMN_TYPE": "varchar(30)",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "avatarUrl",
+      "COLUMN_TYPE": "text",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": ""
+    },
+    {
+      "COLUMN_NAME": "departmentId",
+      "COLUMN_TYPE": "int",
+      "IS_NULLABLE": "YES",
+      "COLUMN_KEY": "MUL"
+    },
+    {
+      "COLUMN_NAME": "isActive",
+      "COLUMN_TYPE": "tinyint(1)",
+      "IS_NULLABLE": "NO",
+      "COLUMN_KEY": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "COLUMN_NAME\tCOLUMN_TYPE\tIS_NULLABLE\tCOLUMN_KEY\nid\tint\tNO\tPRI\nfirstName\tvarchar(100)\tNO\t\nlastName\tvarchar(100)\tNO\t\nemail\tvarchar(320)\tYES\t\nphone\tvarchar(30)\tNO\t\nalternatePhone\tvarchar(30)\tYES\t\naddress\ttext\tYES\t\ncity\tvarchar(100)\tYES\t\npostalCode\tvarchar(20)\tYES\t\nnotes\ttext\tYES\t\nisActive\ttinyint(1)\tNO\t\ncreatedAt\ttimestamp\tNO\t\nupdatedAt\ttimestamp\tNO\t\nid\tint\tNO\tPRI\nopenId\tvarchar(64)\tNO\tUNI\nname\ttext\tYES\t\nemail\tvarchar(320)\tYES\t\nloginMethod\tvarchar(64)\tYES\t\nrole\tenum('admin','manager','technician')\tNO\t\ncreatedAt\ttimestamp\tNO\t\nupdatedAt\ttimestamp\tNO\t\nlastSignedIn\ttimestamp\tNO\t\nphone\tvarchar(30)\tYES\t\navatarUrl\ttext\tYES\t\ndepartmentId\tint\tYES\tMUL\nisActive\ttinyint(1)\tNO\t\n",
+  "stderr": "",
+  "execution_time_ms": 271
+}
