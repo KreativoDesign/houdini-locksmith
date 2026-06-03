@@ -58,6 +58,7 @@ import {
   Zap,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useViewContext } from "@/contexts/ViewContext";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from "./DashboardLayoutSkeleton";
 import { Button } from "./ui/button";
@@ -408,7 +409,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
-  const [currentView, setCurrentView] = useState<ViewType>("admin");
+  const { currentView, setCurrentView } = useViewContext();
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());

@@ -9,9 +9,15 @@ import {
   AlertCircle,
   Phone,
   Mail,
+  Check,
 } from "lucide-react";
+import { useState } from "react";
 
 export function TechnicianDashboard() {
+  const [acceptingJobId, setAcceptingJobId] = useState<number | null>(null);
+  const [acceptedJobs, setAcceptedJobs] = useState<number[]>([]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   // Mock data - in real app, this would come from the API
   const assignedJobs = [
     {
@@ -50,8 +56,26 @@ export function TechnicianDashboard() {
     { label: "Pending", value: "1", color: "bg-yellow-500" },
   ];
 
+  const handleAcceptJob = (jobId: number, jobNumber: string) => {
+    setAcceptingJobId(jobId);
+    setTimeout(() => {
+      setAcceptedJobs([...acceptedJobs, jobId]);
+      setAcceptingJobId(null);
+      setSuccessMessage(`Job ${jobNumber} accepted successfully!`);
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }, 1000);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
+          <CheckCircle2 className="h-5 w-5 text-green-600" />
+          <p className="text-green-800">{successMessage}</p>
+        </div>
+      )}
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">My Dashboard</h1>
@@ -97,7 +121,11 @@ export function TechnicianDashboard() {
                           job.status === "assigned" ? "secondary" : "default"
                         }
                       >
-                        {job.status === "assigned" ? "Assigned" : "In Progress"}
+                        {acceptedJobs.includes(job.id)
+                          ? "Accepted"
+                          : job.status === "assigned"
+                            ? "Assigned"
+                            : "In Progress"}
                       </Badge>
                       <Badge
                         variant="outline"
@@ -112,10 +140,13 @@ export function TechnicianDashboard() {
                     </div>
                     <h3 className="text-lg font-semibold mt-2">{job.title}</h3>
                   </div>
+                  {acceptedJobs.includes(job.id) && (
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                  )}
                   {job.status === "in_progress" && (
                     <CheckCircle2 className="h-5 w-5 text-green-500" />
                   )}
-                  {job.status === "assigned" && (
+                  {job.status === "assigned" && !acceptedJobs.includes(job.id) && (
                     <AlertCircle className="h-5 w-5 text-blue-500" />
                   )}
                 </div>
@@ -172,12 +203,40 @@ export function TechnicianDashboard() {
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-2">
-                  <Button size="sm" className="flex-1">
-                    View Details
-                  </Button>
-                  <Button size="sm" variant="outline" className="flex-1">
-                    Start Job
-                  </Button>
+                  {job.status === "assigned" && !acceptedJobs.includes(job.id) ? (
+                    <>
+                      <Button
+                        size="sm"
+                        className="flex-1 bg-green-600 hover:bg-green-700"
+                        onClick={() => handleAcceptJob(job.id, job.jobNumber)}
+                        disabled={acceptingJobId === job.id}
+                      >
+                        {acceptingJobId === job.id ? (
+                          <span className="flex items-center gap-2">
+                            <span className="animate-spin">⟳</span>
+                            Accepting...
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-2">
+                            <Check className="h-4 w-4" />
+                            Accept Job
+                          </span>
+                        )}
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        View Details
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button size="sm" className="flex-1">
+                        View Details
+                      </Button>
+                      <Button size="sm" variant="outline" className="flex-1">
+                        Start Job
+                      </Button>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>

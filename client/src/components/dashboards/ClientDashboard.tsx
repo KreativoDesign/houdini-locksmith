@@ -10,9 +10,15 @@ import {
   Calendar,
   MapPin,
   ChevronRight,
+  CreditCard,
 } from "lucide-react";
+import { useState } from "react";
 
 export function ClientDashboard() {
+  const [payingQuoteId, setPayingQuoteId] = useState<number | null>(null);
+  const [paidQuotes, setPaidQuotes] = useState<number[]>([]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   // Mock data - in real app, this would come from the API
   const quotes = [
     {
@@ -21,6 +27,7 @@ export function ClientDashboard() {
       title: "Lock Replacement",
       status: "accepted",
       amount: "$250.00",
+      amountNumeric: 250,
       createdDate: "2026-05-28",
       expiryDate: "2026-06-27",
     },
@@ -30,6 +37,7 @@ export function ClientDashboard() {
       title: "Security System Installation",
       status: "pending",
       amount: "$1,500.00",
+      amountNumeric: 1500,
       createdDate: "2026-06-01",
       expiryDate: "2026-07-01",
     },
@@ -81,8 +89,26 @@ export function ClientDashboard() {
     }
   };
 
+  const handlePayInvoice = (quoteId: number, quoteNumber: string, amount: string) => {
+    setPayingQuoteId(quoteId);
+    setTimeout(() => {
+      setPaidQuotes([...paidQuotes, quoteId]);
+      setPayingQuoteId(null);
+      setSuccessMessage(`Payment of ${amount} for ${quoteNumber} processed successfully!`);
+      setTimeout(() => setSuccessMessage(null), 4000);
+    }, 1500);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
+          <CheckCircle2 className="h-5 w-5 text-green-600" />
+          <p className="text-green-800 font-medium">{successMessage}</p>
+        </div>
+      )}
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">My Account</h1>
@@ -94,7 +120,7 @@ export function ClientDashboard() {
       {/* Tabs */}
       <Tabs defaultValue="quotes" className="w-full">
         <TabsList>
-          <TabsTrigger value="quotes">Quotes</TabsTrigger>
+          <TabsTrigger value="quotes">Quotes & Invoices</TabsTrigger>
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
         </TabsList>
 
@@ -113,14 +139,18 @@ export function ClientDashboard() {
                         </p>
                         <Badge
                           className={
-                            quote.status === "accepted"
+                            paidQuotes.includes(quote.id)
                               ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
+                              : quote.status === "accepted"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-yellow-100 text-yellow-800"
                           }
                         >
-                          {quote.status === "accepted"
-                            ? "Accepted"
-                            : "Pending"}
+                          {paidQuotes.includes(quote.id)
+                            ? "Paid"
+                            : quote.status === "accepted"
+                              ? "Invoice Ready"
+                              : "Pending"}
                         </Badge>
                       </div>
                       <h3 className="text-lg font-semibold">{quote.title}</h3>
@@ -143,10 +173,42 @@ export function ClientDashboard() {
                     </div>
                   </div>
 
-                  <Button className="w-full" variant="outline">
-                    View Quote Details
-                    <ChevronRight className="h-4 w-4 ml-2" />
-                  </Button>
+                  <div className="flex gap-2">
+                    {quote.status === "accepted" && !paidQuotes.includes(quote.id) ? (
+                      <>
+                        <Button
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          onClick={() =>
+                            handlePayInvoice(quote.id, quote.quoteNumber, quote.amount)
+                          }
+                          disabled={payingQuoteId === quote.id}
+                        >
+                          {payingQuoteId === quote.id ? (
+                            <span className="flex items-center gap-2">
+                              <span className="animate-spin">⟳</span>
+                              Processing...
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-2">
+                              <CreditCard className="h-4 w-4" />
+                              Pay Invoice
+                            </span>
+                          )}
+                        </Button>
+                        <Button variant="outline" className="flex-1">
+                          View Details
+                          <ChevronRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      </>
+                    ) : (
+                      <Button className="w-full" variant="outline">
+                        {paidQuotes.includes(quote.id)
+                          ? "View Receipt"
+                          : "View Quote Details"}
+                        <ChevronRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -199,10 +261,7 @@ export function ClientDashboard() {
                     <p className="font-semibold text-sm">Job Timeline</p>
                     <div className="space-y-2">
                       {job.timeline.map((step, index) => (
-                        <div
-                          key={index}
-                          className="flex items-start gap-3"
-                        >
+                        <div key={index} className="flex items-start gap-3">
                           <div className="flex flex-col items-center">
                             {step.completed ? (
                               <CheckCircle2 className="h-5 w-5 text-green-500" />

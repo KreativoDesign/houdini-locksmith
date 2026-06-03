@@ -22,7 +22,8 @@ import {
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { LayoutDashboard, LogOut, PanelLeft, Users, Briefcase } from "lucide-react";
-import { ViewSwitcher, type ViewType } from "./ViewSwitcher";
+import { ViewSwitcher } from "./ViewSwitcher";
+import { useViewContext } from "@/contexts/ViewContext";
 import { TechnicianDashboard } from "./dashboards/TechnicianDashboard";
 import { ClientDashboard } from "./dashboards/ClientDashboard";
 import { FrontendPreview } from "./dashboards/FrontendPreview";
@@ -116,7 +117,7 @@ function DashboardLayoutContent({
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
-  const [currentView, setCurrentView] = useState<ViewType>("admin");
+  const { currentView, setCurrentView } = useViewContext();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
