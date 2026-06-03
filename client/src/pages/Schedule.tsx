@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, eachDayOfInterval, isToday, isSameDay } from "date-fns";
+import { ScheduleBookingDetail } from "@/components/schedule/ScheduleBookingDetail";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -53,6 +54,9 @@ export default function SchedulePage() {
   const isMobile = useIsMobile();
   const [weekAnchor, setWeekAnchor] = useState(() => new Date());
   const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null);
+  const [expandedBookingId, setExpandedBookingId] = useState<number | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedTechnician, setSelectedTechnician] = useState<any>(null);
 
   const { from, to } = getWeekRange(weekAnchor);
   const weekDays = eachDayOfInterval({ start: from, end: to });
@@ -118,6 +122,20 @@ export default function SchedulePage() {
   }, [bookingMap, weekDays, techIds]);
 
   const selectedDept = (departments as any[]).find((d: any) => d.id === selectedDeptId);
+
+  // Handle booking card click to expand details
+  const handleBookingClick = (booking: any) => {
+    const tech = (technicians as any[]).find((t: any) => t.id === booking.technicianId);
+    setSelectedBooking(booking);
+    setSelectedTechnician(tech);
+    setExpandedBookingId(booking.id);
+  };
+
+  const handleCloseDetail = () => {
+    setExpandedBookingId(null);
+    setSelectedBooking(null);
+    setSelectedTechnician(null);
+  };
 
   return (
     <div className="p-6 space-y-6 max-w-full">
@@ -252,14 +270,10 @@ export default function SchedulePage() {
                       return (
                         <button
                           key={booking.id}
-                          onClick={() =>
-                            booking.jobCardId
-                              ? navigate(`/jobs/${booking.jobCardId}`)
-                              : undefined
-                          }
-                          className={`w-full text-left rounded-lg border-2 p-3 transition-all ${
-                            booking.jobCardId ? "cursor-pointer hover:shadow-md" : "cursor-default"
-                          } ${colourClass}`}
+                          onClick={() => handleBookingClick(booking)}
+                          className={`w-full text-left rounded-lg border-2 p-3 transition-all cursor-pointer hover:shadow-md active:scale-95 ${
+                            colourClass
+                          }`}
                         >
                           <div className="flex items-start gap-2">
                             <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center shrink-0 text-xs font-bold">
@@ -274,6 +288,7 @@ export default function SchedulePage() {
                               {booking.jobCardId && (
                                 <p className="text-xs mt-1 opacity-75 truncate">Job #{booking.jobCardId}</p>
                               )}
+                              <p className="text-xs mt-2 text-primary font-medium">Tap for details →</p>
                             </div>
                           </div>
                         </button>
@@ -435,6 +450,17 @@ export default function SchedulePage() {
             <span>Multiple bookings on same day</span>
           </div>
         </div>
+      )}
+
+      {/* ── Booking Detail Modal (Mobile Tap-to-Expand) ── */}
+      {selectedBooking && selectedTechnician && (
+        <ScheduleBookingDetail
+          booking={selectedBooking}
+          technician={selectedTechnician}
+          isOpen={expandedBookingId !== null}
+          onClose={handleCloseDetail}
+          colourClass={SLOT_COLOURS[(technicians as any[]).findIndex(t => t.id === selectedBooking.technicianId) % SLOT_COLOURS.length]}
+        />
       )}
     </div>
   );
