@@ -13,12 +13,14 @@ import {
   CreditCard,
 } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 
 // Default test client ID for admin viewing client dashboard
 const DEFAULT_TEST_CLIENT_ID = 1;
 
 export function ClientDashboard() {
+  const [, setLocation] = useLocation();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [clientId] = useState(DEFAULT_TEST_CLIENT_ID);
 
@@ -76,6 +78,14 @@ export function ClientDashboard() {
 
   const handleAcceptQuote = (quoteId: number) => {
     acceptQuoteMutation.mutate({ id: quoteId });
+  };
+
+  const handleViewQuoteDetails = (quoteId: number) => {
+    setLocation(`/admin/quotes/${quoteId}`);
+  };
+
+  const handleViewJobDetails = (jobId: number) => {
+    setLocation(`/jobs/${jobId}`);
   };
 
   return (
@@ -176,13 +186,21 @@ export function ClientDashboard() {
                                 </span>
                               )}
                             </Button>
-                            <Button variant="outline" className="flex-1">
+                            <Button 
+                              variant="outline" 
+                              className="flex-1"
+                              onClick={() => handleViewQuoteDetails(quote.id)}
+                            >
                               View Details
                               <ChevronRight className="h-4 w-4 ml-2" />
                             </Button>
                           </>
                         ) : (
-                          <Button className="w-full" variant="outline">
+                          <Button 
+                            className="w-full" 
+                            variant="outline"
+                            onClick={() => handleViewQuoteDetails(quote.id)}
+                          >
                             {quote.status === "accepted"
                               ? "View Accepted Quote"
                               : "View Quote Details"}
@@ -256,7 +274,11 @@ export function ClientDashboard() {
                       </div>
                     </div>
 
-                    <Button className="w-full" variant="outline">
+                    <Button 
+                      className="w-full" 
+                      variant="outline"
+                      onClick={() => handleViewJobDetails(job.id)}
+                    >
                       View Full Details
                       <ChevronRight className="h-4 w-4 ml-2" />
                     </Button>
