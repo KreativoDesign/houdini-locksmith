@@ -1,9 +1,9 @@
 CREATE TABLE `departmentServiceTypeConfig` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`departmentId` int NOT NULL,
-	`serviceTypes` text NOT NULL DEFAULT ('locksmithing,security,diagnostics,workshop,other'),
-	`createdAt` timestamp NOT NULL DEFAULT (now()),
-	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	`serviceTypes` text NOT NULL,
+	`createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	CONSTRAINT `departmentServiceTypeConfig_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint

@@ -1,0 +1,1 @@
+ALTER TABLE `customerPortalLinks` ADD `expiresAt` timestamp;

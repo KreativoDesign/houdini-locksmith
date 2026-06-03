@@ -1,0 +1,1 @@
+ALTER TABLE `enquiries` ADD `archived` boolean DEFAULT false NOT NULL;

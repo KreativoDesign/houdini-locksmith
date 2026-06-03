@@ -19,6 +19,7 @@ import { localAuthRouter } from "./routers/auth";
 import { clientPortalRouter } from "./routers/clientPortal";
 import { pushRouter } from "./routers/push";
 import { quotesRouter } from "./routers/quotes";
+import { portalRouter } from "./routers/portal";
 
 export const appRouter = router({
   system: systemRouter,
@@ -83,6 +84,8 @@ export const appRouter = router({
   /** Standalone quote system for admin/manager creation and client acceptance */
   quotes: quotesRouter,
 
+  /** Customer portal with shareable links for job/invoice viewing and payments */
+  portal: portalRouter,
 
 });
 

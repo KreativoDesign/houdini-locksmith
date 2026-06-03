@@ -1,6 +1,7 @@
 import {
   boolean,
   decimal,
+  index,
   int,
   mysqlEnum,
   mysqlTable,
@@ -546,3 +547,35 @@ export const quoteTokens = mysqlTable("quoteTokens", {
 });
 export type QuoteToken = typeof quoteTokens.$inferSelect;
 export type InsertQuoteToken = typeof quoteTokens.$inferInsert;
+
+
+// ─────────────────────────────────────────────
+// CUSTOMER PORTAL LINKS  (Shareable links for customers)
+// ─────────────────────────────────────────────
+export const customerPortalLinks = mysqlTable("customerPortalLinks", {
+  id: int("id").autoincrement().primaryKey(),
+  jobCardId: int("jobCardId").notNull().references(() => jobCards.id, { onDelete: "cascade" }),
+  quoteId: int("quoteId").references(() => quotes.id, { onDelete: "cascade" }),
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt"), // null for indefinite links
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type CustomerPortalLink = typeof customerPortalLinks.$inferSelect;
+export type InsertCustomerPortalLink = typeof customerPortalLinks.$inferInsert;
+
+// ─────────────────────────────────────────────
+// PORTAL LINK HISTORY  (Track portal access and actions)
+// ─────────────────────────────────────────────
+export const portalLinkHistory = mysqlTable("portalLinkHistory", {
+  id: int("id").autoincrement().primaryKey(),
+  portalLinkId: int("portalLinkId").notNull().references(() => customerPortalLinks.id, { onDelete: "cascade" }),
+  action: mysqlEnum("action", ["view", "view_invoice", "initiate_payment", "payment_success", "payment_failed"]).notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: text("userAgent"),
+  metadata: text("metadata"), // JSON string for additional data
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type PortalLinkHistory = typeof portalLinkHistory.$inferSelect;
+export type InsertPortalLinkHistory = typeof portalLinkHistory.$inferInsert;

@@ -142,3 +142,72 @@
 - [x] Verify all views work correctly on mobile (< 768px breakpoints)
 
 **Summary:** Completed production-ready implementation of ClientDashboard with proper client-scoped data access. Created new tRPC procedures: quotes.getClientQuotes(clientId) and jobCards.getClientJobs(clientId) for admin/manager access to client-specific data. ClientDashboard now uses these procedures with clientId=1 (default test client). Quote status handling matches schema (draft, sent, accepted, rejected, expired). Accept Quote button calls trpc.quotes.markAsPaid mutation. All 95 tests passing including 10 new tests for new procedures. No TypeScript errors. Checkpoint saved at version 4186a648.
+
+
+## Phase 75: Customer Portal with Shareable Links (In Progress)
+
+### Phase 75.1: Database Schema & Architecture (Completed)
+- [x] Add `customerPortalLinks` table with fields: id, jobCardId, quoteId, token (unique), createdAt, expiresAt (null for indefinite), isActive
+- [x] Add `portalLinkHistory` table to track portal link access and actions
+- [x] Create indexes on token and jobCardId for fast lookups
+- [x] Add migration to create new tables
+
+**Summary:** Successfully created customer portal database schema with two new tables:
+- `customerPortalLinks`: Stores shareable tokens for job/invoice access (7 columns)
+- `portalLinkHistory`: Tracks portal access events and actions (7 columns)
+Both tables include proper foreign key relationships and timestamps. Migration 0014_thankful_spectrum.sql successfully applied to database.
+
+### Phase 75.2: Backend Procedures & Link Generation (Completed)
+- [x] Create `portal.generateLink(jobCardId)` procedure (admin/manager only)
+- [x] Create `portal.getJobDetails(token)` procedure (public, returns job + quote + invoice data)
+- [x] Create `portal.getInvoiceDetails(token)` procedure (public, returns invoice for payment)
+- [x] Implement link token generation (secure random string)
+- [x] Add database helpers for link CRUD operations
+
+**Summary:** Created comprehensive portal router with 5 tRPC procedures:
+1. `generateLink` - Creates shareable tokens for jobs (admin only)
+2. `getPortalData` - Retrieves job and quote details for portal (public)
+3. `getInvoiceData` - Retrieves invoice details for payment (public)
+4. `deactivateLink` - Disables portal links (admin only)
+5. `getLinkHistory` - Views access logs for a job (admin only)
+
+Implemented secure token generation using crypto.randomBytes(32).toString('hex'). All procedures include proper error handling, validation, and access logging. Portal router integrated into main appRouter. Build successful with 0 errors.
+
+### Phase 75.3: Customer Portal UI
+- [ ] Create `/portal/[token]` route for customer portal
+- [ ] Build job status display component (status badge, timeline, technician info)
+- [ ] Build invoice display component (line items, totals, payment status)
+- [ ] Build payment button component (redirects to PayFast)
+- [ ] Add loading/error states and 404 page for invalid tokens
+- [ ] Implement responsive design for mobile viewing
+
+### Phase 75.4: PayFast Integration
+- [ ] Set up PayFast API credentials in environment
+- [ ] Create PayFast payment request builder
+- [ ] Implement `payments.initializePayFastPayment(invoiceId, token)` procedure
+- [ ] Create payment success/failure callback handlers
+- [ ] Update invoice status to "paid" after successful payment
+- [ ] Add error handling and logging for payment failures
+
+### Phase 75.5: Email Notifications
+- [ ] Create email template for portal link notification
+- [ ] Implement `emails.sendPortalLinkEmail(jobCardId, customerEmail)` procedure
+- [ ] Add portal link generation to job creation workflow
+- [ ] Add portal link to quote acceptance email
+- [ ] Add portal link to invoice ready email
+- [ ] Test email delivery with real customer emails
+
+### Phase 75.6: Testing & Validation
+- [ ] Write tests for link generation procedure
+- [ ] Write tests for portal data retrieval (authorization checks)
+- [ ] Write tests for PayFast payment flow
+- [ ] Test portal UI on mobile/desktop viewports
+- [ ] Test email notifications with real email addresses
+- [ ] Manual end-to-end testing of complete flow
+
+### Phase 75.7: Documentation & Deployment
+- [ ] Document customer portal URLs and link format
+- [ ] Create admin guide for generating/managing portal links
+- [ ] Add customer portal to deployment checklist
+- [ ] Deploy to production
+- [ ] Monitor portal link usage and payment success rates
