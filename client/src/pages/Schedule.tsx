@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/useMobile";
 import {
   Select,
   SelectContent,
@@ -49,6 +50,7 @@ const SLOT_COLOURS = [
 
 export default function SchedulePage() {
   const [, navigate] = useLocation();
+  const isMobile = useIsMobile();
   const [weekAnchor, setWeekAnchor] = useState(() => new Date());
   const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null);
 
@@ -180,7 +182,7 @@ export default function SchedulePage() {
         </span>
       </div>
 
-      {/* ── Calendar Grid ── */}
+      {/* ── Calendar Grid / Timeline View ── */}
       {!selectedDeptId ? (
         <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
           <CalendarDays className="w-12 h-12 text-muted-foreground/40" />
@@ -201,7 +203,90 @@ export default function SchedulePage() {
             <span className="font-medium">{selectedDept?.name ?? "this department"}</span>.
           </p>
         </div>
+      ) : isMobile ? (
+        // ── Mobile Timeline View ──
+        <div className="space-y-4">
+          {weekDays.map((day) => {
+            const dateStr = formatDate(day);
+            const dayBookings: any[] = [];
+            for (const tech of technicians as any[]) {
+              const slots = bookingMap.get(tech.id)?.get(dateStr) ?? [];
+              for (const slot of slots) {
+                dayBookings.push({
+                  ...slot,
+                  technicianId: tech.id,
+                  technicianName: tech.name ?? tech.email,
+                  technicianEmail: tech.email,
+                  technicianAvatar: (tech.name ?? tech.email ?? "?").charAt(0).toUpperCase(),
+                });
+              }
+            }
+
+            return (
+              <div key={dateStr} className="space-y-2">
+                <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                  isToday(day) ? "bg-primary/10" : "bg-muted/30"
+                }`}>
+                  <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm">
+                      {DAY_LABELS[weekDays.indexOf(day)]} – {format(day, "d MMM")}
+                    </p>
+                  </div>
+                  {conflictDays.has(dateStr) && (
+                    <div title="Multiple bookings">
+                      <AlertTriangle className="w-4 h-4 text-amber-500" />
+                    </div>
+                  )}
+                </div>
+
+                {dayBookings.length === 0 ? (
+                  <div className="text-center py-4 text-muted-foreground text-sm">
+                    No bookings
+                  </div>
+                ) : (
+                  <div className="space-y-2 pl-3">
+                    {dayBookings.map((booking: any) => {
+                      const techIdx = (technicians as any[]).findIndex(t => t.id === booking.technicianId);
+                      const colourClass = SLOT_COLOURS[techIdx % SLOT_COLOURS.length];
+                      return (
+                        <button
+                          key={booking.id}
+                          onClick={() =>
+                            booking.jobCardId
+                              ? navigate(`/jobs/${booking.jobCardId}`)
+                              : undefined
+                          }
+                          className={`w-full text-left rounded-lg border-2 p-3 transition-all ${
+                            booking.jobCardId ? "cursor-pointer hover:shadow-md" : "cursor-default"
+                          } ${colourClass}`}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center shrink-0 text-xs font-bold">
+                              {booking.technicianAvatar}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-sm truncate">{booking.technicianName}</p>
+                              <div className="flex items-center gap-1 mt-1 text-xs">
+                                <Clock className="w-3 h-3" />
+                                <span>{booking.startTime} – {booking.endTime}</span>
+                              </div>
+                              {booking.jobCardId && (
+                                <p className="text-xs mt-1 opacity-75 truncate">Job #{booking.jobCardId}</p>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       ) : (
+        // ── Desktop Table View ──
         <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
           <table className="w-full min-w-[700px] border-collapse">
             {/* Column headers: Technician | Mon | Tue | … | Sun */}
