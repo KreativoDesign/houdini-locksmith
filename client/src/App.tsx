@@ -354,6 +354,13 @@ function Router() {
       {/* ── Public client portal (no auth required) ── */}
       <Route path="/portal/:token" component={ClientPortal} />
 
+      {/* ── Admin quote creation (must come before /quotes/:token) ── */}
+      <Route path="/quotes/create">
+        <AppShell>
+          <ProtectedRoute component={QuoteBuilder} roles={["admin", "manager"]} />
+        </AppShell>
+      </Route>
+
       {/* ── Public quote view (no auth required) ── */}
       <Route path="/quotes/:token" component={PublicQuoteView} />
 
