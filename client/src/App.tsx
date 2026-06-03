@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 // Public pages (no auth required)
 import Landing from "./pages/Landing";
 import ClientPortal from "./pages/ClientPortal";
+import Portal from "./pages/Portal";
 import PublicQuoteView from "./pages/PublicQuoteView";
 import ServiceLocksmithing from "./pages/ServiceLocksmithing";
 import ServiceSecurity from "./pages/ServiceSecurity";
@@ -357,8 +358,11 @@ function Router() {
       <Route path="/services/security" component={ServiceSecurity} />
       <Route path="/services/diagnostics" component={ServiceDiagnostics} />
 
-      {/* ── Public client portal (no auth required) ── */}
-      <Route path="/portal/:token" component={ClientPortal} />
+      {/* ── Public customer portal (no auth required) ── */}
+      <Route path="/portal/:token" component={Portal} />
+
+      {/* ── Public client portal (legacy, no auth required) ── */}
+      <Route path="/client-portal/:token" component={ClientPortal} />
 
       {/* ── Admin quote creation (must come before /quotes/:token) ── */}
       <Route path="/quotes/create">
