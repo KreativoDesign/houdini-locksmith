@@ -444,6 +444,48 @@ export const jobCardsRouter = router({
       return { url, jobNumber: job.jobNumber };
     }),
 
+  /**
+   * Accept a job assignment as a technician.
+   * Transitions from 'assigned' to 'in_progress' and sets startedAt timestamp.
+   */
+  acceptJob: technicianProcedure
+    .input(z.object({ id: z.number().int().positive() }))
+    .mutation(async ({ input, ctx }) => {
+      const job = await getJobCardById(input.id);
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+      
+      // Only technicians can accept their own jobs
+      if (job.assignedTechnicianId !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "You are not assigned to this job" });
+      }
+      
+      // Job must be in 'assigned' status to accept
+      if (job.status !== "assigned") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot accept a job with status '${job.status}'. Job must be in 'assigned' status.`,
+        });
+      }
+      
+      // Update job status to in_progress and set startedAt
+      await updateJobCard(input.id, {
+        status: "in_progress",
+        startedAt: new Date(),
+      });
+      
+      // Emit notification to manager/owner
+      await emitNotification({
+        type: "job_started",
+        title: "Job Accepted",
+        message: `Job card ${job.jobNumber} has been accepted and is now in progress.`,
+        entityType: "job_card",
+        entityId: input.id,
+        notifyOwnerPush: true,
+      });
+      
+      return { success: true, id: input.id, jobNumber: job.jobNumber };
+    }),
+
   /** Schedule a job card to a specific date */
   schedule: managerProcedure
     .input(

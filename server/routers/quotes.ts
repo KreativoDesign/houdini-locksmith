@@ -522,4 +522,25 @@ export const quotesRouter = router({
     const quotes = await listQuotes({ status: "sent" });
     return { count: quotes.length };
   }),
+
+  markAsPaid: protectedProcedure
+    .input(z.object({ id: z.number().int() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "manager") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      const quote = await getQuoteById(input.id);
+      if (!quote) throw new TRPCError({ code: "NOT_FOUND" });
+      if (quote.status !== "sent") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Cannot process payment for quote with status '${quote.status}'`,
+        });
+      }
+      await updateQuote(input.id, {
+        status: "accepted",
+        acceptedAt: new Date(),
+      });
+      return { success: true, quoteNumber: quote.quoteNumber };
+    }),
 });
