@@ -62,6 +62,10 @@ import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from "./DashboardLayoutSkeleton";
 import { Button } from "./ui/button";
 import { NotificationsBell } from "./NotificationsDrawer";
+import { ViewSwitcher, type ViewType } from "./ViewSwitcher";
+import { TechnicianDashboard } from "./dashboards/TechnicianDashboard";
+import { ClientDashboard } from "./dashboards/ClientDashboard";
+import { FrontendPreview } from "./dashboards/FrontendPreview";
 
 // ─────────────────────────────────────────────
 // MENU DEFINITIONS
@@ -404,6 +408,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
+  const [currentView, setCurrentView] = useState<ViewType>("admin");
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
@@ -490,6 +495,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               )}
             </div>
             <div className="flex items-center gap-3">
+              <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
               <NotificationsBell />
             </div>
           </div>

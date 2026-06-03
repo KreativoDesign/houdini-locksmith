@@ -68,3 +68,14 @@
 - ⚠ Browser interaction testing: Requires test bookings to verify tap-to-expand works with real data
 - ⚠ Keyboard accessibility: Dialog component uses shadcn Dialog which supports Escape key
 - ⚠ Dismissal paths: Dialog supports close button and outside click via shadcn Dialog
+
+
+## Phase 71: Role/View Switcher for Admin Dashboard
+- [ ] Audit current dashboard structure and identify view requirements
+- [ ] Create ViewSwitcher component with role-based view options (Admin, User, Technician, Client)
+- [ ] Implement Technician dashboard view with job assignments and schedule
+- [ ] Implement Client dashboard view with quote/job details and timeline
+- [ ] Implement Frontend website preview view
+- [ ] Integrate ViewSwitcher into admin dashboard header
+- [ ] Test all view switching functionality
+- [ ] Verify responsive design on mobile for all views

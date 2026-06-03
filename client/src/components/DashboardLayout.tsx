@@ -22,6 +22,10 @@ import {
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { LayoutDashboard, LogOut, PanelLeft, Users, Briefcase } from "lucide-react";
+import { ViewSwitcher, type ViewType } from "./ViewSwitcher";
+import { TechnicianDashboard } from "./dashboards/TechnicianDashboard";
+import { ClientDashboard } from "./dashboards/ClientDashboard";
+import { FrontendPreview } from "./dashboards/FrontendPreview";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -112,6 +116,7 @@ function DashboardLayoutContent({
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewType>("admin");
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
@@ -244,21 +249,25 @@ function DashboardLayoutContent({
       </div>
 
       <SidebarInset>
-        {isMobile && (
-          <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 sm:px-4 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm sm:text-base tracking-tight text-foreground">
-                    {activeMenuItem?.label ?? "Menu"}
-                  </span>
-                </div>
+        <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 sm:px-4 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
+          <div className="flex items-center gap-2">
+            {isMobile && <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex flex-col gap-1">
+                <span className="text-sm sm:text-base tracking-tight text-foreground">
+                  {activeMenuItem?.label ?? "Dashboard"}
+                </span>
               </div>
             </div>
           </div>
-        )}
-        <main className="flex-1 p-3 sm:p-4 md:p-6">{children}</main>
+          <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
+        </div>
+        <main className="flex-1 p-3 sm:p-4 md:p-6">
+          {currentView === "admin" && children}
+          {currentView === "technician" && <TechnicianDashboard />}
+          {currentView === "client" && <ClientDashboard />}
+          {currentView === "user" && <FrontendPreview />}
+        </main>
       </SidebarInset>
     </>
   );
