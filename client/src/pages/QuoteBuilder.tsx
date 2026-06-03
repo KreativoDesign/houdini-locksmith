@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { CreateClientDialog } from "@/components/CreateClientDialog";
 
 interface QuoteItem {
   id?: number;
@@ -52,10 +53,12 @@ export default function QuoteBuilder() {
     unitPrice: "0.00",
     discountPercent: 0,
   });
+  const [showCreateClient, setShowCreateClient] = useState(false);
 
-  const { data: clients } = trpc.clients.list.useQuery({});
+  const { data: clients, refetch: refetchClients } = trpc.clients.list.useQuery({});
   const createQuoteMutation = trpc.quotes.create.useMutation();
   const sendQuoteMutation = trpc.quotes.send.useMutation();
+  const utils = trpc.useUtils();
 
   // Calculate line totals and quote totals
   const totals = useMemo(() => {
@@ -81,6 +84,11 @@ export default function QuoteBuilder() {
       grandTotal: grandTotal.toFixed(2),
     };
   }, [items, discount, discountPercent]);
+
+  const handleClientCreated = (newClientId: number) => {
+    setClientId(newClientId);
+    refetchClients();
+  };
 
   const handleAddItem = () => {
     if (!newItem.name || !newItem.unitPrice) {
@@ -192,20 +200,31 @@ export default function QuoteBuilder() {
             <CardHeader>
               <CardTitle>Client</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Label htmlFor="client">Select Client</Label>
-              <Select value={clientId?.toString() || ""} onValueChange={(val) => setClientId(parseInt(val))}>
-                <SelectTrigger id="client">
-                  <SelectValue placeholder="Choose a client..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {clients?.rows?.map((client: any) => (
-                    <SelectItem key={client.id} value={client.id.toString()}>
-                      {client.firstName} {client.lastName} ({client.phone})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <CardContent className="space-y-3">
+              <div>
+                <Label htmlFor="client">Select Client</Label>
+                <Select value={clientId?.toString() || ""} onValueChange={(val) => setClientId(parseInt(val))}>
+                  <SelectTrigger id="client">
+                    <SelectValue placeholder="Choose a client..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {clients?.rows?.map((client: any) => (
+                      <SelectItem key={client.id} value={client.id.toString()}>
+                        {client.firstName} {client.lastName} ({client.phone})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateClient(true)}
+                className="w-full gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Create New Client
+              </Button>
               {selectedClient && (
                 <div className="mt-4 p-3 bg-slate-50 rounded-lg text-sm">
                   <p className="font-semibold">{selectedClient.firstName} {selectedClient.lastName}</p>
@@ -447,6 +466,13 @@ export default function QuoteBuilder() {
           </Card>
         </div>
       </div>
+
+      {/* Create Client Dialog */}
+      <CreateClientDialog
+        open={showCreateClient}
+        onOpenChange={setShowCreateClient}
+        onClientCreated={handleClientCreated}
+      />
     </div>
   );
 }
