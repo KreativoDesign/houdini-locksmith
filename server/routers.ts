@@ -19,6 +19,7 @@ import { localAuthRouter } from "./routers/auth";
 import { clientPortalRouter } from "./routers/clientPortal";
 import { pushRouter } from "./routers/push";
 import { quotesRouter } from "./routers/quotes";
+import { jobTimelineRouter } from "./routers/jobTimeline";
 
 
 export const appRouter = router({
@@ -84,7 +85,8 @@ export const appRouter = router({
   /** Standalone quote system for admin/manager creation and client acceptance */
   quotes: quotesRouter,
 
-
+  /** Job timeline and status history tracking */
+  jobTimeline: jobTimelineRouter,
 
 });
 

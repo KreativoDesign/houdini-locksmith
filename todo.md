@@ -231,3 +231,75 @@ Fixed Client Dashboard button navigation:
 - [ ] Add customer portal to deployment checklist
 - [ ] Deploy to production
 - [ ] Monitor portal link usage and payment success rates
+
+
+## Phase 76: Job Status Timeline (In Progress)
+- [ ] Add jobStatusHistory table to schema to track status changes with timestamps
+- [ ] Create migration for jobStatusHistory table
+- [ ] Add database helper to fetch job status history
+- [ ] Create tRPC procedure: jobCards.getJobTimeline(jobId) to fetch status history
+- [ ] Build JobStatusTimeline component with visual timeline display
+- [ ] Add timeline to ClientDashboard Jobs tab
+- [ ] Display status badges with timestamps on timeline
+- [ ] Show job creation, assignment, in_progress, and completion events
+- [ ] Add tests for jobStatusHistory procedures
+- [ ] Test timeline rendering on mobile devices
+
+## Phase 77: Digital Signature System (Pending)
+- [ ] Add jobSignatures table to schema with fields: jobId, signedBy (technician/client), signatureData (base64), signedAt, signatureType
+- [ ] Create migration for jobSignatures table
+- [ ] Install signature pad library (@react-pdf/renderer or similar)
+- [ ] Create SignaturePad component for capturing signatures
+- [ ] Build signature capture modal for technician device
+- [ ] Build signature capture modal for client dashboard
+- [ ] Create tRPC procedure: jobCards.captureSignature(jobId, signatureData, signedBy)
+- [ ] Add signature validation logic (prevent job completion without signatures)
+- [ ] Create tRPC procedure: jobCards.getSignatures(jobId) to retrieve stored signatures
+- [ ] Add signature display to job detail page
+- [ ] Add tests for signature capture and storage
+- [ ] Test signature capture on mobile devices
+
+## Phase 78: Pay Now Button (Pending)
+- [ ] Add payment status to job cards (check if invoice exists and is ready)
+- [ ] Create "Pay Now" button component with PayFast integration
+- [ ] Add PayFast payment initialization tRPC procedure
+- [ ] Wire "Pay Now" button to payment processing
+- [ ] Add payment success/failure handling
+- [ ] Update job status after successful payment
+- [ ] Display payment status on job card
+- [ ] Add error handling for payment failures
+- [ ] Create tests for payment button functionality
+- [ ] Test payment flow end-to-end
+
+## Phase 79: Job Overview/Summary (Pending)
+- [ ] Enhance job card display with comprehensive job details
+- [ ] Add job description section to job cards
+- [ ] Add job scope/services section
+- [ ] Add pricing breakdown on job cards
+- [ ] Create expandable job details section
+- [ ] Add photos/attachments display from job
+- [ ] Add assigned technician details
+- [ ] Add customer contact information
+- [ ] Add job notes/comments section
+- [ ] Create tests for job overview display
+- [ ] Test responsive layout on mobile
+
+## Phase 80: Integration Testing (Pending)
+- [ ] Test Job Status Timeline with real job data
+- [ ] Test Digital Signature capture and storage
+- [ ] Test Pay Now button with PayFast sandbox
+- [ ] Test Job Overview display with all data types
+- [ ] Test complete job workflow (timeline → signature → payment → completion)
+- [ ] Test mobile responsiveness for all features
+- [ ] Test error scenarios and edge cases
+- [ ] Performance test with large datasets
+- [ ] Create end-to-end integration tests
+
+## Phase 81: Final Checkpoint & Deployment (Pending)
+- [ ] Update todo.md with all completed items
+- [ ] Save final checkpoint with all features
+- [ ] Verify all tests passing (target: 150+ tests)
+- [ ] Review code quality and documentation
+- [ ] Prepare deployment documentation
+- [ ] Deploy to production
+- [ ] Monitor for issues and bugs

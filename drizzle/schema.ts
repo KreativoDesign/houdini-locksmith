@@ -579,3 +579,40 @@ export const portalLinkHistory = mysqlTable("portalLinkHistory", {
 });
 export type PortalLinkHistory = typeof portalLinkHistory.$inferSelect;
 export type InsertPortalLinkHistory = typeof portalLinkHistory.$inferInsert;
+
+
+// ─────────────────────────────────────────────
+// JOB STATUS HISTORY  (Track job status changes with timestamps)
+// ─────────────────────────────────────────────
+export const jobStatusHistory = mysqlTable("jobStatusHistory", {
+  id: int("id").autoincrement().primaryKey(),
+  jobCardId: int("jobCardId").notNull().references(() => jobCards.id, { onDelete: "cascade" }),
+  previousStatus: mysqlEnum("previousStatus", ["pending", "assigned", "in_progress", "completed", "cancelled"]),
+  newStatus: mysqlEnum("newStatus", ["pending", "assigned", "in_progress", "completed", "cancelled"]).notNull(),
+  changedBy: int("changedBy").references(() => users.id), // User who made the change
+  notes: text("notes"), // Optional notes about the status change
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type JobStatusHistory = typeof jobStatusHistory.$inferSelect;
+export type InsertJobStatusHistory = typeof jobStatusHistory.$inferInsert;
+
+// ─────────────────────────────────────────────
+// JOB SIGNATURES  (Digital signatures for job sign-off)
+// ─────────────────────────────────────────────
+export const jobSignatures = mysqlTable("jobSignatures", {
+  id: int("id").autoincrement().primaryKey(),
+  jobCardId: int("jobCardId").notNull().references(() => jobCards.id, { onDelete: "cascade" }),
+  signedBy: mysqlEnum("signedBy", ["technician", "client"]).notNull(),
+  signatureData: text("signatureData").notNull(), // Base64 encoded signature image
+  signerName: varchar("signerName", { length: 255 }).notNull(),
+  signerEmail: varchar("signerEmail", { length: 320 }),
+  signatureType: mysqlEnum("signatureType", ["digital_pad", "digital_upload", "manual"]).default("digital_pad").notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: text("userAgent"),
+  signedAt: timestamp("signedAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type JobSignature = typeof jobSignatures.$inferSelect;
+export type InsertJobSignature = typeof jobSignatures.$inferInsert;
