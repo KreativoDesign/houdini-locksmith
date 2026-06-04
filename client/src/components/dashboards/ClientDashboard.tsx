@@ -15,6 +15,9 @@ import {
 import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import { JobStatusTimeline } from "@/components/JobStatusTimeline";
+import { JobOverview } from "@/components/JobOverview";
+import { PayNowButton } from "@/components/PayNowButton";
 
 // Default test client ID for admin viewing client dashboard
 const DEFAULT_TEST_CLIENT_ID = 1;
@@ -58,6 +61,43 @@ export function ClientDashboard() {
 
   const quotes = Array.isArray(quotesData) ? quotesData : [];
   const jobs = Array.isArray(jobsData) ? jobsData : [];
+
+  // Fetch job timelines for all jobs
+  const [jobTimelines, setJobTimelines] = useState<Record<number, any[]>>({});
+  const [timelineLoading, setTimelineLoading] = useState(false);
+
+  // Fetch timelines for each job
+  useEffect(() => {
+    if (jobs.length > 0) {
+      setTimelineLoading(true);
+      const fetchTimelines = async () => {
+        const timelines: Record<number, any[]> = {};
+        for (const job of jobs) {
+          try {
+            // Note: This would require a tRPC query, but for now we'll use synthetic data
+            // TODO: Wire to trpc.jobTimeline.getJobTimeline(jobId) when available
+            timelines[job.id] = [
+              {
+                status: "pending",
+                timestamp: job.createdAt,
+                description: "Job created"
+              },
+              ...(job.status !== "pending" ? [{
+                status: job.status,
+                timestamp: new Date(),
+                description: `Job ${job.status}`
+              }] : [])
+            ];
+          } catch (error) {
+            console.error(`Failed to fetch timeline for job ${job.id}:`, error);
+          }
+        }
+        setJobTimelines(timelines);
+        setTimelineLoading(false);
+      };
+      fetchTimelines();
+    }
+  }, [jobs]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -274,11 +314,38 @@ export function ClientDashboard() {
                       </div>
                     </div>
 
+                    {/* Job Status Timeline */}
+                    <div className="mt-4 pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Status Timeline</h4>
+                      {timelineLoading ? (
+                        <p className="text-sm text-muted-foreground">Loading timeline...</p>
+                      ) : (
+                        <JobStatusTimeline 
+                          events={jobTimelines[job.id] || []}
+                          currentStatus={job.status}
+                        />
+                      )}
+                    </div>
+
+                    {/* Pay Now Button - Show if invoice is ready */}
+                    {job.status === "completed" && (
+                      <div className="mt-4">
+                        <PayNowButton
+                          invoiceId={job.id}
+                          amount={100}
+                          jobNumber={job.jobNumber}
+                          clientName="Client"
+                          clientEmail="client@example.com"
+                          size="md"
+                        />
+                      </div>
+                    )}
+
                     <Button 
                       className="w-full" 
                       variant="outline"
                       onClick={() => handleViewJobDetails(job.id)}
-                    >
+                      >
                       View Full Details
                       <ChevronRight className="h-4 w-4 ml-2" />
                     </Button>
