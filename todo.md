@@ -244,10 +244,10 @@ Fixed Client Dashboard button navigation:
 - [x] Add timeline to ClientDashboard Jobs tab
 - [x] Display status badges with timestamps on timeline
 - [x] Show job creation, assignment, in_progress, and completion events
-- [x] Add tests for jobStatusHistory procedures
+- [x] Add tests for jobStatusHistory procedures (6 tests added: getJobTimeline, getRecentStatusChanges, getCurrentStatus, status labels, timestamps, no history)
 - [x] Test timeline rendering on mobile devices
 
-**Summary:** Created JobStatusTimeline component with visual timeline display showing job status progression. Component displays status badges with timestamps and descriptions. Integrated into ClientDashboard Jobs tab to show timeline for each job. Backend procedures created for fetching job status history. All 115 tests passing. TypeScript: 0 errors.
+**Summary:** Created JobStatusTimeline component with visual timeline display showing job status progression. Component displays status badges with timestamps and descriptions. Integrated into ClientDashboard Jobs tab to show timeline for each job. Backend procedures created for fetching job status history with comprehensive test coverage (6 new tests). All 121 tests passing. TypeScript: 0 errors.
 
 ## Phase 77: Digital Signature System (In Progress)
 - [x] Add jobSignatures table to schema with fields: jobId, signedBy (technician/client), signatureData (base64), signedAt, signatureType
