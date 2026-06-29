@@ -768,3 +768,344 @@ export async function deletePushSubscription(id: number): Promise<void> {
   if (!db) throw new Error("Database not available");
   await db.delete(pushSubscriptions).where(eq(pushSubscriptions.id, id));
 }
+
+
+// ─────────────────────────────────────────────
+// MISSING HELPER FUNCTIONS
+// ─────────────────────────────────────────────
+
+export async function seedDepartments(depts?: InsertDepartment[]): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const defaultDepts: InsertDepartment[] = depts || [
+    { name: "Locksmith Services", description: "General locksmith services" },
+    { name: "Security Systems", description: "Security system installation and maintenance" },
+    { name: "Emergency Services", description: "24/7 emergency locksmith services" },
+    { name: "Commercial", description: "Commercial lock and security solutions" },
+  ];
+  
+  for (const dept of defaultDepts) {
+    const existing = await db.select().from(departments).where(eq(departments.name, dept.name)).limit(1);
+    if (!existing.length) {
+      await db.insert(departments).values(dept);
+    }
+  }
+}
+
+export async function updateDepartment(id: number, data: Partial<InsertDepartment>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(departments).set(data).where(eq(departments.id, id));
+}
+
+export async function countClients(): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  const result = await db.select({ count: sql`COUNT(*)` }).from(clients);
+  return (result[0]?.count as number) || 0;
+}
+
+export async function getClientWithEnquiries(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const client = await getClientById(id);
+  if (!client) return undefined;
+  const enquiryList = await listEnquiries({ clientId: id });
+  return {
+    ...client,
+    enquiries: enquiryList,
+  };
+}
+
+export async function upsertUser(data: InsertUser): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await getUserByOpenId(data.openId);
+  if (existing) {
+    await updateUser(existing.id, data);
+    return existing.id;
+  }
+  return createUser(data);
+}
+
+export async function getBookedSlotsForDate(slotDate: string): Promise<TimeSlot[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(timeSlots).where(
+    and(
+      eq(timeSlots.slotDate, slotDate),
+      eq(timeSlots.isBooked, true)
+    )
+  ).orderBy(timeSlots.startTime);
+}
+
+export async function getSlotsByTechnicianAndDate(technicianId: number, slotDate: string): Promise<TimeSlot[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(timeSlots).where(
+    and(
+      eq(timeSlots.technicianId, technicianId),
+      eq(timeSlots.slotDate, slotDate)
+    )
+  ).orderBy(timeSlots.startTime);
+}
+
+export async function deleteSignatureByJobCard(jobCardId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(signatures).where(eq(signatures.jobCardId, jobCardId));
+}
+
+
+export async function createEnquiry(data: InsertEnquiry): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(enquiries).values(data);
+  return result[0]?.insertId || 0;
+}
+
+export async function countEnquiries(filters?: {
+  status?: Enquiry["status"];
+  clientId?: number;
+  departmentId?: number;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) return 0;
+  const conditions = [];
+  if (filters?.status) conditions.push(eq(enquiries.status, filters.status));
+  if (filters?.clientId) conditions.push(eq(enquiries.clientId, filters.clientId));
+  if (filters?.departmentId) conditions.push(eq(enquiries.departmentId, filters.departmentId));
+  const result = await db.select({ count: sql`COUNT(*)` }).from(enquiries).where(
+    conditions.length ? and(...conditions) : undefined
+  );
+  return (result[0]?.count as number) || 0;
+}
+
+export async function getPushSubscriptionsForUserIds(userIds: number[]): Promise<PushSubscriptionRow[]> {
+  const db = await getDb();
+  if (!db) return [];
+  if (userIds.length === 0) return [];
+  return db.select().from(pushSubscriptions).where(inArray(pushSubscriptions.userId, userIds));
+}
+
+export async function deleteAvailability(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(employeeAvailability).where(eq(employeeAvailability.id, id));
+}
+
+export async function listAvailability(userId: number): Promise<EmployeeAvailability[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(employeeAvailability).where(eq(employeeAvailability.userId, userId)).orderBy(employeeAvailability.dayOfWeek);
+}
+
+export async function releaseTimeSlot(slotId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(timeSlots).set({ isBooked: false }).where(eq(timeSlots.id, slotId));
+}
+
+
+export async function setAvailability(data: InsertEmployeeAvailability): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(employeeAvailability).values(data);
+  return result[0]?.insertId || 0;
+}
+
+export async function updateAvailability(id: number, data: Partial<InsertEmployeeAvailability>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(employeeAvailability).set(data).where(eq(employeeAvailability.id, id));
+}
+
+export async function getJobItemById(id: number): Promise<JobItem | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(jobItems).where(eq(jobItems.id, id)).limit(1);
+  return result[0];
+}
+
+export async function getJobPricingByJobCard(jobCardId: number): Promise<JobPricing | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(jobPricing).where(eq(jobPricing.jobCardId, jobCardId)).limit(1);
+  return result[0];
+}
+
+export async function deleteJobDocument(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(jobDocuments).where(eq(jobDocuments.id, id));
+}
+
+export async function getJobDocumentById(id: number): Promise<JobDocument | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(jobDocuments).where(eq(jobDocuments.id, id)).limit(1);
+  return result[0];
+}
+
+
+export async function markNotificationRead(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(notifications).set({ isRead: true }).where(eq(notifications.id, id));
+}
+
+export async function markAllNotificationsRead(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(notifications).set({ isRead: true }).where(eq(notifications.userId, userId));
+}
+
+export async function createCatalogueItem(data: InsertPricingCatalogueItem): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(pricingCatalogue).values(data);
+  return result[0]?.insertId || 0;
+}
+
+export async function getCatalogueItemById(id: number): Promise<PricingCatalogueItem | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(pricingCatalogue).where(eq(pricingCatalogue.id, id)).limit(1);
+  return result[0];
+}
+
+export async function deleteCatalogueItem(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(pricingCatalogue).where(eq(pricingCatalogue.id, id));
+}
+
+export async function listCatalogueItems(category?: string): Promise<PricingCatalogueItem[]> {
+  const db = await getDb();
+  if (!db) return [];
+  const conditions = category ? [eq(pricingCatalogue.category, category)] : [];
+  return db.select().from(pricingCatalogue).where(
+    conditions.length ? and(...conditions) : undefined
+  ).orderBy(pricingCatalogue.category, pricingCatalogue.name);
+}
+
+
+export async function updateCatalogueItem(id: number, data: Partial<InsertPricingCatalogueItem>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(pricingCatalogue).set(data).where(eq(pricingCatalogue.id, id));
+}
+
+export async function seedDefaultCatalogueItems(): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const defaultItems: InsertPricingCatalogueItem[] = [
+    { category: "Locks", name: "Standard Lock", price: 50, description: "Standard door lock" },
+    { category: "Locks", name: "Smart Lock", price: 150, description: "Electronic smart lock" },
+    { category: "Services", name: "Lock Installation", price: 75, description: "Professional lock installation" },
+    { category: "Services", name: "Emergency Lockout", price: 100, description: "24/7 emergency lockout service" },
+  ];
+  
+  for (const item of defaultItems) {
+    const existing = await db.select().from(pricingCatalogue).where(eq(pricingCatalogue.name, item.name)).limit(1);
+    if (!existing.length) {
+      await db.insert(pricingCatalogue).values(item);
+    }
+  }
+}
+
+export async function getClientPortalToken(token: string): Promise<ClientPortalToken | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(clientPortalTokens).where(eq(clientPortalTokens.token, token)).limit(1);
+  return result[0];
+}
+
+export async function getClientPortalTokenByJobCard(jobCardId: number): Promise<ClientPortalToken | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(clientPortalTokens).where(eq(clientPortalTokens.jobCardId, jobCardId)).limit(1);
+  return result[0];
+}
+
+export async function upsertClientPortalToken(data: InsertClientPortalToken): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await getClientPortalTokenByJobCard(data.jobCardId);
+  if (existing) {
+    await db.update(clientPortalTokens).set(data).where(eq(clientPortalTokens.id, existing.id));
+    return existing.id;
+  }
+  return createClientPortalToken(data);
+}
+
+export async function upsertPushSubscription(data: InsertPushSubscriptionRow): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await db.select().from(pushSubscriptions).where(
+    and(
+      eq(pushSubscriptions.userId, data.userId),
+      eq(pushSubscriptions.endpoint, data.endpoint)
+    )
+  ).limit(1);
+  if (existing.length > 0) {
+    await db.update(pushSubscriptions).set(data).where(eq(pushSubscriptions.id, existing[0].id));
+    return existing[0].id;
+  }
+  return createPushSubscription(data);
+}
+
+
+export async function getPushSubscriptionsForUser(userId: number): Promise<PushSubscriptionRow[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(pushSubscriptions).where(eq(pushSubscriptions.userId, userId));
+}
+
+export async function generateQuoteNumber(): Promise<string> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const lastQuote = await db.select().from(quotes).orderBy(desc(quotes.id)).limit(1);
+  const lastNum = lastQuote[0]?.quoteNumber?.split("-").pop() || "0";
+  const nextNum = String(parseInt(lastNum) + 1).padStart(4, "0");
+  const year = new Date().getFullYear();
+  return `QT-${year}-${nextNum}`;
+}
+
+export async function getQuoteItemsByQuoteId(quoteId: number): Promise<QuoteItem[]> {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(quoteItems).where(eq(quoteItems.quoteId, quoteId));
+}
+
+export async function getQuoteTokenByQuoteId(quoteId: number): Promise<QuoteToken | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(quoteTokens).where(eq(quoteTokens.quoteId, quoteId)).limit(1);
+  return result[0];
+}
+
+export async function upsertQuoteToken(data: InsertQuoteToken): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await getQuoteTokenByQuoteId(data.quoteId);
+  if (existing) {
+    await db.update(quoteTokens).set(data).where(eq(quoteTokens.id, existing.id));
+    return existing.id;
+  }
+  return createQuoteToken(data);
+}
+
+export async function deleteQuoteItem(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(quoteItems).where(eq(quoteItems.id, id));
+}
+
+export async function updateQuoteItem(id: number, data: Partial<InsertQuoteItem>): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(quoteItems).set(data).where(eq(quoteItems.id, id));
+}

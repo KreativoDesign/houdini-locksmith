@@ -23,6 +23,7 @@ export default function JobCardForm() {
   const params = new URLSearchParams(search);
   const prefillClientId = params.get("clientId");
   const prefillEnquiryId = params.get("enquiryId");
+  const utils = trpc.useUtils();
 
   const [form, setForm] = useState({
     title: "",
@@ -42,7 +43,13 @@ export default function JobCardForm() {
   const createMutation = trpc.jobCards.create.useMutation({
     onSuccess: (job: any) => {
       toast.success(`Job card ${job.jobNumber} created`);
-      navigate(`/jobs/${job.id}`);
+      // Invalidate cache to ensure the detail page can fetch the newly created job
+      utils.jobCards.get.invalidate({ id: job.id });
+      utils.jobCards.list.invalidate();
+      // Add a small delay to ensure the job is persisted before navigating
+      setTimeout(() => {
+        navigate(`/jobs/${job.id}`);
+      }, 300);
     },
     onError: (err) => toast.error(err.message),
   });
@@ -99,22 +106,21 @@ export default function JobCardForm() {
                 required
               />
             </div>
+
             <div className="space-y-1.5">
               <Label>Description</Label>
               <Textarea
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                placeholder="Describe the work required…"
+                placeholder="Detailed description of the job..."
                 rows={3}
               />
             </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Priority</Label>
-                <Select
-                  value={form.priority}
-                  onValueChange={(v) => setForm((f) => ({ ...f, priority: v as typeof f.priority }))}
-                >
+                <Label>Priority *</Label>
+                <Select value={form.priority} onValueChange={(v) => setForm((f) => ({ ...f, priority: v as any }))}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -122,28 +128,35 @@ export default function JobCardForm() {
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="normal">Normal</SelectItem>
                     <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">
-                      <span className="flex items-center gap-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-                        Urgent
-                      </span>
-                    </SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
               <div className="space-y-1.5">
                 <Label>Scheduled Date</Label>
                 <Input
-                  type="datetime-local"
+                  type="date"
                   value={form.scheduledDate}
                   onChange={(e) => setForm((f) => ({ ...f, scheduledDate: e.target.value }))}
                 />
               </div>
             </div>
+
+            <div className="flex items-center gap-2 p-2 bg-blue-50 border border-blue-200 rounded">
+              <AlertTriangle className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <label className="flex items-center gap-2 cursor-pointer flex-1">
+                <Switch
+                  checked={form.requiresSignature}
+                  onCheckedChange={(v) => setForm((f) => ({ ...f, requiresSignature: v }))}
+                />
+                <span className="text-sm text-blue-700">Requires signature on completion</span>
+              </label>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Assignment */}
+        {/* Client & Department */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -152,34 +165,29 @@ export default function JobCardForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
-              <Label>Client</Label>
-              <Select
-                value={form.clientId}
-                onValueChange={(v) => setForm((f) => ({ ...f, clientId: v }))}
-              >
+              <Label>Client *</Label>
+              <Select value={form.clientId} onValueChange={(v) => setForm((f) => ({ ...f, clientId: v }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select client (optional)" />
+                  <SelectValue placeholder="Select a client..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {((clients as any).rows ?? clients as any[]).map((c: any) => (
+                  {(clients as any[]).map((c) => (
                     <SelectItem key={c.id} value={String(c.id)}>
-                      {c.name}
+                      {c.firstName} {c.lastName}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+
             <div className="space-y-1.5">
               <Label>Department *</Label>
-              <Select
-                value={form.departmentId}
-                onValueChange={(v) => setForm((f) => ({ ...f, departmentId: v }))}
-              >
+              <Select value={form.departmentId} onValueChange={(v) => setForm((f) => ({ ...f, departmentId: v }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select department" />
+                  <SelectValue placeholder="Select a department..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {(departments as any[]).map((d: any) => (
+                  {(departments as any[]).map((d) => (
                     <SelectItem key={d.id} value={String(d.id)}>
                       {d.name}
                     </SelectItem>
@@ -187,20 +195,17 @@ export default function JobCardForm() {
                 </SelectContent>
               </Select>
             </div>
+
             <div className="space-y-1.5">
-              <Label>Assign Technician</Label>
-              <Select
-                value={form.technicianId}
-                onValueChange={(v) => setForm((f) => ({ ...f, technicianId: v }))}
-              >
+              <Label>Assign Technician (optional)</Label>
+              <Select value={form.technicianId} onValueChange={(v) => setForm((f) => ({ ...f, technicianId: v }))}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Assign later" />
+                  <SelectValue placeholder="Select a technician..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {(technicians as any[]).map((t: any) => (
+                  {(technicians as any[]).map((t) => (
                     <SelectItem key={t.id} value={String(t.id)}>
-                      {t.name ?? t.email}
-                      {t.departmentName ? ` — ${t.departmentName}` : ""}
+                      {t.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -209,36 +214,13 @@ export default function JobCardForm() {
           </CardContent>
         </Card>
 
-        {/* Options */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Requires Client Signature</p>
-                <p className="text-xs text-muted-foreground">
-                  Job cannot be completed without a captured signature
-                </p>
-              </div>
-              <Switch
-                checked={form.requiresSignature}
-                onCheckedChange={(v) => setForm((f) => ({ ...f, requiresSignature: v }))}
-              />
-            </div>
-
-          </CardContent>
-        </Card>
-
-        <div className="flex gap-3 justify-end">
+        {/* Actions */}
+        <div className="flex gap-2 justify-end">
           <Button type="button" variant="outline" onClick={() => navigate("/jobs")}>
             Cancel
           </Button>
           <Button type="submit" disabled={createMutation.isPending}>
-            {createMutation.isPending ? "Creating…" : "Create Job Card"}
+            {createMutation.isPending ? "Creating..." : "Create Job Card"}
           </Button>
         </div>
       </form>
