@@ -10,6 +10,7 @@ import {
   getSignatureByJobCard,
   getUserById,
   listJobCards,
+  listJobCardsWithDetails,
   listJobItems,
   listJobDocuments,
   updateJobCard,
@@ -48,13 +49,13 @@ export const jobCardsRouter = router({
     )
     .query(async ({ input, ctx }) => {
       // Technicians only see their own jobs unless they are manager/admin
-      const filters = { ...input } as Parameters<typeof listJobCards>[0];
+      const filters = { ...input } as Parameters<typeof listJobCardsWithDetails>[0];
       if (ctx.user.role === "technician") {
         filters!.assignedTechnicianId = ctx.user.id;
       }
       if (input?.dateFrom) filters!.dateFrom = new Date(input.dateFrom);
       if (input?.dateTo) filters!.dateTo = new Date(input.dateTo);
-      return listJobCards(filters);
+      return listJobCardsWithDetails(filters);
     }),
 
   get: technicianProcedure

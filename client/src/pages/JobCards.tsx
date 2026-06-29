@@ -673,6 +673,7 @@ export default function JobCards() {
                   <TableHead>Client</TableHead>
                   <TableHead>Department</TableHead>
                   <TableHead>Technician</TableHead>
+                  <TableHead>Enquiry Taken By</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Priority</TableHead>
                   <TableHead>Scheduled</TableHead>
@@ -697,6 +698,7 @@ export default function JobCards() {
                       <TableCell className="text-sm text-muted-foreground">{job.clientName ?? "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{job.departmentName ?? "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{job.technicianName ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{job.enquiryTakenByName ?? "—"}</TableCell>
                       <TableCell><StatusBadge status={job.status as JobStatus} /></TableCell>
                       <TableCell><PriorityBadge priority={job.priority as Priority} /></TableCell>
                       <TableCell className="text-sm text-muted-foreground">
