@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowLeft, Briefcase, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Briefcase, AlertTriangle, Loader2 } from "lucide-react";
 
 export default function JobCardForm() {
   const [, navigate] = useLocation();
@@ -35,6 +35,7 @@ export default function JobCardForm() {
     requiresSignature: true,
     scheduledDate: "",
   });
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const { data: clients = [] } = trpc.clients.list.useQuery({ limit: 200 });
   const { data: departments = [] } = trpc.departments.list.useQuery();
@@ -42,16 +43,20 @@ export default function JobCardForm() {
 
   const createMutation = trpc.jobCards.create.useMutation({
     onSuccess: (job: any) => {
-      toast.success(`Job card ${job.jobNumber} created`);
+      // Show success toast
+      toast.success(`Job card ${job.jobNumber} created successfully!`, {
+        description: "Redirecting to job details...",
+      });
       // Invalidate cache to ensure the detail page can fetch the newly created job
       utils.jobCards.get.invalidate({ id: job.id });
       utils.jobCards.list.invalidate();
-      // Add a small delay to ensure the job is persisted before navigating
+      // Set loading state and add a small delay to ensure the job is persisted before navigating
+      setIsNavigating(true);
       setTimeout(() => {
         navigate(`/jobs/${job.id}`);
       }, 300);
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => toast.error(`Failed to create job card: ${err.message}`),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -216,11 +221,23 @@ export default function JobCardForm() {
 
         {/* Actions */}
         <div className="flex gap-2 justify-end">
-          <Button type="button" variant="outline" onClick={() => navigate("/jobs")}>
+          <Button type="button" variant="outline" onClick={() => navigate("/jobs")} disabled={createMutation.isPending || isNavigating}>
             Cancel
           </Button>
-          <Button type="submit" disabled={createMutation.isPending}>
-            {createMutation.isPending ? "Creating..." : "Create Job Card"}
+          <Button type="submit" disabled={createMutation.isPending || isNavigating}>
+            {isNavigating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Redirecting...
+              </>
+            ) : createMutation.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create Job Card"
+            )}
           </Button>
         </div>
       </form>
