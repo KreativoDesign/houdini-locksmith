@@ -43,9 +43,13 @@ export default function JobCardForm() {
 
   const createMutation = trpc.jobCards.create.useMutation({
     onSuccess: (job: any) => {
-      // Show success toast
-      toast.success(`Job card ${job.jobNumber} created successfully!`, {
-        description: "Redirecting to job details...",
+      // Get the selected client's name from the clients list
+      const selectedClient = (clients as any[]).find((c) => String(c.id) === form.clientId);
+      const clientName = selectedClient ? `${selectedClient.firstName} ${selectedClient.lastName}` : "Client";
+      
+      // Show success toast with job number and client name
+      toast.success(`Job card ${job.jobNumber} created!`, {
+        description: `Created for ${clientName}. Redirecting to job details...`,
       });
       // Invalidate cache to ensure the detail page can fetch the newly created job
       utils.jobCards.get.invalidate({ id: job.id });
@@ -56,15 +60,21 @@ export default function JobCardForm() {
         navigate(`/jobs/${job.id}`);
       }, 300);
     },
-    onError: (err) => toast.error(`Failed to create job card: ${err.message}`),
+    onError: (err) => toast.error(`Failed to create job card`, {
+      description: err.message,
+    }),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return toast.error("Title is required");
-    if (!form.departmentId) return toast.error("Department is required");
+    if (!form.departmentId) return toast.error("Department is required", {
+      description: "Please select a department",
+    });
 
-    if (!form.clientId) return toast.error("Client is required");
+    if (!form.clientId) return toast.error("Client is required", {
+      description: "Please select a client",
+    });
     createMutation.mutate({
       title: form.title.trim(),
       description: form.description.trim() || undefined,
