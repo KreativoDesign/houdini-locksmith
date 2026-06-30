@@ -56,7 +56,7 @@ import {
   pushSubscriptions,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
-import { and, desc, eq, gte, lte, inArray } from "drizzle-orm";
+import { and, desc, eq, gte, lte, inArray, sql } from "drizzle-orm";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 

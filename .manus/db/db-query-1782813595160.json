@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, assignedToId FROM enquiries ORDER BY createdAt DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute SELECT id, assignedToId FROM enquiries ORDER BY createdAt DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "390001",
+      "assignedToId": "360001"
+    },
+    {
+      "id": "360001",
+      "assignedToId": "NULL"
+    },
+    {
+      "id": "330001",
+      "assignedToId": "NULL"
+    },
+    {
+      "id": "300001",
+      "assignedToId": "NULL"
+    },
+    {
+      "id": "270001",
+      "assignedToId": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tassignedToId\n390001\t360001\n360001\tNULL\n330001\tNULL\n300001\tNULL\n270001\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 275
+}
