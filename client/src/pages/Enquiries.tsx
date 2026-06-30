@@ -26,20 +26,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Plus,
-  Search,
-  MoreHorizontal,
-  ClipboardList,
-  Eye,
-  Edit,
-  XCircle,
-  ChevronLeft,
-  ChevronRight,
-  ArrowRightCircle,
-} from "lucide-react";
+import { Plus, Search, MoreHorizontal, ClipboardList, Eye, Edit, XCircle, ChevronLeft, ChevronRight, ArrowRightCircle, Users } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const PAGE_SIZE = 25;
 
@@ -79,9 +69,14 @@ export default function Enquiries() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [serviceFilter, setServiceFilter] = useState<string>("all");
+  const [employeeFilter, setEmployeeFilter] = useState<string>("all");
   const [page, setPage] = useState(0);
+  const [sortBy, setSortBy] = useState<"date" | "employee">("date");
 
   const utils = trpc.useUtils();
+  
+  // Fetch technicians for filter dropdown
+  const { data: technicians = [] } = trpc.users.technicians.useQuery();
 
   const handleSearch = (v: string) => {
     setSearch(v);
@@ -95,15 +90,25 @@ export default function Enquiries() {
   const { data, isLoading } = trpc.enquiries.list.useQuery({
     status: statusFilter !== "all" ? (statusFilter as any) : undefined,
     serviceType: serviceFilter !== "all" ? (serviceFilter as any) : undefined,
+    assignedToId: employeeFilter !== "all" ? parseInt(employeeFilter) : undefined,
     clientId: presetClientId,
     search: debouncedSearch || undefined,
     limit: PAGE_SIZE,
     offset: page * PAGE_SIZE,
   });
 
-  const rows = data?.rows ?? [];
+  let rows = data?.rows ?? [];
   const total = data?.total ?? 0;
   const totalPages = Math.ceil(total / PAGE_SIZE);
+  
+  // Sort rows based on selected sort option
+  if (sortBy === "employee" && rows.length > 0) {
+    rows = [...rows].sort((a: any, b: any) => {
+      const nameA = a.assignedToName || "Unassigned";
+      const nameB = b.assignedToName || "Unassigned";
+      return nameA.localeCompare(nameB);
+    });
+  }
 
   const closeMutation = trpc.enquiries.close.useMutation({
     onSuccess: () => {
@@ -169,6 +174,28 @@ export default function Enquiries() {
               </SelectContent>
             </Select>
           </div>
+          <Select value={employeeFilter} onValueChange={(v) => { setEmployeeFilter(v); setPage(0); }}>
+            <SelectTrigger className="w-full sm:w-[150px]">
+              <SelectValue placeholder="All Employees" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Employees</SelectItem>
+              {(technicians as any[]).map((t: any) => (
+                <SelectItem key={t.id} value={String(t.id)}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+            <SelectTrigger className="w-full sm:w-[150px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Sort by Date</SelectItem>
+              <SelectItem value="employee">Sort by Employee</SelectItem>
+            </SelectContent>
+          </Select>
         </CardContent>
       </Card>
 
@@ -183,6 +210,7 @@ export default function Enquiries() {
                 <TableHead>Service</TableHead>
                 <TableHead>Priority</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Assigned To</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -246,6 +274,11 @@ export default function Enquiries() {
                           <span className={`h-2 w-2 rounded-full ${s.dot}`} />
                           <Badge variant={s.variant} className="text-xs">{s.label}</Badge>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm text-muted-foreground">
+                          {(e as any).assignedToName || "Unassigned"}
+                        </p>
                       </TableCell>
                       <TableCell>
                         <span className="text-sm text-muted-foreground">
