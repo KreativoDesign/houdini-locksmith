@@ -280,9 +280,14 @@ export default function Enquiries() {
                         </p>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(e.createdAt).toLocaleDateString()}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium">
+                            {new Date(e.createdAt).toLocaleDateString()}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(e.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell className="text-right" onClick={(ev) => ev.stopPropagation()}>
                         <DropdownMenu>
