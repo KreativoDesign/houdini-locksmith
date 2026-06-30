@@ -63,15 +63,18 @@ export const enquiriesRouter = router({
         priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
         source: z.enum(["phone", "email", "walk_in", "online", "referral"]).default("phone"),
         notes: z.string().optional(),
+        assignedToId: z.number().int().positive().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const client = await getClientById(input.clientId);
       if (!client) throw new TRPCError({ code: "NOT_FOUND", message: "Client not found" });
 
-      const id = await createEnquiry({ ...input, status: "new" });
+      // Use provided assignedToId or default to current user
+      const assignedToId = input.assignedToId ?? ctx.user.id;
+      const id = await createEnquiry({ ...input, status: "new", assignedToId });
 
-      // Notify owner of new enquiry
+      // Notify owner and assigned employee of new enquiry
       await emitNotification({
         type: "new_enquiry",
         title: "New Enquiry Received",
@@ -80,6 +83,18 @@ export const enquiriesRouter = router({
         entityId: id,
         notifyOwnerPush: true,
       });
+
+      // Notify assigned employee if different from current user
+      if (assignedToId !== ctx.user.id) {
+        await emitNotification({
+          type: "enquiry_assigned",
+          title: "Enquiry Assigned to You",
+          message: `Enquiry from ${client.firstName} ${client.lastName}: "${input.subject}"`,
+          entityType: "enquiry",
+          entityId: id,
+          userId: assignedToId,
+        });
+      }
 
       return { id };
     }),

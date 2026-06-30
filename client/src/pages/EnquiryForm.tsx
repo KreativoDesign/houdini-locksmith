@@ -14,9 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Save, UserPlus, Users } from "lucide-react";
+import { ArrowLeft, Save, UserPlus, Users, User } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { getServiceTypesForDepartment, SERVICE_TYPE_LABELS } from "@/lib/departmentServiceTypesStorage";
+import { useState, useEffect } from "react";
 
 type ClientMode = "existing" | "new";
 
@@ -26,6 +28,7 @@ export default function EnquiryForm() {
   const searchStr = useSearch();
   const urlParams = new URLSearchParams(searchStr);
   const presetClientId = urlParams.get("clientId") ? parseInt(urlParams.get("clientId")!) : undefined;
+  const { user } = useAuth();
 
   const isEdit = !!id;
   const enquiryId = id ? parseInt(id) : undefined;
@@ -49,6 +52,9 @@ export default function EnquiryForm() {
   const { data: depts } = trpc.departments.list.useQuery();
   const deptsList = depts ?? [];
 
+  // ── Load technicians/employees ──────────────────────────────────────────────
+  const { data: technicians = [] } = trpc.users.technicians.useQuery();
+
   // ── Enquiry form state ────────────────────────────────────────────────────
   const [form, setForm] = useState({
     clientId: presetClientId ? String(presetClientId) : "",
@@ -59,6 +65,7 @@ export default function EnquiryForm() {
     priority: "normal",
     source: "phone",
     notes: "",
+    assignedToId: user?.id ? String(user.id) : "",
   });
 
   // ── New client form state ─────────────────────────────────────────────────
@@ -71,6 +78,16 @@ export default function EnquiryForm() {
   });
 
   const [saving, setSaving] = useState(false);
+
+  // Get current user's name for display
+  const currentUserName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "";
+
+  // Initialize assignedToId when user loads
+  useEffect(() => {
+    if (!isEdit && user?.id && !form.assignedToId) {
+      setForm((p) => ({ ...p, assignedToId: String(user.id) }));
+    }
+  }, [user?.id, isEdit]);
 
   // Populate form when editing
   useEffect(() => {
@@ -85,6 +102,7 @@ export default function EnquiryForm() {
         priority: e.priority,
         source: e.source,
         notes: e.notes ?? "",
+        assignedToId: e.assignedToId ? String(e.assignedToId) : (user?.id ? String(user.id) : ""),
       });
     }
   }, [existing, isEdit]);
@@ -174,6 +192,7 @@ export default function EnquiryForm() {
           source: form.source as any,
           departmentId: form.departmentId ? parseInt(form.departmentId) : undefined,
           notes: form.notes || undefined,
+          assignedToId: form.assignedToId ? parseInt(form.assignedToId) : undefined,
         });
       } else {
         // Create new client first if needed
@@ -197,6 +216,7 @@ export default function EnquiryForm() {
           priority: form.priority as any,
           source: form.source as any,
           notes: form.notes || undefined,
+          assignedToId: form.assignedToId ? parseInt(form.assignedToId) : undefined,
         });
       }
     } finally {
@@ -378,6 +398,38 @@ export default function EnquiryForm() {
           </CardContent>
         </Card>
 
+        {/* ── Employee Assignment ── */}
+        <Card>
+          <CardHeader><CardTitle className="text-base">Assignment</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Assigned To
+              </Label>
+              <Select
+                value={form.assignedToId}
+                onValueChange={(v) => setForm((p) => ({ ...p, assignedToId: v }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select employee…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(technicians as any[]).map((t: any) => (
+                    <SelectItem key={t.id} value={String(t.id)}>
+                      {t.name}
+                      {user?.id === t.id && " (You)"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                {form.assignedToId === String(user?.id) ? `Currently assigned to you (${currentUserName})` : "Select who is handling this enquiry"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* ── Department & Service ── */}
         <Card>
           <CardHeader><CardTitle className="text-base">Department & Service</CardTitle></CardHeader>
@@ -445,7 +497,9 @@ export default function EnquiryForm() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label>Priority</Label>
+                <Label className="flex items-center gap-2">
+                <span>Priority</span>
+              </Label>
                 <Select
                   value={form.priority}
                   onValueChange={(v) => setForm((p) => ({ ...p, priority: v }))}
