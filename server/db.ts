@@ -246,31 +246,46 @@ export async function listEnquiries(filters?: {
   if (filters?.assignedToId) conditions.push(eq(enquiries.assignedToId, filters.assignedToId));
   if (filters?.serviceType) conditions.push(eq(enquiries.serviceType, filters.serviceType as any));
   
-  // Fetch enquiries with client and assigned user details
+  // Fetch raw enquiries first
   const enquiryRows = await db
     .select()
     .from(enquiries)
-    .leftJoin(clients, eq(enquiries.clientId, clients.id))
     .where(conditions.length ? and(...conditions) : undefined)
     .orderBy(desc(enquiries.createdAt))
     .limit(filters?.limit || 50)
     .offset(filters?.offset || 0);
   
-  // Enrich with assigned user names
+  // Enrich with client and assigned user names
   const enriched = await Promise.all(
-    enquiryRows.map(async (row) => {
+    enquiryRows.map(async (enquiry) => {
+      let clientFirstName = "";
+      let clientLastName = "";
+      let clientPhone = "";
       let assignedToName = "Unassigned";
-      if (row.enquiries.assignedToId) {
-        const user = await db.select().from(users).where(eq(users.id, row.enquiries.assignedToId)).limit(1);
+      
+      // Fetch client details
+      if (enquiry.clientId) {
+        const client = await db.select().from(clients).where(eq(clients.id, enquiry.clientId)).limit(1);
+        if (client.length > 0) {
+          clientFirstName = client[0].firstName || "";
+          clientLastName = client[0].lastName || "";
+          clientPhone = client[0].phone || "";
+        }
+      }
+      
+      // Fetch assigned user name
+      if (enquiry.assignedToId) {
+        const user = await db.select().from(users).where(eq(users.id, enquiry.assignedToId)).limit(1);
         if (user.length > 0) {
           assignedToName = `${user[0].firstName || ""} ${user[0].lastName || ""}`.trim();
         }
       }
+      
       return {
-        ...row.enquiries,
-        clientFirstName: row.clients?.firstName,
-        clientLastName: row.clients?.lastName,
-        clientPhone: row.clients?.phone,
+        ...enquiry,
+        clientFirstName,
+        clientLastName,
+        clientPhone,
         assignedToName,
       };
     })
