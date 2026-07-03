@@ -72,7 +72,7 @@ export const enquiriesRouter = router({
 
       // Use provided assignedToId or default to current user
       const assignedToId = input.assignedToId ?? ctx.user.id;
-      const id = await createEnquiry({ ...input, status: "new", assignedToId });
+      const id = await createEnquiry({ ...input, status: "new", assignedToId, createdById: ctx.user.id });
 
       // Notify owner and assigned employee of new enquiry
       await emitNotification({

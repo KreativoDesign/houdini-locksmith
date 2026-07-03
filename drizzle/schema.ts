@@ -100,6 +100,7 @@ export const enquiries = mysqlTable("enquiries", {
   /** Service type maps to a department specialisation */
   serviceType: mysqlEnum("serviceType", ["locksmithing", "security", "diagnostics", "workshop", "other"]).default("other"),
   assignedToId: int("assignedToId").references(() => users.id),
+  createdById: int("createdById").references(() => users.id), // who created the enquiry
   convertedToJobCardId: int("convertedToJobCardId"), // populated after conversion
   archived: boolean("archived").default(false).notNull(), // archived when converted to job card
   notes: text("notes"),

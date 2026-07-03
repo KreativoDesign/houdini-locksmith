@@ -309,6 +309,7 @@ export async function getEnquiryWithDetails(id: number) {
       source: enquiries.source,
       serviceType: enquiries.serviceType,
       assignedToId: enquiries.assignedToId,
+      createdById: enquiries.createdById,
       convertedToJobCardId: enquiries.convertedToJobCardId,
       notes: enquiries.notes,
       createdAt: enquiries.createdAt,
@@ -328,10 +329,20 @@ export async function getEnquiryWithDetails(id: number) {
     .leftJoin(users, eq(enquiries.assignedToId, users.id))
     .where(eq(enquiries.id, id))
     .limit(1);
-  return result[0];
+  const enquiry = result[0];
+  if (!enquiry || !enquiry.createdById) return enquiry;
+  
+  // Fetch creator name
+  const db2 = await getDb();
+  if (!db2) return enquiry;
+  const creatorResult = await db2.select({ name: users.name }).from(users).where(eq(users.id, enquiry.createdById)).limit(1);
+  return {
+    ...enquiry,
+    createdByName: creatorResult[0]?.name || undefined,
+  };
 }
 
-export async function updateEnquiry(id: number, data: Partial<InsertEnquiry>): Promise<void> {
+export async function updateEnquiry(id: number, data: Partial<InsertEnquiry & { createdById?: number }>): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(enquiries).set(data).where(eq(enquiries.id, id));

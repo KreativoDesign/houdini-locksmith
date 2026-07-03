@@ -37,6 +37,7 @@ import {
   CheckCircle2,
   Briefcase,
   FileText,
+  UserCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -332,6 +333,12 @@ export default function EnquiryDetail() {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Assigned To</span>
                   <span className="font-medium">{e.assignedToName}</span>
+                </div>
+              )}
+              {(e as any).createdByName && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground flex items-center gap-1.5"><User className="h-3.5 w-3.5" /> Created By</span>
+                  <span className="font-medium">{(e as any).createdByName}</span>
                 </div>
               )}
               <div className="flex items-center justify-between text-sm pt-2 border-t">
