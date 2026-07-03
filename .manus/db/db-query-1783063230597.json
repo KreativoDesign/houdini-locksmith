@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, jobNumber, title FROM jobCards WHERE id = 300001 LIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39BtYQyKHXzYXJi.357dd00e2ff3 --database RhVEFKENpu3fHPtnd8SHCE --execute SELECT id, jobNumber, title FROM jobCards WHERE id = 300001 LIMIT 1;",
+  "rows": [
+    {
+      "id": "300001",
+      "jobNumber": "JC-2026-0013",
+      "title": "TROUBLESHOOT"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tjobNumber\ttitle\n300001\tJC-2026-0013\tTROUBLESHOOT\n",
+  "stderr": "",
+  "execution_time_ms": 1746
+}

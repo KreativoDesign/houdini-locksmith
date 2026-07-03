@@ -1410,6 +1410,13 @@ export default function JobCardDetail() {
     { enabled: !!jobId, refetchInterval: 15_000 }
   );
 
+  // Fetch enquiry details to get creator name if job has an enquiryId
+  const enquiryId = (job as any)?.enquiryId as number | undefined;
+  const { data: enquiry } = trpc.enquiries.get.useQuery(
+    { id: enquiryId || 0, withDetails: true },
+    { enabled: !!enquiryId }
+  );
+
   // Filter technicians by the job card's department once the job is loaded
   const deptId = (job as any)?.departmentId as number | undefined;
   const { data: technicians = [] } = trpc.users.technicians.useQuery(
@@ -1874,17 +1881,28 @@ export default function JobCardDetail() {
                   </p>
                 </div>
               </div>
-              {/* Enquiry link */}
+              {/* Enquiry link and creator */}
               {j.enquiryId && (
-                <div className="flex items-start gap-2">
-                  <FileText className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">From Enquiry</p>
-                    <Link href={`/enquiries/${j.enquiryId}`} className="font-medium text-primary hover:underline text-xs">
-                      View enquiry →
-                    </Link>
+                <>
+                  <div className="flex items-start gap-2">
+                    <FileText className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">From Enquiry</p>
+                      <Link href={`/enquiries/${j.enquiryId}`} className="font-medium text-primary hover:underline text-xs">
+                        View enquiry →
+                      </Link>
+                    </div>
                   </div>
-                </div>
+                  {enquiry && (enquiry as any).createdByName && (
+                    <div className="flex items-start gap-2">
+                      <User className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Enquiry Created By</p>
+                        <p className="font-medium">{(enquiry as any).createdByName}</p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
               <Separator />
               {/* Timestamps */}
