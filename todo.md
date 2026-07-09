@@ -277,6 +277,15 @@ Fixed Client Dashboard button navigation:
 
 **Summary:** Created PayNowButton component with PayFast integration placeholder. Component displays on ClientDashboard when job is completed. Integrated into job cards with proper sizing and styling. Ready for PayFast API integration.
 
+## Phase 79.1: Enquiry Creator Display (Completed)
+- [x] Add createdById column to enquiries table
+- [x] Fetch enquiry creator name in JobCardDetail
+- [x] Display "Enquiry Created By" field in job card Details section
+- [x] Show creator name with User icon
+- [x] Test on job cards created from enquiries
+
+**Summary:** Added "Enquiry Created By" field to job card details page. When a job is created from an enquiry, the employee who created the enquiry is now displayed in the Details section with a User icon. Fetches enquiry data and displays creator name clearly.
+
 ## Phase 79: Job Overview/Summary (Completed)
 - [x] Enhance job card display with comprehensive job details
 - [x] Add job description section to job cards

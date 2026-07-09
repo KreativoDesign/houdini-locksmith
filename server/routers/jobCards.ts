@@ -517,4 +517,45 @@ export const jobCardsRouter = router({
       const jobs = await listJobCards({ clientId: input.clientId });
       return jobs;
     }),
+
+  /**
+   * Capture signature for a job card
+   */
+  captureSignature: technicianProcedure
+    .input(
+      z.object({
+        jobId: z.number().int().positive(),
+        signatureData: z.string(),
+        signedBy: z.enum(["technician", "client"]),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const job = await getJobCardById(input.jobId);
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+
+      if (ctx.user.role !== "admin" && ctx.user.id !== job.assignedTechnicianId) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Not authorized to sign this job" });
+      }
+
+      const fileName = `signatures/job-${input.jobId}-${input.signedBy}-${Date.now()}.png`;
+      const buffer = Buffer.from(input.signatureData.split(",")[1] || input.signatureData, "base64");
+      const { url } = await storagePut(fileName, buffer, "image/png");
+
+      return {
+        success: true,
+        signatureUrl: url,
+        signedAt: new Date(),
+        signedBy: input.signedBy,
+      };
+    }),
+
+  /**
+   * Get signatures for a job card
+   */
+  getSignatures: technicianProcedure
+    .input(z.object({ jobId: z.number().int().positive() }))
+    .query(async ({ input }) => {
+      const signature = await getSignatureByJobCard(input.jobId);
+      return signature || null;
+    }),
 });

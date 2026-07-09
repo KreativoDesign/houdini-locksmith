@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { desc, eq, and } from "drizzle-orm";
 import { z } from "zod";
+import { randomBytes } from "crypto";
 import {
   createQuote,
   generateQuoteNumber,
@@ -103,7 +104,7 @@ export const quotesRouter = router({
       const totals = calculateQuoteTotals(input.items, input.discount, input.discountPercent);
 
       // Create quote
-      const quote = await createQuote({
+      const quoteId = await createQuote({
         quoteNumber,
         clientId: input.clientId,
         createdById: ctx.user.id,
@@ -121,7 +122,7 @@ export const quotesRouter = router({
       for (const item of input.items) {
         const lineTotal = calculateLineTotal(item.quantity, item.unitPrice, item.discountPercent);
         await createQuoteItem({
-          quoteId: quote.id,
+          quoteId: quoteId as number,
           name: item.name,
           type: item.type,
           quantity: item.quantity,
@@ -131,7 +132,9 @@ export const quotesRouter = router({
         });
       }
 
-      return quote;
+      // Fetch and return the created quote
+      const quote = await getQuoteById(quoteId);
+      return quote || { id: quoteId, quoteNumber, clientId: input.clientId, createdById: ctx.user.id, status: "draft", description: input.description, total: totals.total, vat: totals.vat, grandTotal: totals.grandTotal, discount: input.discount, discountPercent: input.discountPercent, expiresAt: input.expiresAt, createdAt: new Date(), updatedAt: new Date() };
     }),
 
   /**
@@ -267,8 +270,17 @@ export const quotesRouter = router({
       // Generate or get existing token
       let token = await getQuoteTokenByQuoteId(quote.id);
       if (!token) {
-        const newToken = await upsertQuoteToken(quote.id, quote.expiresAt);
-        token = { quoteId: quote.id, token: newToken, expiresAt: quote.expiresAt, createdAt: new Date(), id: 0 };
+        const tokenString = randomBytes(32).toString('hex');
+        await upsertQuoteToken({
+          quoteId: quote.id,
+          token: tokenString,
+          expiresAt: quote.expiresAt,
+        });
+        token = await getQuoteTokenByQuoteId(quote.id);
+      }
+
+      if (!token) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create quote token" });
       }
 
       const items = await getQuoteItemsByQuoteId(quote.id);

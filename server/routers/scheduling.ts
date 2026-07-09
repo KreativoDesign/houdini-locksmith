@@ -4,7 +4,6 @@ import {
   bookTimeSlot,
   createTimeSlotsForDay,
   deleteAvailability,
-  getAvailabilityByUserAndDate,
   getAvailableSlots,
   getBookedSlotsForDate,
   getJobCardById,
@@ -76,8 +75,8 @@ export const schedulingRouter = router({
       const results = await Promise.all(
         input.technicianIds.flatMap((techId) =>
           dates.map(async (date) => {
-            const slots = await getBookedSlotsForDate(techId, date);
-            return slots.map((s) => ({ ...s, technicianId: techId, date }));
+            const slots = await getSlotsByTechnicianAndDate(techId, date);
+            return slots.filter((s) => s.isBooked).map((s) => ({ ...s, technicianId: techId, date }));
           })
         )
       );
@@ -93,7 +92,7 @@ export const schedulingRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return getBookedSlotsForDate(input.technicianId, input.date);
+      return getSlotsByTechnicianAndDate(input.technicianId, input.date).then((slots) => slots.filter((s) => s.isBooked));
     }),
 
   /** Get only available (unbooked) slots for a technician on a date */
@@ -135,7 +134,7 @@ export const schedulingRouter = router({
       }
 
       try {
-        await bookTimeSlot(input.slotId, input.jobCardId);
+        await bookTimeSlot(input.slotId);
         // Persist both the slot reference and the human-readable scheduled date/time
         // so the sidebar and other surfaces can display it without a slot join.
         const scheduledDate = new Date(`${slot.slotDate}T${slot.startTime}:00`);
@@ -215,7 +214,7 @@ export const schedulingRouter = router({
       if (ctx.user.role === "technician" && userId !== ctx.user.id) {
         throw new TRPCError({ code: "FORBIDDEN", message: "You can only view your own availability" });
       }
-      return listAvailability(userId, input?.fromDate, input?.toDate);
+      return listAvailability(userId);
     }),
 
   updateAvailability: technicianProcedure

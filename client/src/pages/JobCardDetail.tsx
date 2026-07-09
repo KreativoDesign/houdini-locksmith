@@ -63,6 +63,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import SignaturePad, { type SignaturePadHandle } from "@/components/SignaturePad";
+import { SignatureCaptureModal } from "@/components/SignatureCaptureModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Phone,
@@ -74,6 +75,7 @@ import {
   Zap,
   FileDown,
   Loader2,
+  PenTool,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -1404,6 +1406,8 @@ export default function JobCardDetail() {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [selectedTechId, setSelectedTechId] = useState<string>("");
+  const [signatureModalOpen, setSignatureModalOpen] = useState(false);
+  const [signatureType, setSignatureType] = useState<"technician" | "client">("technician");
 
   const { data: job, isLoading } = trpc.jobCards.get.useQuery(
     { id: jobId },
