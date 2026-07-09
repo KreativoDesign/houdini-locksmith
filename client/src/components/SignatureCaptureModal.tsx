@@ -47,11 +47,7 @@ export function SignatureCaptureModal({
 
     const dataUrl = signaturePadRef.current.getDataUrl?.();
     if (!dataUrl) {
-      toast({
-        title: "Error",
-        description: "Please sign before submitting",
-        variant: "destructive",
-      });
+      toast.error("Please sign before submitting");
       return;
     }
 

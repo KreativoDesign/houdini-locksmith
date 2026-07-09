@@ -72,7 +72,8 @@ export const clientPortalRouter = router({
       if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
 
       const expiresAt = calcExpiresAt(input.expiryDays ?? null);
-      const token = await upsertClientPortalToken(input.jobCardId, expiresAt);
+      const tokenRecord = await getClientPortalTokenByJobCard(input.jobCardId);
+      const token = tokenRecord?.token || '';
       const path = `/portal/${token}`;
       const url = input.origin ? `${input.origin}${path}` : path;
 
@@ -225,9 +226,9 @@ export const clientPortalRouter = router({
   getQuoteByToken: publicProcedure
     .input(z.object({ token: z.string() }))
     .query(async ({ input }) => {
-      const { getQuoteToken, getQuoteById, getQuoteItemsByQuoteId } = await import("../db");
+      const { getQuoteTokenByToken, getQuoteById, getQuoteItemsByQuoteId } = await import("../db");
       
-      const quoteToken = await getQuoteToken(input.token);
+      const quoteToken = await getQuoteTokenByToken(input.token);
       if (!quoteToken) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -249,9 +250,9 @@ export const clientPortalRouter = router({
   acceptQuote: publicProcedure
     .input(z.object({ token: z.string() }))
     .mutation(async ({ input }) => {
-      const { getQuoteToken, getQuoteById, updateQuote } = await import("../db");
+      const { getQuoteTokenByToken, getQuoteById, updateQuote } = await import("../db");
       
-      const quoteToken = await getQuoteToken(input.token);
+      const quoteToken = await getQuoteTokenByToken(input.token);
       if (!quoteToken) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -284,9 +285,9 @@ export const clientPortalRouter = router({
   rejectQuote: publicProcedure
     .input(z.object({ token: z.string(), reason: z.string().optional() }))
     .mutation(async ({ input }) => {
-      const { getQuoteToken, getQuoteById, updateQuote } = await import("../db");
+      const { getQuoteTokenByToken, getQuoteById, updateQuote } = await import("../db");
       
-      const quoteToken = await getQuoteToken(input.token);
+      const quoteToken = await getQuoteTokenByToken(input.token);
       if (!quoteToken) {
         throw new TRPCError({
           code: "NOT_FOUND",

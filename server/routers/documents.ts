@@ -32,7 +32,11 @@ export const documentsRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return listJobDocuments(input.jobCardId, input.category);
+      const docs = await listJobDocuments(input.jobCardId);
+      if (input.category) {
+        return docs.filter((d) => d.category === input.category);
+      }
+      return docs;
     }),
 
   /**

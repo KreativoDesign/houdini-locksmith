@@ -23,10 +23,10 @@ export const catalogueRouter = router({
       const isAdmin = ctx.user.role === "admin";
       // Seed defaults for admins on first call
       if (isAdmin) {
-        await seedDefaultCatalogueItems(ctx.user.id);
+        await seedDefaultCatalogueItems();
       }
       const activeOnly = isAdmin ? (input?.activeOnly ?? false) : true;
-      return listCatalogueItems(activeOnly);
+      return listCatalogueItems(activeOnly ? "part" : undefined);
     }),
 
   /** Create a new catalogue item (admin only) */
