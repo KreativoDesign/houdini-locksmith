@@ -1,6 +1,9 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
-import { upsertPushSubscription, deletePushSubscription, getPushSubscriptionsForUser } from "../db";
+import { upsertPushSubscription, deletePushSubscription, getPushSubscriptionsForUser, getDb } from "../db";
+import { pushSubscriptions } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 export const pushRouter = router({
   /**
@@ -17,7 +20,7 @@ export const pushRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await upsertPushSubscription(ctx.user.id, input);
+      await upsertPushSubscription({ userId: ctx.user.id, ...input } as any);
       return { success: true };
     }),
 
@@ -27,7 +30,13 @@ export const pushRouter = router({
   unsubscribe: protectedProcedure
     .input(z.object({ endpoint: z.string().url() }))
     .mutation(async ({ ctx, input }) => {
-      await deletePushSubscription(ctx.user.id, input.endpoint);
+      // Find the subscription by endpoint and delete it
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      const sub = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.endpoint, input.endpoint)).limit(1);
+      if (sub.length > 0) {
+        await deletePushSubscription(sub[0].id);
+      }
       return { success: true };
     }),
 

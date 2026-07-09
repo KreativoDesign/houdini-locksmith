@@ -17,7 +17,11 @@ export const notificationsRouter = router({
       }).optional()
     )
     .query(async ({ input, ctx }) => {
-      return listNotifications(ctx.user.id, input?.unreadOnly ?? false);
+      const notifications = await listNotifications(ctx.user.id);
+      if (input?.unreadOnly) {
+        return notifications.filter((n) => !n.isRead);
+      }
+      return notifications;
     }),
 
   /** Admin: list all system notifications */
@@ -28,7 +32,11 @@ export const notificationsRouter = router({
       }).optional()
     )
     .query(async ({ input }) => {
-      return listNotifications(undefined, input?.unreadOnly ?? false);
+      const notifications = await listNotifications();
+      if (input?.unreadOnly) {
+        return notifications.filter((n) => !n.isRead);
+      }
+      return notifications;
     }),
 
   markRead: technicianProcedure

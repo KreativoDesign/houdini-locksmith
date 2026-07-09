@@ -277,7 +277,7 @@ export async function listEnquiries(filters?: {
       if (enquiry.assignedToId) {
         const user = await db.select().from(users).where(eq(users.id, enquiry.assignedToId)).limit(1);
         if (user.length > 0) {
-          assignedToName = `${user[0].firstName || ""} ${user[0].lastName || ""}`.trim();
+          assignedToName = user[0].name || "";
         }
       }
       
@@ -626,7 +626,7 @@ export async function updateJobPricing(id: number, data: Partial<InsertJobPricin
 export async function listPricingCatalogueItems(): Promise<PricingCatalogueItem[]> {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(pricingCatalogue).orderBy(pricingCatalogue.category);
+  return db.select().from(pricingCatalogue).orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
 }
 
 export async function createPricingCatalogueItem(data: InsertPricingCatalogueItem): Promise<number> {
@@ -698,7 +698,7 @@ export async function listEmployeeAvailability(userId: number): Promise<Employee
     .select()
     .from(employeeAvailability)
     .where(eq(employeeAvailability.userId, userId))
-    .orderBy(employeeAvailability.dayOfWeek);
+    .orderBy(employeeAvailability.availableDate);
 }
 
 // ─────────────────────────────────────────────
@@ -948,7 +948,7 @@ export async function deleteAvailability(id: number): Promise<void> {
 export async function listAvailability(userId: number): Promise<EmployeeAvailability[]> {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(employeeAvailability).where(eq(employeeAvailability.userId, userId)).orderBy(employeeAvailability.dayOfWeek);
+  return db.select().from(employeeAvailability).where(eq(employeeAvailability.userId, userId)).orderBy(employeeAvailability.availableDate);
 }
 
 export async function releaseTimeSlot(slotId: number): Promise<void> {
@@ -1031,13 +1031,13 @@ export async function deleteCatalogueItem(id: number): Promise<void> {
   await db.delete(pricingCatalogue).where(eq(pricingCatalogue.id, id));
 }
 
-export async function listCatalogueItems(category?: string): Promise<PricingCatalogueItem[]> {
+export async function listCatalogueItems(type?: string): Promise<PricingCatalogueItem[]> {
   const db = await getDb();
   if (!db) return [];
-  const conditions = category ? [eq(pricingCatalogue.category, category)] : [];
+  const conditions = type ? [eq(pricingCatalogue.type, type as any)] : [];
   return db.select().from(pricingCatalogue).where(
     conditions.length ? and(...conditions) : undefined
-  ).orderBy(pricingCatalogue.category, pricingCatalogue.name);
+  ).orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
 }
 
 
@@ -1052,10 +1052,10 @@ export async function seedDefaultCatalogueItems(): Promise<void> {
   if (!db) throw new Error("Database not available");
   
   const defaultItems: InsertPricingCatalogueItem[] = [
-    { category: "Locks", name: "Standard Lock", price: 50, description: "Standard door lock" },
-    { category: "Locks", name: "Smart Lock", price: 150, description: "Electronic smart lock" },
-    { category: "Services", name: "Lock Installation", price: 75, description: "Professional lock installation" },
-    { category: "Services", name: "Emergency Lockout", price: 100, description: "24/7 emergency lockout service" },
+    { type: "part", name: "Standard Lock", defaultPrice: "50.00", description: "Standard door lock" },
+    { type: "part", name: "Smart Lock", defaultPrice: "150.00", description: "Electronic smart lock" },
+    { type: "service", name: "Lock Installation", defaultPrice: "75.00", description: "Professional lock installation" },
+    { type: "service", name: "Emergency Lockout", defaultPrice: "100.00", description: "24/7 emergency lockout service" },
   ];
   
   for (const item of defaultItems) {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2 } from "lucide-react";
 import SignaturePad, { SignaturePadHandle } from "./SignaturePad";
 import { trpc } from "@/lib/trpc";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 interface SignatureCaptureModalProps {
   open: boolean;
@@ -21,7 +21,7 @@ export function SignatureCaptureModal({
   signedBy,
   onSuccess,
 }: SignatureCaptureModalProps) {
-  const { toast } = useToast();
+
   const signaturePadRef = useRef<SignaturePadHandle>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -29,10 +29,7 @@ export function SignatureCaptureModal({
   const captureSignatureMutation = trpc.jobCards.captureSignature.useMutation({
     onSuccess: () => {
       setIsSuccess(true);
-      toast({
-        title: "Signature Captured",
-        description: `${signedBy === "technician" ? "Technician" : "Client"} signature has been saved successfully.`,
-      });
+      toast.success(`${signedBy === "technician" ? "Technician" : "Client"} signature has been saved successfully.`);
       setTimeout(() => {
         onOpenChange(false);
         setIsSuccess(false);
@@ -40,11 +37,7 @@ export function SignatureCaptureModal({
       }, 2000);
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to capture signature",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to capture signature");
       setIsSubmitting(false);
     },
   });

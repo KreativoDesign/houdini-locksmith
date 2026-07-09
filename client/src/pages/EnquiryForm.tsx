@@ -79,7 +79,7 @@ export default function EnquiryForm() {
   const [saving, setSaving] = useState(false);
 
   // Get current user's name for display
-  const currentUserName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "";
+  const currentUserName = user?.name || "";
 
   // Initialize assignedToId when user loads
   useEffect(() => {
