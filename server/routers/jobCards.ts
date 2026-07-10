@@ -541,20 +541,18 @@ export const jobCardsRouter = router({
       const buffer = Buffer.from(input.signatureData.split(",")[1] || input.signatureData, "base64");
       const { url } = await storagePut(fileName, buffer, "image/png");
 
-      // Import and use the new signature persistence function
-      const { createJobSignature } = await import("../db");
+      // Persist signature to database using existing createSignature function
       const signedAt = new Date();
-      const signatureId = await createJobSignature({
+      const signatureId = await createSignature({
         jobCardId: input.jobId,
-        signedBy: input.signedBy,
-        signatureData: input.signatureData,
+        signatureData: url, // Store the S3 URL
         signatureUrl: url,
         signedAt,
       });
 
       return {
         success: true,
-        signatureId,
+        signatureId: signatureId || 0,
         signatureUrl: url,
         signedAt,
         signedBy: input.signedBy,
@@ -567,8 +565,7 @@ export const jobCardsRouter = router({
   getSignatures: technicianProcedure
     .input(z.object({ jobId: z.number().int().positive() }))
     .query(async ({ input }) => {
-      const { getSignaturesByJobCard } = await import("../db");
-      const signatures = await getSignaturesByJobCard(input.jobId);
-      return signatures || [];
+      const signature = await getSignatureByJobCard(input.jobId);
+      return signature ? [signature] : [];
     }),
 });
