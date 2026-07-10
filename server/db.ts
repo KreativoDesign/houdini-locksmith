@@ -54,6 +54,7 @@ import {
   timeSlots,
   users,
   pushSubscriptions,
+  jobSignatures,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 import { and, desc, eq, gte, lte, inArray, sql } from "drizzle-orm";
@@ -1158,4 +1159,60 @@ export async function updateQuoteItem(id: number, data: Partial<InsertQuoteItem>
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(quoteItems).set(data).where(eq(quoteItems.id, id));
+}
+
+
+// ─────────────────────────────────────────────
+// JOB SIGNATURES
+// ─────────────────────────────────────────────
+
+export async function createJobSignature(data: {
+  jobCardId: number;
+  signedBy: "technician" | "client";
+  signatureData: string; // base64 or URL
+  signatureUrl?: string;
+  signedAt?: Date;
+}): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(jobSignatures).values({
+    jobCardId: data.jobCardId,
+    signedBy: data.signedBy,
+    signatureData: data.signatureData,
+    signatureUrl: data.signatureUrl,
+    signedAt: data.signedAt || new Date(),
+  });
+  
+  return result.insertId as number;
+}
+
+export async function getSignatureByJobCard(jobCardId: number): Promise<any | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db
+    .select()
+    .from(jobSignatures)
+    .where(eq(jobSignatures.jobCardId, jobCardId))
+    .limit(1);
+  
+  return result[0];
+}
+
+export async function getSignaturesByJobCard(jobCardId: number): Promise<any[]> {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db
+    .select()
+    .from(jobSignatures)
+    .where(eq(jobSignatures.jobCardId, jobCardId))
+    .orderBy(desc(jobSignatures.signedAt));
+}
+
+export async function deleteJobSignature(id: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(jobSignatures).where(eq(jobSignatures.id, id));
 }
