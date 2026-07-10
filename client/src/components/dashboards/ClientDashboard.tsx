@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -51,18 +50,8 @@ export function ClientDashboard() {
     },
   });
 
-  // Auto-dismiss success message after 4 seconds
-  useEffect(() => {
-    if (successMessage) {
-      const timer = setTimeout(() => setSuccessMessage(null), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [successMessage]);
-
-  const quotes = Array.isArray(quotesData) ? quotesData : [];
-  const jobs = Array.isArray(jobsData) ? jobsData : [];
-
-  // Fetch job timelines for all jobs
+  const quotes = quotesData || [];
+  const jobs = jobsData || [];
   const [jobTimelines, setJobTimelines] = useState<Record<number, any[]>>({});
   const [timelineLoading, setTimelineLoading] = useState(false);
 
@@ -70,32 +59,24 @@ export function ClientDashboard() {
   useEffect(() => {
     if (jobs.length > 0) {
       setTimelineLoading(true);
-      const fetchTimelines = async () => {
-        const timelines: Record<number, any[]> = {};
-        for (const job of jobs) {
-          try {
-            // Note: This would require a tRPC query, but for now we'll use synthetic data
-            // TODO: Wire to trpc.jobTimeline.getJobTimeline(jobId) when available
-            timelines[job.id] = [
-              {
-                status: "pending",
-                timestamp: job.createdAt,
-                description: "Job created"
-              },
-              ...(job.status !== "pending" ? [{
-                status: job.status,
-                timestamp: new Date(),
-                description: `Job ${job.status}`
-              }] : [])
-            ];
-          } catch (error) {
-            console.error(`Failed to fetch timeline for job ${job.id}:`, error);
-          }
-        }
-        setJobTimelines(timelines);
-        setTimelineLoading(false);
-      };
-      fetchTimelines();
+      // Create synthetic timelines based on job status
+      const timelines: Record<number, any[]> = {};
+      jobs.forEach((job) => {
+        timelines[job.id] = [
+          {
+            status: "pending",
+            timestamp: job.createdAt,
+            description: "Job created"
+          },
+          ...(job.status !== "pending" ? [{
+            status: job.status,
+            timestamp: new Date(),
+            description: `Job ${job.status}`
+          }] : [])
+        ];
+      });
+      setJobTimelines(timelines);
+      setTimelineLoading(false);
     }
   }, [jobs]);
 
@@ -116,244 +97,175 @@ export function ClientDashboard() {
     }
   };
 
-  const handleAcceptQuote = (quoteId: number) => {
-    acceptQuoteMutation.mutate({ id: quoteId });
+  const getJobStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending":
+        return { label: "Pending", color: "bg-gray-100 text-gray-800" };
+      case "assigned":
+        return { label: "Assigned", color: "bg-blue-100 text-blue-800" };
+      case "in_progress":
+        return { label: "In Progress", color: "bg-yellow-100 text-yellow-800" };
+      case "completed":
+        return { label: "Completed", color: "bg-green-100 text-green-800" };
+      case "cancelled":
+        return { label: "Cancelled", color: "bg-red-100 text-red-800" };
+      default:
+        return { label: status, color: "bg-gray-100 text-gray-800" };
+    }
   };
 
-  const handleViewQuoteDetails = (quoteId: number) => {
-    setLocation(`/admin/quotes/${quoteId}`);
-  };
-
-  const handleViewJobDetails = (jobId: number) => {
-    setLocation(`/jobs/${jobId}`);
-  };
+  if (quotesLoading || jobsLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading client data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      {/* Success Message */}
+    <div className="space-y-6 p-6">
       {successMessage && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
-          <CheckCircle2 className="h-5 w-5 text-green-600" />
-          <p className="text-green-800 font-medium">{successMessage}</p>
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
+          {successMessage}
         </div>
       )}
 
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">My Account</h1>
-        <p className="text-muted-foreground mt-1">
-          View your quotes and job status
-        </p>
-      </div>
-
-      {/* Tabs */}
       <Tabs defaultValue="quotes" className="w-full">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="quotes">Quotes & Invoices</TabsTrigger>
           <TabsTrigger value="jobs">Jobs</TabsTrigger>
         </TabsList>
 
-        {/* Quotes Tab */}
         <TabsContent value="quotes" className="space-y-4">
-          {quotesLoading ? (
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">Loading quotes...</p>
-              </CardContent>
-            </Card>
-          ) : quotes.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">No quotes at this time</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {quotes.map((quote) => {
+          <div className="grid gap-4">
+            {quotes.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>No quotes available</p>
+              </div>
+            ) : (
+              quotes.map((quote: any) => {
                 const statusBadge = getStatusBadge(quote.status);
-                const grandTotalNum = parseFloat(quote.grandTotal || "0");
                 return (
-                  <Card key={quote.id} className="hover:border-primary/50 transition-colors">
-                    <CardContent className="pt-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                            <p className="font-mono text-sm text-muted-foreground">
-                              {quote.quoteNumber}
-                            </p>
-                            <Badge className={statusBadge.color}>
-                              {statusBadge.label}
-                            </Badge>
-                          </div>
-                          <h3 className="text-lg font-semibold">{quote.description || "Quote"}</h3>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-green-600">
-                            ${grandTotalNum.toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="text-sm">
-                          <p className="text-muted-foreground">Created</p>
-                          <p className="font-medium">{new Date(quote.createdAt).toLocaleDateString()}</p>
-                        </div>
-                        <div className="text-sm">
-                          <p className="text-muted-foreground">Expires</p>
-                          <p className="font-medium">{quote.expiresAt ? new Date(quote.expiresAt).toLocaleDateString() : "N/A"}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-2">
-                        {quote.status === "sent" ? (
-                          <>
-                            <Button
-                              className="flex-1 bg-green-600 hover:bg-green-700"
-                              onClick={() => handleAcceptQuote(quote.id)}
-                              disabled={acceptQuoteMutation.isPending}
-                            >
-                              {acceptQuoteMutation.isPending ? (
-                                <span className="flex items-center gap-2">
-                                  <span className="animate-spin">⟳</span>
-                                  Processing...
-                                </span>
-                              ) : (
-                                <span className="flex items-center gap-2">
-                                  <CreditCard className="h-4 w-4" />
-                                  Accept Quote
-                                </span>
-                              )}
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              className="flex-1"
-                              onClick={() => handleViewQuoteDetails(quote.id)}
-                            >
-                              View Details
-                              <ChevronRight className="h-4 w-4 ml-2" />
-                            </Button>
-                          </>
-                        ) : (
-                          <Button 
-                            className="w-full" 
-                            variant="outline"
-                            onClick={() => handleViewQuoteDetails(quote.id)}
-                          >
-                            {quote.status === "accepted"
-                              ? "View Accepted Quote"
-                              : "View Quote Details"}
-                            <ChevronRight className="h-4 w-4 ml-2" />
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </TabsContent>
-
-        {/* Jobs Tab */}
-        <TabsContent value="jobs" className="space-y-4">
-          {jobsLoading ? (
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">Loading jobs...</p>
-              </CardContent>
-            </Card>
-          ) : jobs.length === 0 ? (
-            <Card>
-              <CardContent className="pt-6 text-center">
-                <p className="text-muted-foreground">No jobs at this time</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {jobs.map((job) => (
-                <Card key={job.id}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
+                  <div
+                    key={quote.id}
+                    className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start justify-between mb-3">
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <p className="font-mono text-sm text-muted-foreground">
-                            {job.jobNumber}
-                          </p>
-                          <Badge
-                            className={
-                              job.status === "completed"
-                                ? "bg-green-100 text-green-800"
-                                : job.status === "in_progress"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                            }
-                          >
-                            {job.status === "completed"
-                              ? "Completed"
-                              : job.status === "in_progress"
-                                ? "In Progress"
-                                : "Pending"}
-                          </Badge>
-                        </div>
-                        <h3 className="text-lg font-semibold">{job.title}</h3>
+                        <h3 className="font-semibold text-lg">{quote.quoteNumber}</h3>
+                        <p className="text-sm text-gray-600">
+                          Created: {new Date(quote.createdAt).toLocaleDateString()}
+                        </p>
                       </div>
+                      <Badge className={statusBadge.color}>{statusBadge.label}</Badge>
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Job Details */}
-                    <div className="grid grid-cols-2 gap-4 pb-4 border-b">
-                      <div className="text-sm">
-                        <p className="text-muted-foreground">Status</p>
-                        <p className="font-medium capitalize">{job.status}</p>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Amount</p>
+                        <p className="font-semibold">R{parseFloat(quote.totalAmount).toFixed(2)}</p>
                       </div>
-                      <div className="text-sm">
-                        <p className="text-muted-foreground">Scheduled Date</p>
-                        <p className="font-medium">{job.scheduledDate ? new Date(job.scheduledDate).toLocaleDateString() : "TBD"}</p>
+                      <div>
+                        <p className="text-sm text-gray-600">Status</p>
+                        <p className="font-semibold capitalize">{quote.status}</p>
                       </div>
                     </div>
 
-                    {/* Job Status Timeline */}
-                    <div className="mt-4 pt-4 border-t">
-                      <h4 className="text-sm font-semibold mb-3">Status Timeline</h4>
-                      {timelineLoading ? (
-                        <p className="text-sm text-muted-foreground">Loading timeline...</p>
-                      ) : (
-                        <JobStatusTimeline 
-                          events={jobTimelines[job.id] || []}
-                          currentStatus={job.status}
-                        />
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation(`/quotes/${quote.id}`)}
+                      >
+                        View Details
+                        <ChevronRight className="h-4 w-4 ml-2" />
+                      </Button>
+                      {quote.status === "sent" && (
+                        <Button
+                          size="sm"
+                          onClick={() => acceptQuoteMutation.mutate({ id: quote.id })}
+                          disabled={acceptQuoteMutation.isPending}
+                        >
+                          {acceptQuoteMutation.isPending ? "Processing..." : "Accept Quote"}
+                        </Button>
                       )}
                     </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </TabsContent>
 
-                    {/* Pay Now Button - Show if invoice is ready */}
-                    {job.status === "completed" && (
-                      <div className="mt-4">
-                        <PayNowButton
-                          invoiceId={job.id}
-                          amount={100}
-                          jobNumber={job.jobNumber}
-                          clientName="Client"
-                          clientEmail="client@example.com"
-                          size="md"
-                        />
+        <TabsContent value="jobs" className="space-y-4">
+          <div className="grid gap-4">
+            {jobs.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>No jobs available</p>
+              </div>
+            ) : (
+              jobs.map((job: any) => {
+                const statusBadge = getJobStatusBadge(job.status);
+                const timeline = jobTimelines[job.id] || [];
+                return (
+                  <div
+                    key={job.id}
+                    className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="font-semibold text-lg">{job.jobCardNumber}</h3>
+                        <p className="text-sm text-gray-600">{job.description}</p>
+                      </div>
+                      <Badge className={statusBadge.color}>{statusBadge.label}</Badge>
+                    </div>
+
+                    {timeline.length > 0 && (
+                      <div className="mb-4 p-3 bg-gray-50 rounded">
+                        <p className="text-sm font-semibold mb-2">Status Timeline</p>
+                        <div className="space-y-2">
+                          {timeline.map((event: any, idx: number) => (
+                            <div key={idx} className="text-sm flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-primary"></div>
+                              <span className="capitalize">{event.description}</span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(event.timestamp).toLocaleDateString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
 
-                    <Button 
-                      className="w-full" 
-                      variant="outline"
-                      onClick={() => handleViewJobDetails(job.id)}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation(`/jobs/${job.id}`)}
                       >
-                      View Full Details
-                      <ChevronRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                        View Details
+                        <ChevronRight className="h-4 w-4 ml-2" />
+                      </Button>
+                      {job.status === "completed" && (
+                        <PayNowButton 
+                          invoiceId={job.id} 
+                          amount={0}
+                          jobNumber={job.jobCardNumber}
+                          clientName="Client"
+                          clientEmail="client@example.com"
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
