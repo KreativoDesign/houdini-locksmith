@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, ChevronRight } from "lucide-react";
+import { ArrowLeft, Loader2, ChevronRight, Upload, X } from "lucide-react";
 
 export default function JobCardEditForm() {
   const { id } = useParams<{ id: string }>();
@@ -32,11 +32,17 @@ export default function JobCardEditForm() {
     scheduledDate: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadedPhotos, setUploadedPhotos] = useState<
+    Array<{ id: number; fileUrl: string; fileName: string }>
+  >([]);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const { data: job, isLoading: jobLoading } = trpc.jobCards.get.useQuery({ id: jobId });
   const { data: departments = [] } = trpc.departments.list.useQuery();
   const { data: technicians = [] } = trpc.users.technicians.useQuery();
+  const { data: existingDocuments } = trpc.documents.list.useQuery({ jobCardId: jobId });
   const updateMutation = trpc.jobCards.update.useMutation();
+  const uploadDocumentMutation = trpc.documents.upload.useMutation();
 
   // Populate form when job data loads
   useEffect(() => {
@@ -54,6 +60,53 @@ export default function JobCardEditForm() {
       });
     }
   }, [job]);
+
+  // Load existing photos
+  useEffect(() => {
+    if (existingDocuments && Array.isArray(existingDocuments)) {
+      const photos = (existingDocuments as any[]).filter((doc) =>
+        ["photo", "before_image", "after_image"].includes(doc.category)
+      );
+      setUploadedPhotos(photos);
+    }
+  }, [existingDocuments]);
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    setIsUploadingPhoto(true);
+    try {
+      for (const file of Array.from(files)) {
+        // Convert file to base64
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const dataUrl = event.target?.result as string;
+          try {
+            const result = await uploadDocumentMutation.mutateAsync({
+              jobCardId: jobId,
+              category: "photo",
+              fileName: file.name,
+              fileDataUrl: dataUrl,
+              description: `Site photo - ${new Date().toLocaleDateString()}`,
+            });
+            setUploadedPhotos((prev) => [
+              ...prev,
+              { id: result.id, fileUrl: result.fileUrl, fileName: file.name },
+            ]);
+            toast.success(`Photo "${file.name}" uploaded successfully`);
+          } catch (error: any) {
+            toast.error(`Failed to upload ${file.name}: ${error.message}`);
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    } finally {
+      setIsUploadingPhoto(false);
+      // Reset input
+      e.target.value = "";
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,6 +302,48 @@ export default function JobCardEditForm() {
               <Label htmlFor="requiresSignature" className="cursor-pointer">
                 Requires Signature
               </Label>
+            </div>
+
+            {/* Photo Upload */}
+            <div className="space-y-2">
+              <Label htmlFor="photos">Site Photos</Label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                <Label htmlFor="photo-input" className="cursor-pointer">
+                  <span className="text-blue-600 hover:text-blue-700 font-medium">
+                    Click to upload
+                  </span>
+                  <span className="text-gray-600"> or drag and drop</span>
+                </Label>
+                <p className="text-sm text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                <Input
+                  id="photo-input"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  disabled={isUploadingPhoto}
+                  className="hidden"
+                />
+              </div>
+
+              {/* Uploaded Photos */}
+              {uploadedPhotos.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                  {uploadedPhotos.map((photo) => (
+                    <div key={photo.id} className="relative group">
+                      <img
+                        src={photo.fileUrl}
+                        alt={photo.fileName}
+                        className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                      />
+                      <p className="text-xs text-gray-600 mt-1 truncate">
+                        {photo.fileName}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
