@@ -46,6 +46,7 @@ import JobCards from "./pages/JobCards";
 import JobCardDetail from "./pages/JobCardDetail";
 import TechnicianJobDetail from "./pages/TechnicianJobDetail";
 import JobCardForm from "./pages/JobCardForm";
+import JobCardEditForm from "./pages/JobCardEditForm";
 import Jobs from "./pages/Jobs";
 import JobDetail from "./pages/JobDetail";
 
@@ -271,6 +272,19 @@ function Router() {
         <AppShell>
           <ProtectedRoute component={Jobs} roles={["admin", "manager"]} />
         </AppShell>
+      </Route>
+      <Route path="/jobs/:id/edit">
+        {({ params }: any) => {
+          const jobId = params?.id;
+          if (!jobId) {
+            return null;
+          }
+          return (
+            <AppShell>
+              <ProtectedRoute component={() => <JobCardEditForm />} roles={["admin", "manager"]} />
+            </AppShell>
+          );
+        }}
       </Route>
       <Route path="/jobs/:id">
         {({ params }: any) => {

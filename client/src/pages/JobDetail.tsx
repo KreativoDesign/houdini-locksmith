@@ -122,20 +122,28 @@ export default function JobDetail({ id }: { id: string }) {
       </nav>
 
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setLocation("/jobs")}
-          className="hidden sm:flex"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Jobs
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">{(job as any).title}</h1>
-          <p className="text-sm text-gray-600 mt-1">Job #{(job as any).jobNumber}</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLocation("/jobs")}
+            className="hidden sm:flex"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Jobs
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">{(job as any).title}</h1>
+            <p className="text-sm text-gray-600 mt-1">Job #{(job as any).jobNumber}</p>
+          </div>
         </div>
+        <Button
+          onClick={() => setLocation(`/jobs/${jobId}/edit`)}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          Edit Job
+        </Button>
       </div>
 
       {/* Status and Priority */}
