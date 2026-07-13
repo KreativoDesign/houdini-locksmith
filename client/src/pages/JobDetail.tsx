@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, Plus, Clock, User, Phone, Mail, ChevronRight } from "lucide-react";
+import { ArrowLeft, Plus, Clock, User, Phone, Mail, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +27,16 @@ export default function JobDetail({ id }: { id: string }) {
 
   const { data: jobItemsData } = trpc.jobItems.list.useQuery({ jobCardId: jobId });
   const jobItems = Array.isArray(jobItemsData) ? jobItemsData : (jobItemsData as any)?.rows ?? [];
+  const { data: jobDocuments = [] } = trpc.documents.list.useQuery({ jobCardId: jobId });
   const updateStatusMutation = trpc.jobCards.updateStatus.useMutation();
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+
+  // Filter photos from documents
+  const photos = Array.isArray(jobDocuments)
+    ? (jobDocuments as any[]).filter((doc) =>
+        ["photo", "before_image", "after_image"].includes(doc.category)
+      )
+    : [];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -169,6 +178,37 @@ export default function JobDetail({ id }: { id: string }) {
               <p className="text-gray-700">{(job as any).description || "No description provided"}</p>
             </CardContent>
           </Card>
+
+          {/* Site Photos Gallery */}
+          {photos.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Photos ({photos.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {photos.map((photo: any) => (
+                    <div
+                      key={photo.id}
+                      className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-200 hover:border-blue-400 transition-colors"
+                      onClick={() => setSelectedPhoto(photo.fileUrl)}
+                    >
+                      <img
+                        src={photo.fileUrl}
+                        alt={photo.fileName}
+                        className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium transition-opacity">
+                          View
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Job Items */}
           <Card>
@@ -325,6 +365,31 @@ export default function JobDetail({ id }: { id: string }) {
           </Card>
         </div>
       </div>
+
+      {/* Photo Lightbox Modal */}
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedPhoto(null)}
+              className="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-100 transition-colors z-10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={selectedPhoto}
+              alt="Full size photo"
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
