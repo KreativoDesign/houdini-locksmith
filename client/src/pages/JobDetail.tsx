@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, Plus, Clock, User, Phone, Mail, ChevronRight, X } from "lucide-react";
+import { ArrowLeft, Plus, Clock, User, Phone, Mail, ChevronRight, X, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +29,7 @@ export default function JobDetail({ id }: { id: string }) {
   const jobItems = Array.isArray(jobItemsData) ? jobItemsData : (jobItemsData as any)?.rows ?? [];
   const { data: jobDocuments = [] } = trpc.documents.list.useQuery({ jobCardId: jobId });
   const updateStatusMutation = trpc.jobCards.updateStatus.useMutation();
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
   // Filter photos from documents
   const photos = Array.isArray(jobDocuments)
@@ -37,6 +37,34 @@ export default function JobDetail({ id }: { id: string }) {
         ["photo", "before_image", "after_image"].includes(doc.category)
       )
     : [];
+
+  const selectedPhoto = selectedPhotoIndex !== null ? photos[selectedPhotoIndex]?.fileUrl : null;
+
+  const handlePrevPhoto = () => {
+    if (selectedPhotoIndex === null) return;
+    setSelectedPhotoIndex(
+      selectedPhotoIndex === 0 ? photos.length - 1 : selectedPhotoIndex - 1
+    );
+  };
+
+  const handleNextPhoto = () => {
+    if (selectedPhotoIndex === null) return;
+    setSelectedPhotoIndex(
+      selectedPhotoIndex === photos.length - 1 ? 0 : selectedPhotoIndex + 1
+    );
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedPhotoIndex === null) return;
+      if (e.key === "ArrowLeft") handlePrevPhoto();
+      if (e.key === "ArrowRight") handleNextPhoto();
+      if (e.key === "Escape") setSelectedPhotoIndex(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPhotoIndex, photos.length]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -191,7 +219,7 @@ export default function JobDetail({ id }: { id: string }) {
                     <div
                       key={photo.id}
                       className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-200 hover:border-blue-400 transition-colors"
-                      onClick={() => setSelectedPhoto(photo.fileUrl)}
+                      onClick={() => setSelectedPhotoIndex(photos.indexOf(photo))}
                     >
                       <img
                         src={photo.fileUrl}
@@ -367,26 +395,62 @@ export default function JobDetail({ id }: { id: string }) {
       </div>
 
       {/* Photo Lightbox Modal */}
-      {selectedPhoto && (
+      {selectedPhotoIndex !== null && selectedPhoto && (
         <div
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedPhoto(null)}
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedPhotoIndex(null)}
         >
           <div
-            className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg overflow-hidden"
+            className="relative max-w-4xl max-h-[90vh] w-full flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button */}
             <button
-              onClick={() => setSelectedPhoto(null)}
-              className="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-100 transition-colors z-10"
+              onClick={() => setSelectedPhotoIndex(null)}
+              className="absolute top-4 right-4 bg-white rounded-full p-2 hover:bg-gray-100 transition-colors z-20"
+              title="Close (Esc)"
             >
               <X className="w-6 h-6" />
             </button>
-            <img
-              src={selectedPhoto}
-              alt="Full size photo"
-              className="w-full h-full object-contain"
-            />
+
+            {/* Photo Counter */}
+            <div className="absolute top-4 left-4 bg-white px-3 py-1 rounded-full text-sm font-medium z-20">
+              {selectedPhotoIndex + 1} / {photos.length}
+            </div>
+
+            {/* Image Container */}
+            <div className="flex-1 flex items-center justify-center bg-black rounded-lg overflow-hidden">
+              <img
+                src={selectedPhoto}
+                alt={`Photo ${selectedPhotoIndex + 1}`}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+
+            {/* Navigation Arrows */}
+            {photos.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrevPhoto}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-3 transition-all z-20"
+                  title="Previous (←)"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={handleNextPhoto}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-3 transition-all z-20"
+                  title="Next (→)"
+                >
+                  <ChevronRightIcon className="w-6 h-6" />
+                </button>
+              </>
+            )}
+
+            {/* Keyboard Hints */}
+            <div className="text-white text-center text-sm mt-4 opacity-75">
+              Use arrow keys to navigate • Press Esc to close
+            </div>
           </div>
         </div>
       )}
