@@ -280,7 +280,7 @@ function Router() {
           }
           return (
             <AppShell>
-              <ProtectedRoute component={() => <JobDetail id={jobId} />} roles={["admin", "manager"]} />
+              <ProtectedRoute component={() => <JobDetail id={String(jobId)} />} roles={["admin", "manager"]} />
             </AppShell>
           );
         }}

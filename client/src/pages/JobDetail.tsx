@@ -108,7 +108,7 @@ export default function JobDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -120,105 +120,56 @@ export default function JobDetail({ id }: { id: string }) {
           Back to Jobs
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">{job.title}</h1>
-          <p className="text-gray-500 mt-1">Job #{job.jobNumber}</p>
+          <h1 className="text-3xl font-bold">{(job as any).title}</h1>
+          <p className="text-sm text-gray-600 mt-1">Job #{(job as any).jobNumber}</p>
         </div>
       </div>
 
+      {/* Status and Priority */}
+      <div className="flex gap-4">
+        <Badge className={getStatusColor((job as any).status)}>
+          {(job as any).status}
+        </Badge>
+        <Badge className={getPriorityColor((job as any).priority)}>
+          {(job as any).priority}
+        </Badge>
+      </div>
+
+      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
+        {/* Left Column - Job Details */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Job Information */}
+          {/* Description */}
           <Card>
             <CardHeader>
-              <CardTitle>Job Information</CardTitle>
+              <CardTitle>Description</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Status</label>
-                  <Badge className={getStatusColor(job.status)}>
-                    {job.status.replace(/_/g, " ")}
-                  </Badge>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Priority</label>
-                  <Badge className={getPriorityColor(job.priority)}>
-                    {job.priority}
-                  </Badge>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-500">Description</label>
-                <p className="mt-1">{job.description || "No description provided"}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Created</label>
-                  <p className="mt-1">
-                    {new Date(job.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-500">Scheduled</label>
-                  <p className="mt-1">
-                    {job.scheduledDate
-                      ? new Date(job.scheduledDate).toLocaleDateString()
-                      : "Not scheduled"}
-                  </p>
-                </div>
-              </div>
+            <CardContent>
+              <p className="text-gray-700">{(job as any).description || "No description provided"}</p>
             </CardContent>
           </Card>
 
-          {/* Job Items/Services */}
+          {/* Job Items */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Services & Items</CardTitle>
-              <Button size="sm" className="bg-lime-500 hover:bg-lime-600 text-slate-950">
+              <CardTitle>Job Items</CardTitle>
+              <Button size="sm" variant="outline">
                 <Plus className="w-4 h-4 mr-2" />
                 Add Item
               </Button>
             </CardHeader>
             <CardContent>
-              {jobItems && jobItems.length > 0 ? (
-                <div className="space-y-3">
-                  {jobItems.filter((item: any) => item && item.id).map((item: any) => (
-                    <div
-                      key={item?.id || Math.random()}
-                      className="flex justify-between items-start p-3 border rounded-lg"
-                    >
-                      <div>
-                        <p className="font-medium">{item.description}</p>
-                        <p className="text-sm text-gray-500">
-                          Quantity: {item.quantity}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold">
-                          ${((Number(item.unitPrice) || 0) * (Number(item.quantity) || 0)).toFixed(2)}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          ${(Number(item.unitPrice) || 0).toFixed(2)} each
-                        </p>
-                      </div>
+              {jobItems.length === 0 ? (
+                <p className="text-gray-500">No items added yet</p>
+              ) : (
+                <div className="space-y-2">
+                  {jobItems.map((item: any) => (
+                    <div key={item.id} className="flex justify-between p-2 border rounded">
+                      <span>{item.description}</span>
+                      <span className="font-semibold">R {item.amount}</span>
                     </div>
                   ))}
-                  <div className="border-t pt-3 mt-3">
-                    <div className="flex justify-between font-bold">
-                      <span>Total:</span>
-                      <span>
-                        $
-                        {jobItems
-                          .filter((item: any) => item && item.id)
-                          .reduce((sum: number, item: any) => sum + (Number(item.unitPrice) || 0) * (Number(item.quantity) || 0), 0)
-                          .toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
                 </div>
-              ) : (
-                <p className="text-gray-500">No items added yet</p>
               )}
             </CardContent>
           </Card>
@@ -226,61 +177,33 @@ export default function JobDetail({ id }: { id: string }) {
           {/* Notes */}
           <Card>
             <CardHeader>
-              <CardTitle>Notes & Updates</CardTitle>
+              <CardTitle>Notes</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <Textarea
-                  placeholder="Add a note or update..."
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  rows={3}
-                />
-                <Button
-                  onClick={handleAddNote}
-                  className="bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold"
-                >
-                  Add Note
-                </Button>
-              </div>
-
-              {/* Timeline */}
-              <div className="space-y-3 mt-6">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  Timeline
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex gap-3">
-                    <div className="w-2 h-2 rounded-full bg-lime-500 mt-2 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium">Job Created</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(job.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
-                    <div>
-                      <p className="font-medium">Current Status</p>
-                      <p className="text-sm text-gray-500">
-                        {job.status.replace(/_/g, " ")}
-                      </p>
-                    </div>
-                  </div>
+              <Textarea
+                placeholder="Add a note..."
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+              />
+              <Button onClick={handleAddNote} className="w-full">
+                Add Note
+              </Button>
+              {(job as any).technicianNotes && (
+                <div className="mt-4 p-3 bg-gray-50 rounded border">
+                  <p className="text-sm font-semibold text-gray-700">Technician Notes:</p>
+                  <p className="text-sm text-gray-600 mt-1">{(job as any).technicianNotes}</p>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar */}
+        {/* Right Column - Sidebar */}
         <div className="space-y-6">
           {/* Status Update */}
           <Card>
             <CardHeader>
-              <CardTitle>Update Status</CardTitle>
+              <CardTitle className="text-lg">Update Status</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Select value={newStatus} onValueChange={setNewStatus}>
@@ -298,8 +221,8 @@ export default function JobDetail({ id }: { id: string }) {
               </Select>
               <Button
                 onClick={handleStatusUpdate}
-                className="w-full bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold"
                 disabled={updateStatusMutation.isPending}
+                className="w-full"
               >
                 {updateStatusMutation.isPending ? "Updating..." : "Update Status"}
               </Button>
@@ -307,56 +230,74 @@ export default function JobDetail({ id }: { id: string }) {
           </Card>
 
           {/* Assigned Technician */}
-          {job.assignedTechnicianId && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Assigned Technician</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <User className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="font-medium">Technician</p>
-                    <p className="text-sm text-gray-500">
-                      {job.technicianName || "Loading..."}
-                    </p>
-                  </div>
-                </div>
-
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Customer Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
+              <CardTitle className="text-lg">Assigned Technician</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="font-medium">{job.clientName || "Unknown"}</p>
-                <p className="text-sm text-gray-500">Customer</p>
-              </div>
-              {job.clientEmail && (
-                <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-gray-400" />
-                  <a
-                    href={`mailto:${job.clientEmail}`}
-                    className="text-lime-600 hover:underline text-sm"
-                  >
-                    {job.clientEmail}
-                  </a>
+            <CardContent>
+              {(job as any).technicianName ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-600" />
+                    <span className="font-semibold">{(job as any).technicianName}</span>
+                  </div>
+                  {(job as any).technicianEmail && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="w-4 h-4 text-gray-600" />
+                      <span>{(job as any).technicianEmail}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-gray-500">No technician assigned</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Client Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Client</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p className="font-semibold">{(job as any).clientName}</p>
+              {(job as any).clientEmail && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Mail className="w-4 h-4 text-gray-600" />
+                  <span>{(job as any).clientEmail}</span>
                 </div>
               )}
-              {job.clientPhone && (
-                <div className="flex items-center gap-3">
-                  <Phone className="w-5 h-5 text-gray-400" />
-                  <a
-                    href={`tel:${job.clientPhone}`}
-                    className="text-lime-600 hover:underline text-sm"
-                  >
-                    {job.clientPhone}
-                  </a>
+              {(job as any).clientPhone && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Phone className="w-4 h-4 text-gray-600" />
+                  <span>{(job as any).clientPhone}</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Dates */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              {(job as any).createdAt && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-600" />
+                  <span>Created: {new Date((job as any).createdAt).toLocaleDateString()}</span>
+                </div>
+              )}
+              {(job as any).startedAt && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-600" />
+                  <span>Started: {new Date((job as any).startedAt).toLocaleDateString()}</span>
+                </div>
+              )}
+              {(job as any).completedAt && (
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-600" />
+                  <span>Completed: {new Date((job as any).completedAt).toLocaleDateString()}</span>
                 </div>
               )}
             </CardContent>
