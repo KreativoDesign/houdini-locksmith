@@ -411,6 +411,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   });
   const { currentView, setCurrentView } = useViewContext();
 
+  // Determine if we're on a dashboard-only route where view switching applies
+  const isDashboardRoute = ['/admin', '/manager', '/technician', '/dashboard'].some(route => location.startsWith(route));
+
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
   }, [sidebarWidth]);
@@ -503,10 +506,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         )}
 
         <main className="flex-1 p-5 md:p-6">
-          {currentView === "admin" && children}
-          {currentView === "technician" && <TechnicianDashboard />}
-          {currentView === "client" && <ClientDashboard />}
-          {currentView === "user" && <FrontendPreview />}
+          {/* For dashboard routes, show the view switcher preview. For other routes, always show children */}
+          {isDashboardRoute ? (
+            <>
+              {currentView === "admin" && children}
+              {currentView === "technician" && <TechnicianDashboard />}
+              {currentView === "client" && <ClientDashboard />}
+              {currentView === "user" && <FrontendPreview />}
+            </>
+          ) : (
+            children
+          )}
         </main>
       </SidebarInset>
     </SidebarProvider>
