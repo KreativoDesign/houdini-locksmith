@@ -50,6 +50,7 @@ import {
   Trash2,
   X,
   XCircle,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -289,6 +290,18 @@ export default function QuoteDetails() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+        <button
+          onClick={() => navigate("/admin/quotes")}
+          className="hover:text-foreground transition-colors"
+        >
+          Quotes
+        </button>
+        <ChevronRight className="w-4 h-4" />
+        <span className="text-foreground font-medium">{quote?.quoteNumber || `Quote #${quoteId}`}</span>
+      </nav>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

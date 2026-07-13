@@ -38,6 +38,7 @@ import {
   Briefcase,
   FileText,
   UserCheck,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -201,6 +202,18 @@ export default function EnquiryDetail() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+        <button
+          onClick={() => navigate("/enquiries")}
+          className="hover:text-foreground transition-colors"
+        >
+          Enquiries
+        </button>
+        <ChevronRight className="w-4 h-4" />
+        <span className="text-foreground font-medium">Enquiry #{e.id}</span>
+      </nav>
+
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">

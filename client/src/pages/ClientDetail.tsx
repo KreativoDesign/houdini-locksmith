@@ -20,7 +20,9 @@ import {
   Plus,
   Calendar,
   AlertCircle,
+  ChevronRight,
 } from "lucide-react";
+import { useState } from "react";
 
 const STATUS_LABELS: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   new: { label: "New", variant: "default" },
@@ -83,6 +85,18 @@ export default function ClientDetail() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+        <button
+          onClick={() => navigate("/clients")}
+          className="hover:text-foreground transition-colors"
+        >
+          Clients
+        </button>
+        <ChevronRight className="w-4 h-4" />
+        <span className="text-foreground font-medium">{c.firstName} {c.lastName}</span>
+      </nav>
+
       {/* Back + Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate("/clients")}>
