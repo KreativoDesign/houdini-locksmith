@@ -546,8 +546,9 @@ export const jobCardsRouter = router({
       const signedAt = new Date();
       const signatureId = await createSignature({
         jobCardId: input.jobId,
-        signatureData: url, // Store the S3 URL
-        signatureUrl: url,
+        signatureUrl: url, // Store the S3 URL
+        signatureKey: fileName,
+        signerName: input.signedBy,
         signedAt,
       });
 

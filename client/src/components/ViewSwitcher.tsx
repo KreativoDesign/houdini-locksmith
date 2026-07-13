@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -51,7 +52,21 @@ const VIEW_OPTIONS = [
 ];
 
 export function ViewSwitcher({ currentView, onViewChange }: ViewSwitcherProps) {
+  const { user } = useAuth();
   const currentViewOption = VIEW_OPTIONS.find((v) => v.id === currentView);
+
+  // Filter views based on user role
+  const allowedViews = VIEW_OPTIONS.filter((view) => {
+    if (user?.role === "admin" || user?.role === "manager") {
+      // Admin and managers can see: admin, user (frontend), client
+      return ["admin", "user", "client"].includes(view.id);
+    }
+    if (user?.role === "technician") {
+      // Technicians can see: technician, user (frontend)
+      return ["technician", "user"].includes(view.id);
+    }
+    return false;
+  });
 
   return (
     <DropdownMenu>
@@ -69,7 +84,7 @@ export function ViewSwitcher({ currentView, onViewChange }: ViewSwitcherProps) {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>Switch View</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {VIEW_OPTIONS.map((view) => (
+        {allowedViews.map((view) => (
           <DropdownMenuItem
             key={view.id}
             onClick={() => onViewChange(view.id)}
