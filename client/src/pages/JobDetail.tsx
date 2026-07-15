@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight, ChevronLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,11 +9,18 @@ import { toast } from "sonner";
 
 export default function JobDetail({ id }: { id: string }) {
   const [, setLocation] = useLocation();
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const jobId = parseInt(id);
 
   const { data: job, isLoading, error } = trpc.jobCards.get.useQuery({
     id: jobId,
   });
+
+  const { data: photos } = trpc.documents.list.useQuery(
+    { jobCardId: jobId, category: "photo" },
+    { enabled: !!jobId }
+  );
+  const photoList = (photos as any[]) || [];
 
   if (isLoading) {
     return (
@@ -40,6 +47,27 @@ export default function JobDetail({ id }: { id: string }) {
   }
 
   const jobData = job as any;
+
+  const handleNextPhoto = () => {
+    if (selectedPhotoIndex !== null && photoList.length > 0) {
+      setSelectedPhotoIndex((selectedPhotoIndex + 1) % photoList.length);
+    }
+  };
+
+  const handlePrevPhoto = () => {
+    if (selectedPhotoIndex !== null && photoList.length > 0) {
+      setSelectedPhotoIndex(
+        (selectedPhotoIndex - 1 + photoList.length) % photoList.length
+      );
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (selectedPhotoIndex === null) return;
+    if (e.key === "ArrowRight") handleNextPhoto();
+    if (e.key === "ArrowLeft") handlePrevPhoto();
+    if (e.key === "Escape") setSelectedPhotoIndex(null);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -105,6 +133,37 @@ export default function JobDetail({ id }: { id: string }) {
               </p>
             </CardContent>
           </Card>
+
+          {/* Site Photos Gallery */}
+          {photoList.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Photos ({photoList.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {photoList.map((photo: any, index: number) => (
+                    <div
+                      key={photo.id || index}
+                      className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-200 hover:border-blue-400 transition-colors"
+                      onClick={() => setSelectedPhotoIndex(index)}
+                    >
+                      <img
+                        src={photo.fileUrl}
+                        alt={photo.fileName || `Photo ${index + 1}`}
+                        className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium transition-opacity">
+                          View
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Job Details */}
           <Card>
@@ -222,6 +281,69 @@ export default function JobDetail({ id }: { id: string }) {
           </Card>
         </div>
       </div>
+
+      {/* Lightbox Modal */}
+      {selectedPhotoIndex !== null && photoList.length > 0 && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedPhotoIndex(null)}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+        >
+          <div
+            className="relative max-w-4xl w-full max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedPhotoIndex(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+              title="Close (Esc)"
+            >
+              <X className="w-8 h-8" />
+            </button>
+
+            {/* Image */}
+            <div className="flex-1 flex items-center justify-center">
+              <img
+                src={photoList[selectedPhotoIndex]?.fileUrl}
+                alt={photoList[selectedPhotoIndex]?.fileName || "Photo"}
+                className="max-w-full max-h-[80vh] object-contain"
+              />
+            </div>
+
+            {/* Navigation Arrows */}
+            {photoList.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrevPhoto}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-3 transition-all z-20"
+                  title="Previous (←)"
+                >
+                  <ChevronLeft className="w-6 h-6 text-black" />
+                </button>
+                <button
+                  onClick={handleNextPhoto}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-3 transition-all z-20"
+                  title="Next (→)"
+                >
+                  <ChevronRight className="w-6 h-6 text-black" />
+                </button>
+              </>
+            )}
+
+            {/* Photo Counter and Hints */}
+            <div className="text-white text-center mt-4 space-y-2">
+              <div className="text-sm font-medium">
+                {selectedPhotoIndex + 1} / {photoList.length}
+              </div>
+              <div className="text-xs opacity-75">
+                Use arrow keys to navigate • Press Esc to close
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
