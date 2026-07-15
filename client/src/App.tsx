@@ -273,6 +273,11 @@ function Router() {
           <ProtectedRoute component={Jobs} roles={["admin", "manager"]} />
         </AppShell>
       </Route>
+      <Route path="/jobs/new">
+        <AppShell>
+          <ProtectedRoute component={JobCardForm} roles={["admin", "manager"]} />
+        </AppShell>
+      </Route>
       <Route path="/jobs/:id/edit">
         {({ params }: any) => {
           const jobId = params?.id;
@@ -298,11 +303,6 @@ function Router() {
             </AppShell>
           );
         }}
-      </Route>
-      <Route path="/jobs/new">
-        <AppShell>
-          <ProtectedRoute component={JobCardForm} roles={["admin", "manager"]} />
-        </AppShell>
       </Route>
 
       {/* ── Pricing ── */}
