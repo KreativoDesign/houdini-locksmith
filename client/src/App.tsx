@@ -299,7 +299,9 @@ function Router() {
           }
           return (
             <AppShell>
-              <ProtectedRoute component={() => <JobDetail id={String(jobId)} />} />
+              <ErrorBoundary>
+                <ProtectedRoute component={() => <JobDetail id={String(jobId)} />} />
+              </ErrorBoundary>
             </AppShell>
           );
         }}
