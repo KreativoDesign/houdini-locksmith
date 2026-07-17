@@ -72,7 +72,7 @@ import SchedulePage from "./pages/Schedule";
 
 /** Redirect unauthenticated users to /login */
 function ProtectedRoute({ component: Component, roles }: {
-  component: React.ComponentType;
+  component: React.ComponentType<any> | (() => React.ReactNode);
   roles?: Array<"admin" | "manager" | "technician">;
 }) {
   const { user, loading } = useAuth();
@@ -89,7 +89,18 @@ function ProtectedRoute({ component: Component, roles }: {
     return <Redirect to="/technician" />;
   }
 
-  return <Component />;
+  // Handle both component classes and function components
+  if (typeof Component === 'function') {
+    // Check if it's a React component or a render function
+    if (Component.prototype?.isReactComponent || Component.prototype?.render) {
+      const Comp = Component as React.ComponentType<any>;
+      return <Comp />;
+    }
+    // It's a render function, call it directly
+    return (Component as () => React.ReactNode)();
+  }
+  const Comp = Component as React.ComponentType<any>;
+  return <Comp />;
 }
 
 /** Role-aware dashboard redirect from /dashboard */
