@@ -75,41 +75,35 @@ function ProtectedRoute({ component: Component, roles }: {
   component: React.ComponentType<any> | (() => React.ReactNode);
   roles?: Array<"admin" | "manager" | "technician">;
 }) {
+  // IMPORTANT: All hooks must be called unconditionally before any conditional logic
   const { user, loading } = useAuth();
-  console.log("ProtectedRoute: loading=", loading, "user=", user?.id, "roles=", roles);
 
+  // Now handle conditional logic WITHOUT early returns
   if (loading) {
-    console.log("ProtectedRoute: still loading");
     return null;
   }
 
   if (!user) {
-    console.log("ProtectedRoute: no user, redirecting to login");
     return <Redirect to="/login" />;
   }
 
   if (roles && !roles.includes(user.role as any)) {
-    console.log("ProtectedRoute: user role", user.role, "not in allowed roles", roles);
     if (user.role === "admin") return <Redirect to="/admin" />;
     if (user.role === "manager") return <Redirect to="/manager" />;
     return <Redirect to="/technician" />;
   }
 
-  console.log("ProtectedRoute: rendering component", Component.name || "anonymous");
-  // Handle both component classes and function components
+  // Render the component
   if (typeof Component === 'function') {
     // Check if it's a React component or a render function
     if (Component.prototype?.isReactComponent || Component.prototype?.render) {
       const Comp = Component as React.ComponentType<any>;
-      console.log("ProtectedRoute: rendering as React component");
       return <Comp />;
     }
     // It's a render function, call it directly
-    console.log("ProtectedRoute: calling as render function");
     return (Component as () => React.ReactNode)();
   }
   const Comp = Component as React.ComponentType<any>;
-  console.log("ProtectedRoute: rendering as class component");
   return <Comp />;
 }
 
