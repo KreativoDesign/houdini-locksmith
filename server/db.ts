@@ -1034,10 +1034,14 @@ export async function deleteCatalogueItem(id: number): Promise<void> {
 export async function listCatalogueItems(type?: string): Promise<PricingCatalogueItem[]> {
   const db = await getDb();
   if (!db) return [];
-  const conditions = type ? [eq(pricingCatalogue.type, type as any)] : [];
-  return db.select().from(pricingCatalogue).where(
-    conditions.length ? and(...conditions) : undefined
-  ).orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
+  
+  let query = db.select().from(pricingCatalogue);
+  
+  if (type) {
+    query = query.where(eq(pricingCatalogue.type, type as any));
+  }
+  
+  return query.orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
 }
 
 

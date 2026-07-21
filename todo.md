@@ -374,6 +374,16 @@ Fixed Client Dashboard button navigation:
 - Mobile cards: hover shadows, smooth transitions, fade-in animations
 - All transitions use 200ms duration for responsive feel
 
+## Phase 84: Bug Fix - PricingCatalogue Query Error (Completed)
+- [x] Identified malformed SQL query in listCatalogueItems function
+- [x] Root cause: Passing undefined to .where() clause when no type filter provided
+- [x] Fixed by conditionally building query only when type filter exists
+- [x] Verified job detail page loads without SQL errors
+- [x] All job detail sections rendering correctly
+- [x] No console errors on /jobs/:id pages
+
+**Summary:** Fixed critical SQL query error in pricingCatalogue listing. The function was generating malformed SQL `where  = ?` when no type filter was provided. Changed to conditional query building that only adds WHERE clause when needed. Job detail pages now load without errors.
+
 ## Phase 81: Final Checkpoint & Deployment (Pending)
 - [ ] Update todo.md with all completed items
 - [ ] Save final checkpoint with all features
