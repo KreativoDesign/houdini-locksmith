@@ -48,7 +48,7 @@ import TechnicianJobDetail from "./pages/TechnicianJobDetail";
 import JobCardForm from "./pages/JobCardForm";
 import JobCardEditForm from "./pages/JobCardEditForm";
 import Jobs from "./pages/Jobs";
-import JobDetail from "./pages/JobDetail";
+
 
 // Pricing page
 import Pricing from "./pages/Pricing";
@@ -315,7 +315,7 @@ function Router() {
       <Route path="/jobs/:id">
         <AppShell>
           <ErrorBoundary>
-            <ProtectedRoute component={JobDetail} />
+            <ProtectedRoute component={JobCardDetail} />
           </ErrorBoundary>
         </AppShell>
       </Route>
