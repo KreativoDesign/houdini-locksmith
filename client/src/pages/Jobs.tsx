@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Filter, Search } from "lucide-react";
+import { Plus, Filter, Search, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { JobsList } from "@/components/jobs/JobsList";
 import { CreateJobModal } from "@/components/jobs/CreateJobModal";
@@ -50,45 +51,53 @@ export default function Jobs() {
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold h-10 sm:h-auto"
+          className="w-full sm:w-auto bg-lime-500 hover:bg-lime-600 text-slate-950 font-bold h-10 sm:h-auto group transition-all duration-300 hover:shadow-md"
         >
-          <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+          <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-2 group-hover:scale-110 transition-transform duration-300" />
           New Job
         </Button>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
-        <Card>
+        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-slate-400">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500">Total Jobs</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{stats.total}</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : stats.total}
+            </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-yellow-400">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500">Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-500">{stats.pending}</div>
+            <div className="text-3xl font-bold text-yellow-500">
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : stats.pending}
+            </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-blue-400">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500">In Progress</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-500">{stats.inProgress}</div>
+            <div className="text-3xl font-bold text-blue-500">
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : stats.inProgress}
+            </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-green-400">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-gray-500">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-500">{stats.completed}</div>
+            <div className="text-3xl font-bold text-green-500">
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : stats.completed}
+            </div>
           </CardContent>
         </Card>
       </div>
