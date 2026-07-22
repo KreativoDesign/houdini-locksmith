@@ -384,6 +384,17 @@ Fixed Client Dashboard button navigation:
 
 **Summary:** Fixed critical SQL query error in pricingCatalogue listing. The function was generating malformed SQL `where  = ?` when no type filter was provided. Changed to conditional query building that only adds WHERE clause when needed. Job detail pages now load without errors.
 
+## Phase 85: Bug Fix - Schedule Page React Hooks Error (Completed)
+- [x] Identified React Hooks error on /schedule page
+- [x] Root cause: Missing useState, useEffect, useMemo import from React
+- [x] Schedule component was calling useState without importing it
+- [x] Fixed by adding proper React imports
+- [x] Verified Schedule page loads without errors
+- [x] Department selector, week navigation, and content rendering correctly
+- [x] No console errors on /schedule page
+
+**Summary:** Fixed React Hooks error on Schedule page by adding missing React imports. The component was calling useState, useEffect, and useMemo without importing them, causing hook order violations. Schedule page now loads and displays correctly with department selection and week navigation working properly.
+
 ## Phase 81: Final Checkpoint & Deployment (Pending)
 - [ ] Update todo.md with all completed items
 - [ ] Save final checkpoint with all features
