@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { randomBytes } from "node:crypto";
 import {
   getClientById,
   getClientPortalToken,
@@ -73,7 +74,21 @@ export const clientPortalRouter = router({
 
       const expiresAt = calcExpiresAt(input.expiryDays ?? null);
       const tokenRecord = await getClientPortalTokenByJobCard(input.jobCardId);
-      const token = tokenRecord?.token || '';
+      
+      // Generate a new token if one doesn't exist
+      let token = tokenRecord?.token;
+      if (!token) {
+        // Generate a 64-character hex token
+        token = randomBytes(32).toString('hex');
+      }
+      
+      // Save/update the token in the database
+      await upsertClientPortalToken({
+        jobCardId: input.jobCardId,
+        token,
+        expiresAt,
+      });
+      
       const path = `/portal/${token}`;
       const url = input.origin ? `${input.origin}${path}` : path;
 
