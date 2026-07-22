@@ -395,6 +395,17 @@ Fixed Client Dashboard button navigation:
 
 **Summary:** Fixed React Hooks error on Schedule page by adding missing React imports. The component was calling useState, useEffect, and useMemo without importing them, causing hook order violations. Schedule page now loads and displays correctly with department selection and week navigation working properly.
 
+## Phase 86: Bug Fix - Error Loading Screens Audit & Fix (Completed)
+- [x] Audited all application pages for error loading screens
+- [x] Tested Dashboard, Quotes, Enquiries, Job Cards, Schedule, Clients, Pricing, Reports, Departments, Team, Settings
+- [x] Found and fixed Quotes page 404 error - added default path `/admin/quotes` to menu item
+- [x] Verified all pages load without error screens
+- [x] Confirmed Team page works at `/team` route
+- [x] Verified context-dependent pages (Pricing, Reports) show appropriate messages
+- [x] All navigation links working correctly
+
+**Summary:** Completed comprehensive audit of all application pages. Found and fixed one 404 error on Quotes page by adding the default path to the menu item. All other pages load correctly without error screens. Navigation is working properly across the entire application.
+
 ## Phase 81: Final Checkpoint & Deployment (Pending)
 - [ ] Update todo.md with all completed items
 - [ ] Save final checkpoint with all features

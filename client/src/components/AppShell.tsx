@@ -91,6 +91,7 @@ const ALL_MENU_ITEMS: MenuItem[] = [
   {
     icon: ReceiptText,
     label: "Quotes",
+    path: "/admin/quotes",
     roles: ["admin", "manager"],
     submenu: [
       { label: "New Quote", path: "/quotes/create" },
