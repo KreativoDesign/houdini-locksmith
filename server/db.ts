@@ -309,7 +309,7 @@ export async function getEnquiryWithDetails(id: number) {
       source: enquiries.source,
       serviceType: enquiries.serviceType,
       assignedToId: enquiries.assignedToId,
-      createdById: enquiries.createdById,
+      createdById: enquiries.createdById ?? null,
       convertedToJobCardId: enquiries.convertedToJobCardId,
       notes: enquiries.notes,
       createdAt: enquiries.createdAt,
@@ -463,7 +463,7 @@ export async function listJobCardsWithDetails(filters?: {
     .orderBy(desc(jobCards.createdAt));
   
   // Fetch enquiry employees separately to avoid alias conflicts
-  const enquiryEmployeeIds = [...new Set(results.map(r => r.enquiryAssignedToId).filter(Boolean))];
+  const enquiryEmployeeIds = Array.from(new Set(results.map(r => r.enquiryAssignedToId).filter(Boolean)));
   const enquiryEmployees: Record<number, User | undefined> = {};
   
   if (enquiryEmployeeIds.length > 0) {
@@ -1035,13 +1035,14 @@ export async function listCatalogueItems(type?: string): Promise<PricingCatalogu
   const db = await getDb();
   if (!db) return [];
   
-  let query = db.select().from(pricingCatalogue);
-  
   if (type) {
-    query = query.where(eq(pricingCatalogue.type, type as any));
+    return db.select().from(pricingCatalogue)
+      .where(eq(pricingCatalogue.type, type as any))
+      .orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
   }
   
-  return query.orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
+  return db.select().from(pricingCatalogue)
+    .orderBy(pricingCatalogue.sortOrder, pricingCatalogue.name);
 }
 
 
