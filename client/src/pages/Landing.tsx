@@ -169,7 +169,7 @@ Please follow up with this lead as soon as possible.
             <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] flex items-center justify-center">
               <div className="relative w-full h-full flex items-center justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-hero_b03acded.png" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-compressed_b94a0d36.png" 
                   alt="Houdini Mascot" 
                   className="h-full w-auto object-contain drop-shadow-2xl hover:drop-shadow-3xl transition-shadow duration-300"
                 />
