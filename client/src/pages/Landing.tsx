@@ -166,12 +166,12 @@ Please follow up with this lead as soon as possible.
             </div>
 
             {/* Right side - Technician image */}
-            <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] flex items-center justify-center order-first lg:order-last">
+            <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] flex items-center justify-center">
               <div className="relative w-full h-full flex items-center justify-center">
                 <img 
-                  src="/manus-storage/ChatGPTImageJul23,2026,11_26_54AM_94ab64c2.png" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-technician_49771972.png" 
                   alt="Houdini Technician" 
-                  className="w-full h-full object-contain drop-shadow-2xl hover:drop-shadow-3xl transition-shadow duration-300"
+                  className="h-full w-auto object-contain drop-shadow-2xl hover:drop-shadow-3xl transition-shadow duration-300"
                 />
               </div>
             </div>
