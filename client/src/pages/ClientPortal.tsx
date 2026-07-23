@@ -108,7 +108,7 @@ export default function ClientPortal() {
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-logo_e1c5aaa1.jpeg"
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png"
               alt="Houdini Locksmith"
               className="w-8 h-8 rounded-lg object-cover"
             />
