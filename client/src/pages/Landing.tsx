@@ -172,7 +172,7 @@ Please follow up with this lead as soon as possible.
                 <img 
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/WhatsAppImage2026-04-01at00.23.33_9335e76f.jpeg" 
                   alt="Houdini Mascot" 
-                  className="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 object-contain drop-shadow-2xl animate-pulse"
+                  className="w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 object-contain drop-shadow-2xl animate-pulse" style={{display: 'none'}}
                 />
               </div>
 
@@ -188,7 +188,7 @@ Please follow up with this lead as soon as possible.
                   <img 
                     src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent_f4c51513.png" 
                     alt="Locksmithing" 
-                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10" style={{display: 'none', objectFit: 'none'}}
                   />
                 </button>
               </div>
@@ -204,7 +204,7 @@ Please follow up with this lead as soon as possible.
                   <img 
                     src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent_e87806f7.png" 
                     alt="Security Systems" 
-                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10" style={{display: 'none'}}
                   />
                 </button>
               </div>
@@ -220,7 +220,7 @@ Please follow up with this lead as soon as possible.
                   <img 
                     src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent_ea7907e6.png" 
                     alt="Diagnostics" 
-                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10"
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain drop-shadow-2xl relative z-10" style={{display: 'none'}}
                   />
                 </button>
               </div>
