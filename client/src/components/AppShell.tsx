@@ -407,8 +407,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
 
   const [sidebarWidth, setSidebarWidth] = useState(() => {
-    const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
-    return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
+    try {
+      const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
+      return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
+    } catch (e) {
+      // localStorage access can throw SecurityError in some browsers (e.g., Safari private mode)
+      console.warn('localStorage access failed:', e);
+      return DEFAULT_WIDTH;
+    }
   });
   const { currentView, setCurrentView } = useViewContext();
 
@@ -416,7 +422,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const isDashboardRoute = ['/admin', '/manager', '/technician', '/dashboard'].some(route => location.startsWith(route));
 
   useEffect(() => {
-    localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
+    try {
+      localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
+    } catch (e) {
+      // localStorage access can throw SecurityError in some browsers
+      console.warn('localStorage setItem failed:', e);
+    }
   }, [sidebarWidth]);
 
   if (loading) return <DashboardLayoutSkeleton />;

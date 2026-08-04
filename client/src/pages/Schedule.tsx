@@ -154,7 +154,7 @@ export default function SchedulePage() {
         {/* Department selector */}
         <div className="flex items-center gap-3">
           <Select
-            value={selectedDeptId ? String(selectedDeptId) : ""}
+            value={selectedDeptId ? String(selectedDeptId) : undefined}
             onValueChange={(v) => setSelectedDeptId(Number(v))}
           >
             <SelectTrigger className="w-48 h-9">

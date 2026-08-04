@@ -248,7 +248,7 @@ export default function JobCardEditForm() {
                   <SelectValue placeholder="Select technician" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Unassigned</SelectItem>
+                  <SelectItem value="0">Unassigned</SelectItem>
                   {(technicians as any[]).map((tech) => (
                     <SelectItem key={tech.id} value={String(tech.id)}>
                       {tech.name}
