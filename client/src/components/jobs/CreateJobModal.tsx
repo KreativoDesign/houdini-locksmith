@@ -53,9 +53,9 @@ export function CreateJobModal({
   const { data: techniciansData } = trpc.users.technicians.useQuery();
 
   // Normalize data to arrays and filter out undefined entries
-  const clients = Array.isArray(clientsData) ? clientsData : (clientsData as any)?.rows ?? [];
-  const technicians = Array.isArray(techniciansData) ? techniciansData : (techniciansData as any)?.rows ?? [];
-  const deptsList = Array.isArray(departments) ? departments : (departments as any)?.rows ?? [];
+  const clients = Array.isArray(clientsData) ? clientsData : (clientsData && typeof clientsData === 'object' ? (clientsData as any)?.rows : undefined) ?? [];
+  const technicians = Array.isArray(techniciansData) ? techniciansData : (techniciansData && typeof techniciansData === 'object' ? (techniciansData as any)?.rows : undefined) ?? [];
+  const deptsList = Array.isArray(departments) ? departments : (departments && typeof departments === 'object' ? (departments as any)?.rows : undefined) ?? [];
   
   // Filter out any undefined or null entries
   const validClients = (clients as any[]).filter((c: any) => c && c.id != null);
