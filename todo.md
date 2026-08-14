@@ -680,3 +680,6 @@ Fixed Client Dashboard button navigation:
 **Verified results:** TypeScript is clean, production build succeeds, the dev server is healthy, and the post-hardening regression suite passes 170 tests. The production client bundle remains approximately 1.89 MB minified / 367 KB gzip, with a Vite chunk-size warning. The production dependency audit remains a release follow-up with 1 critical and 14 high advisories until dependency upgrades are isolated and validated.
 
 **Follow-ups:** Add database indexes for high-volume filters, split the client bundle with route-level lazy loading, move base64 uploads to direct storage, and remediate the dependency advisories. Live penetration/load testing remains outside the sandbox audit.
+
+- [ ] Move ignored pnpm patch and override settings into supported workspace configuration
+- [ ] Validate package-manager remediation without breaking the application or test suite
