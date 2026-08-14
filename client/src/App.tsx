@@ -72,7 +72,7 @@ import SchedulePage from "./pages/Schedule";
 
 /** Redirect unauthenticated users to /login */
 function ProtectedRoute({ component: Component, roles }: {
-  component: React.ComponentType<any> | (() => React.ReactNode);
+  component: React.ComponentType;
   roles?: Array<"admin" | "manager" | "technician">;
 }) {
   // IMPORTANT: All hooks must be called unconditionally before any conditional logic
@@ -93,18 +93,9 @@ function ProtectedRoute({ component: Component, roles }: {
     return <Redirect to="/technician" />;
   }
 
-  // Render the component
-  if (typeof Component === 'function') {
-    // Check if it's a React component or a render function
-    if (Component.prototype?.isReactComponent || Component.prototype?.render) {
-      const Comp = Component as React.ComponentType<any>;
-      return <Comp />;
-    }
-    // It's a render function, call it directly
-    return (Component as () => React.ReactNode)();
-  }
-  const Comp = Component as React.ComponentType<any>;
-  return <Comp />;
+  // Mount each page as a React component. Calling a function component directly
+  // attaches its hooks to ProtectedRoute and can corrupt the hook chain on navigation.
+  return <Component />;
 }
 
 /** Role-aware dashboard redirect from /dashboard */
@@ -172,6 +163,14 @@ function AuthRoute({ component: Component }: { component: React.ComponentType })
   return <Component />;
 }
 
+/** Root route that keeps authentication hooks inside a dedicated React component. */
+function RootRoute() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Landing />;
+  return <DashboardRedirect />;
+}
+
 // ─────────────────────────────────────────────
 // ROUTER
 // ─────────────────────────────────────────────
@@ -189,12 +188,7 @@ function Router() {
 
       {/* Root → show landing for unauthenticated, redirect for authenticated */}
       <Route path="/">
-        {(() => {
-          const { user, loading } = useAuth();
-          if (loading) return null;
-          if (!user) return <Landing />;
-          return <DashboardRedirect />;
-        })()}
+        <RootRoute />
       </Route>
       <Route path="/dashboard">
         <DashboardRedirect />
@@ -294,17 +288,9 @@ function Router() {
         </AppShell>
       </Route>
       <Route path="/jobs/:id/edit">
-        {({ params }: any) => {
-          const jobId = params?.id;
-          if (!jobId) {
-            return null;
-          }
-          return (
-            <AppShell>
-              <ProtectedRoute component={() => <JobCardEditForm />} roles={["admin", "manager"]} />
-            </AppShell>
-          );
-        }}
+        <AppShell>
+          <ProtectedRoute component={JobCardEditForm} roles={["admin", "manager"]} />
+        </AppShell>
       </Route>
       <Route path="/jobs/:id">
         <AppShell>
