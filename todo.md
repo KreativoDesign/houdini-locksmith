@@ -657,3 +657,15 @@ Fixed Client Dashboard button navigation:
 **External blockers:** `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY`, and related PayFast configuration are missing. `PayNowButton.tsx` still contains a PayFast placeholder, so live payments are not configured. The Resend API key is valid, but `houdini.co.za` is reported by Resend with status `not_started`, so production email delivery from that sender domain is not verified. `VITE_FRONTEND_URL` is not set; quote URLs currently use the published-domain fallback in `server/routers/quotes.ts`, but an explicit production URL is recommended.
 
 **Audit checks:** Resend domain listing succeeded with the configured key; the full test suite passed with 165 tests; TypeScript and production build checks passed; the development server remained healthy.
+
+
+## Phase 99: Security and Performance Audit (In Progress)
+- [ ] Audit dependency vulnerabilities and third-party package risks
+- [ ] Audit authentication state, session cookie security, and RBAC procedure guards
+- [ ] Audit input validation, SQL injection prevention (Drizzle ORM), and secure file handling
+- [ ] Audit client bundle composition, chunk sizes, and static asset delivery
+- [ ] Audit database query efficiency, indexing, and server memory footprint
+- [ ] Verify security and performance regression tests (all 165 tests passing)
+- [ ] Save an audited security and performance checkpoint
+
+**Security and Performance Scope:** Covers static code analysis, authorization middleware verification, database query patterns, and bundle generation metrics. Live DDoS resilience, penetration testing, and infrastructure-level WAF rules require live production infrastructure management.
