@@ -13,6 +13,9 @@ import { router } from "../_core/trpc";
 import { storagePut } from "../storage";
 import { sendSignatureConfirmationEmail } from "../_core/email";
 
+const MAX_SIGNATURE_SIZE = 2 * 1024 * 1024;
+const MAX_SIGNATURE_DATA_URL_LENGTH = 3 * 1024 * 1024;
+
 /** Convert a base64 data URL to a Buffer */
 function dataUrlToBuffer(dataUrl: string): { buffer: Buffer; mimeType: string } {
   const matches = dataUrl.match(/^data:(.+);base64,(.+)$/);
@@ -43,7 +46,7 @@ export const signaturesRouter = router({
       z.object({
         jobCardId: z.number().int().positive(),
         /** Base64 data URL, e.g. "data:image/png;base64,iVBOR..." */
-        signatureDataUrl: z.string().min(10),
+        signatureDataUrl: z.string().min(10).max(MAX_SIGNATURE_DATA_URL_LENGTH),
         signerName: z.string().min(1).max(200),
         signerRole: z.string().max(100).optional(),
         ipAddress: z.string().max(45).optional(),
@@ -72,7 +75,14 @@ export const signaturesRouter = router({
       let signatureUrl: string;
       let signatureKey: string;
       try {
-        const { buffer, mimeType } = dataUrlToBuffer(input.signatureDataUrl);
+        const { buffer, mimeType: detectedMimeType } = dataUrlToBuffer(input.signatureDataUrl);
+        const mimeType = detectedMimeType.toLowerCase().split(";")[0] ?? "";
+        if (mimeType !== "image/png" || buffer.length > MAX_SIGNATURE_SIZE) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Signature must be a PNG image no larger than 2 MB.",
+          });
+        }
         const timestamp = Date.now();
         signatureKey = `jobs/${input.jobCardId}/signatures/sig-${timestamp}.png`;
         const result = await storagePut(signatureKey, buffer, mimeType);
@@ -146,7 +156,7 @@ export const signaturesRouter = router({
     .input(
       z.object({
         jobCardId: z.number().int().positive(),
-        signatureDataUrl: z.string().min(10),
+        signatureDataUrl: z.string().min(10).max(MAX_SIGNATURE_DATA_URL_LENGTH),
         signerName: z.string().min(1).max(200),
         signerRole: z.string().max(100).optional(),
         ipAddress: z.string().max(45).optional(),
@@ -166,7 +176,14 @@ export const signaturesRouter = router({
       let signatureUrl: string;
       let signatureKey: string;
       try {
-        const { buffer, mimeType } = dataUrlToBuffer(input.signatureDataUrl);
+        const { buffer, mimeType: detectedMimeType } = dataUrlToBuffer(input.signatureDataUrl);
+        const mimeType = detectedMimeType.toLowerCase().split(";")[0] ?? "";
+        if (mimeType !== "image/png" || buffer.length > MAX_SIGNATURE_SIZE) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Signature must be a PNG image no larger than 2 MB.",
+          });
+        }
         const timestamp = Date.now();
         signatureKey = `jobs/${input.jobCardId}/signatures/sig-${timestamp}.png`;
         const result = await storagePut(signatureKey, buffer, mimeType);

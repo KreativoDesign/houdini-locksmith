@@ -56,7 +56,7 @@ import {
   pushSubscriptions,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
-import { and, desc, eq, gte, lte, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lte, inArray, like, or, sql } from "drizzle-orm";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -196,19 +196,39 @@ export async function updateClient(id: number, data: Partial<InsertClient>): Pro
   await db.update(clients).set(data).where(eq(clients.id, id));
 }
 
-export async function listClients(filters?: {
-  isActive?: boolean;
+export interface ClientListFilters {
+  includeInactive?: boolean;
   search?: string;
-}): Promise<Client[]> {
+  limit?: number;
+  offset?: number;
+}
+
+export async function listClients(filters?: ClientListFilters): Promise<Client[]> {
   const db = await getDb();
   if (!db) return [];
   const conditions = [];
-  if (filters?.isActive !== undefined) conditions.push(eq(clients.isActive, filters.isActive));
+  if (!filters?.includeInactive) conditions.push(eq(clients.isActive, true));
+
+  const search = filters?.search?.trim();
+  if (search) {
+    const pattern = `%${search}%`;
+    conditions.push(
+      or(
+        like(clients.firstName, pattern),
+        like(clients.lastName, pattern),
+        like(clients.email, pattern),
+        like(clients.phone, pattern)
+      )
+    );
+  }
+
   return db
     .select()
     .from(clients)
     .where(conditions.length ? and(...conditions) : undefined)
-    .orderBy(clients.firstName, clients.lastName);
+    .orderBy(clients.firstName, clients.lastName)
+    .limit(filters?.limit ?? 50)
+    .offset(filters?.offset ?? 0);
 }
 
 // ─────────────────────────────────────────────
@@ -849,10 +869,29 @@ export async function updateDepartment(id: number, data: Partial<InsertDepartmen
   await db.update(departments).set(data).where(eq(departments.id, id));
 }
 
-export async function countClients(): Promise<number> {
+export async function countClients(filters?: ClientListFilters): Promise<number> {
   const db = await getDb();
   if (!db) return 0;
-  const result = await db.select({ count: sql`COUNT(*)` }).from(clients);
+  const conditions = [];
+  if (!filters?.includeInactive) conditions.push(eq(clients.isActive, true));
+
+  const search = filters?.search?.trim();
+  if (search) {
+    const pattern = `%${search}%`;
+    conditions.push(
+      or(
+        like(clients.firstName, pattern),
+        like(clients.lastName, pattern),
+        like(clients.email, pattern),
+        like(clients.phone, pattern)
+      )
+    );
+  }
+
+  const result = await db
+    .select({ count: sql`COUNT(*)` })
+    .from(clients)
+    .where(conditions.length ? and(...conditions) : undefined);
   return (result[0]?.count as number) || 0;
 }
 

@@ -659,13 +659,24 @@ Fixed Client Dashboard button navigation:
 **Audit checks:** Resend domain listing succeeded with the configured key; the full test suite passed with 165 tests; TypeScript and production build checks passed; the development server remained healthy.
 
 
-## Phase 99: Security and Performance Audit (In Progress)
-- [ ] Audit dependency vulnerabilities and third-party package risks
-- [ ] Audit authentication state, session cookie security, and RBAC procedure guards
-- [ ] Audit input validation, SQL injection prevention (Drizzle ORM), and secure file handling
-- [ ] Audit client bundle composition, chunk sizes, and static asset delivery
-- [ ] Audit database query efficiency, indexing, and server memory footprint
-- [ ] Verify security and performance regression tests (all 165 tests passing)
-- [ ] Save an audited security and performance checkpoint
-
+## Phase 99: Security and Performance Audit (Completed with Follow-ups)
+- [x] Audit dependency vulnerabilities and third-party package risks
+- [x] Audit authentication state, session cookie security, and RBAC procedure guards
+- [x] Audit input validation, SQL injection prevention (Drizzle ORM), and secure file handling
+- [x] Audit client bundle composition, chunk sizes, and static asset delivery
+- [x] Audit database query efficiency, indexing, and server memory footprint
+- [x] Verify security and performance regression tests - 12 test files, 170 tests passing
+- [x] Save an audited security and performance checkpoint - baseline saved as `c3a72a23`; final hardening checkpoint follows
 **Security and Performance Scope:** Covers static code analysis, authorization middleware verification, database query patterns, and bundle generation metrics. Live DDoS resilience, penetration testing, and infrastructure-level WAF rules require live production infrastructure management.
+- [x] Prevent production error boundaries from exposing stack traces - stack details are now development-only
+- [x] Reduce global request-body limits to the maximum required by supported uploads - 16 MB JSON and 1 MB URL-encoded
+- [x] Restrict uploaded document MIME types to supported safe formats - size, MIME, filename, and description guards added
+- [x] Add regression tests for production error disclosure and upload validation
+- [x] Apply client-list search and pagination inputs in the database helper
+- [x] Add safe size and MIME validation to signature uploads - PNG-only and bounded payloads
+- [x] Add regression tests for bounded client queries and signature validation
+- [x] Review high-risk production dependency findings and decide remediation scope - remediation deferred for isolated package upgrades and transitive overrides
+
+**Verified results:** TypeScript is clean, production build succeeds, the dev server is healthy, and the post-hardening regression suite passes 170 tests. The production client bundle remains approximately 1.89 MB minified / 367 KB gzip, with a Vite chunk-size warning. The production dependency audit remains a release follow-up with 1 critical and 14 high advisories until dependency upgrades are isolated and validated.
+
+**Follow-ups:** Add database indexes for high-volume filters, split the client bundle with route-level lazy loading, move base64 uploads to direct storage, and remediate the dependency advisories. Live penetration/load testing remains outside the sandbox audit.

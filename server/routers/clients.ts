@@ -17,7 +17,7 @@ export const clientsRouter = router({
     .query(async ({ input }) => {
       const [rows, total] = await Promise.all([
         listClients(input),
-        countClients(),
+        countClients(input),
       ]);
       return { rows, total };
     }),

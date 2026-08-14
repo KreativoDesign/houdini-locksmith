@@ -12,6 +12,17 @@ import { router } from "../_core/trpc";
 import { storagePut } from "../storage";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_DATA_URL_LENGTH = 16 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "application/pdf",
+  "video/mp4",
+  "video/webm",
+  "video/quicktime",
+]);
 
 /** Convert a base64 data URL to Buffer */
 function dataUrlToBuffer(dataUrl: string): { buffer: Buffer; mimeType: string } {
@@ -51,10 +62,10 @@ export const documentsRouter = router({
         category: z
           .enum(["photo", "document", "before_image", "after_image", "signature", "other"])
           .default("photo"),
-        fileName: z.string().min(1).max(255),
+        fileName: z.string().trim().min(1).max(255),
         /** Base64 data URL */
-        fileDataUrl: z.string().min(10),
-        description: z.string().optional(),
+        fileDataUrl: z.string().min(10).max(MAX_DATA_URL_LENGTH),
+        description: z.string().trim().max(1000).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -72,7 +83,13 @@ export const documentsRouter = router({
 
       try {
         const { buffer, mimeType: detectedMime } = dataUrlToBuffer(input.fileDataUrl);
-        mimeType = detectedMime;
+        mimeType = detectedMime.toLowerCase().split(";")[0] ?? "";
+        if (!ALLOWED_MIME_TYPES.has(mimeType)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Unsupported file type. Upload an image, PDF, or supported video file.",
+          });
+        }
         fileSize = buffer.length;
 
         if (fileSize > MAX_FILE_SIZE) {
