@@ -27,7 +27,7 @@ This document records verified findings from the local codebase, package manager
 
 ## Dependency audit
 
-`pnpm audit --prod` reported 1 critical, 14 high, 32 moderate, and 9 low advisories across 650 production dependencies. Key affected paths include `fast-xml-parser` through the AWS SDK, `axios`/`form-data`, `lodash-es` through `streamdown`/Mermaid, `nanoid`, `path-to-regexp` through Express 4, `DOMPurify`, `qs`, `uuid`, and `body-parser`. Dependency remediation was not applied in this audit because several fixes require transitive overrides or major-version upgrades and need isolated validation.
+The direct dependency remediation upgraded AWS SDK S3 packages to `3.1111.0`, Axios to `1.19.0`, and nanoid to `6.0.1`. The critical `fast-xml-parser` advisory and most high findings were cleared. The fresh `pnpm audit --prod` result is 2 high, 20 moderate, and 7 low advisories across the remaining production graph. The remaining high findings are `path-to-regexp@0.1.12` through Express 4 and `lodash-es@4.17.21` through streamdown/Mermaid. They require either a compatible Express/Mermaid upgrade or a verified transitive override; no unvalidated override was forced into production.
 
 ## Performance findings
 
