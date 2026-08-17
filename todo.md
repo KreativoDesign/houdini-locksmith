@@ -704,3 +704,6 @@ Fixed Client Dashboard button navigation:
 - [x] Preserve the existing visual styling, neon glows, and interactive cards
 - [x] Verify test suite, type checking, and build - 170 tests passing, clean TypeScript, successful production build
 - [x] Save checkpoint with updated services
+
+- [x] Split public and authenticated route chunks to reduce the initial client bundle
+- [x] Verify lazy-loaded routes with tests and a production build - 170 tests pass, TypeScript clean, build succeeds
