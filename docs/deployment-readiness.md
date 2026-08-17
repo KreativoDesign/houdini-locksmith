@@ -52,3 +52,14 @@ After the required credentials and domain verification are available, perform a 
 ## Security Notes
 
 Production error boundaries suppress internal stack traces. Request-body limits and document/signature upload validation are hardened. Do not paste API keys into source files, issue comments, screenshots, or support tickets. Rotate credentials if they are ever exposed.
+
+
+## Customer Portal Administration
+
+Managers and administrators can generate a portal link from a job card. The generated token is 64 hexadecimal characters and the public route is `/portal/<token>`. When the frontend supplies its origin, the returned URL is a complete link such as `https://your-public-domain.example/portal/<64-character-token>`.
+
+The `generateLink` procedure accepts an optional expiry of 7, 14, or 30 days. Omitting the expiry leaves the link without an expiry date. A regenerated link reuses the stored token for that job card while updating the expiry setting. If the linked client has an email address, the application attempts to send the portal URL automatically.
+
+The public portal is read-only for job progress, technician assignment, schedule information, signatures, photos, visible job items, and pricing totals. It does not require customer authentication. Invalid or expired tokens return a generic invalid-or-expired-link response and do not expose internal job notes.
+
+Before launch, verify the public route with a non-production test job and confirm that the email sender domain is verified. Do not include portal tokens in screenshots, support tickets, or public documentation because possession of a valid token grants access to the associated read-only portal view.

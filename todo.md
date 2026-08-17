@@ -239,9 +239,9 @@ Fixed Client Dashboard button navigation:
 **Summary:** Completed comprehensive unit testing of clientPortal procedures. Created 27 test cases with full coverage of link generation, portal data retrieval, authorization checks, public/protected procedures, and quote operations. All 148 tests passing with 0 failures.
 
 ### Phase 75.7: Documentation & Deployment
-- [ ] Document customer portal URLs and link format
-- [ ] Create admin guide for generating/managing portal links
-- [ ] Add customer portal to deployment checklist
+- [x] Document customer portal URLs and link format - documented `/portal/<64-character-token>` and origin handling in `docs/deployment-readiness.md`
+- [x] Create admin guide for generating/managing portal links - documented manager/admin generation, expiry, email, and security handling
+- [x] Add customer portal to deployment checklist - included public-route acceptance testing and token handling guidance
 - [ ] Deploy to production
 - [ ] Monitor portal link usage and payment success rates
 
