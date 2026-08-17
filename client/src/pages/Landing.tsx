@@ -1,21 +1,19 @@
 'use client';
 
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MapPin, ArrowRight, Menu, X } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function Landing() {
-  const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    service: "locksmithing",
+    service: "locks",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +47,7 @@ Please follow up with this lead as soon as possible.
         name: "",
         email: "",
         phone: "",
-        service: "locksmithing",
+        service: "locks",
         message: "",
       });
     } catch (error) {
@@ -57,6 +55,11 @@ Please follow up with this lead as soon as possible.
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleServiceSelect = (service: string) => {
+    setFormData((previous) => ({ ...previous, service }));
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -187,88 +190,102 @@ Please follow up with this lead as soon as possible.
       <section className="py-20 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
+            <p className="text-sm uppercase tracking-[0.3em] text-lime-400 mb-3">What we do</p>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">
               Complete Security <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-500">Solutions</span>
             </h2>
-            <p className="text-xl text-gray-400">Professional services tailored to your needs</p>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">Professional services tailored to protect your home, business, and vehicle.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Locksmithing */}
-            <button
-              onClick={() => setLocation("/services/locksmithing")}
-              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
-            >
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+            {/* Locks */}
+            <button onClick={() => handleServiceSelect("locks")} className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 hover:-translate-y-1 transition-all duration-200 group text-left w-full min-h-[25rem]">
               <div className="mb-6 flex justify-center relative h-28">
-                {/* Neon glow background */}
-                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
-                <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent_f4c51513.png" 
-                  alt="Locksmithing" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
-                />
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{ background: "radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)" }}></div>
+                <LockKeyhole className="w-24 h-24 text-lime-400 group-hover:scale-110 transition-transform drop-shadow-lg relative z-10" strokeWidth={1.4} />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-center">Locksmithing</h3>
-              <p className="text-gray-400 mb-6 text-center">
-                Expert lock installation, repair, and emergency unlocking services for residential and commercial properties.
-              </p>
+              <h3 className="text-2xl font-bold mb-4 text-center">Locks</h3>
+              <p className="text-gray-400 mb-6 text-center">A wide range of locks backed by mobile call-out vehicles for residential, commercial, and emergency lock problems.</p>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li>• Residential lock services</li>
-                <li>• Commercial security locks</li>
-                <li>• Emergency lockout assistance</li>
-                <li>• Master key systems</li>
+                <li>• Residential and commercial locks</li>
+                <li>• Mobile call-out response</li>
+                <li>• Lock repair and replacement</li>
               </ul>
             </button>
 
-            {/* Security Systems */}
-            <button
-              onClick={() => setLocation("/services/security")}
-              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
-            >
+            {/* CCTV */}
+            <button onClick={() => handleServiceSelect("cctv")} className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 hover:-translate-y-1 transition-all duration-200 group text-left w-full min-h-[25rem]">
               <div className="mb-6 flex justify-center relative h-28">
-                {/* Neon glow background */}
-                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
-                <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent_e87806f7.png" 
-                  alt="Security Systems" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
-                />
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{ background: "radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)" }}></div>
+                <Camera className="w-24 h-24 text-lime-400 group-hover:scale-110 transition-transform drop-shadow-lg relative z-10" strokeWidth={1.4} />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-center">Security Systems</h3>
-              <p className="text-gray-400 mb-6 text-center">
-                Advanced surveillance and alarm systems with 24/7 monitoring and mobile app integration for complete peace of mind.
-              </p>
+              <h3 className="text-2xl font-bold mb-4 text-center">CCTV</h3>
+              <p className="text-gray-400 mb-6 text-center">Tailor-made CCTV systems from stand-alone installations to highly integrated solutions with on-site or off-site monitoring.</p>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li>• CCTV installation & monitoring</li>
-                <li>• Alarm system design</li>
-                <li>• Access control systems</li>
-                <li>• Mobile app integration</li>
+                <li>• Stand-alone camera systems</li>
+                <li>• Integrated surveillance</li>
+                <li>• On-site or off-site monitoring</li>
               </ul>
             </button>
 
-            {/* Diagnostics & Maintenance */}
-            <button
-              onClick={() => setLocation("/services/diagnostics")}
-              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
-            >
+            {/* Safes */}
+            <button onClick={() => handleServiceSelect("safes")} className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 hover:-translate-y-1 transition-all duration-200 group text-left w-full min-h-[25rem]">
               <div className="mb-6 flex justify-center relative h-28">
-                {/* Neon glow background */}
-                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
-                <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent_ea7907e6.png" 
-                  alt="Diagnostics" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
-                />
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{ background: "radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)" }}></div>
+                <ShieldCheck className="w-24 h-24 text-lime-400 group-hover:scale-110 transition-transform drop-shadow-lg relative z-10" strokeWidth={1.4} />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-center">Diagnostics & Maintenance</h3>
-              <p className="text-gray-400 mb-6 text-center">
-                Comprehensive system diagnostics and preventive maintenance to ensure your security infrastructure operates at peak performance.
-              </p>
+              <h3 className="text-2xl font-bold mb-4 text-center">Safes</h3>
+              <p className="text-gray-400 mb-6 text-center">Safe solutions for every requirement, from basic wall safes to SABS- and insurance-approved categorised safes.</p>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li>• System diagnostics</li>
-                <li>• Preventive maintenance</li>
-                <li>• Performance optimization</li>
-                <li>• Emergency repairs</li>
+                <li>• Wall safes</li>
+                <li>• SABS-approved options</li>
+                <li>• Insurance-approved categories</li>
+              </ul>
+            </button>
+
+            {/* Intercoms */}
+            <button onClick={() => handleServiceSelect("intercoms")} className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 hover:-translate-y-1 transition-all duration-200 group text-left w-full min-h-[25rem]">
+              <div className="mb-6 flex justify-center relative h-28">
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{ background: "radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)" }}></div>
+                <Radio className="w-24 h-24 text-lime-400 group-hover:scale-110 transition-transform drop-shadow-lg relative z-10" strokeWidth={1.4} />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-center">Intercoms</h3>
+              <p className="text-gray-400 mb-6 text-center">A wide range of intercom products selected to suit specific residential, commercial, and access-control applications.</p>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>• Application-specific products</li>
+                <li>• Entry communication systems</li>
+                <li>• Residential and commercial use</li>
+              </ul>
+            </button>
+
+            {/* Electric Fencing */}
+            <button onClick={() => handleServiceSelect("electric-fencing")} className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 hover:-translate-y-1 transition-all duration-200 group text-left w-full min-h-[25rem]">
+              <div className="mb-6 flex justify-center relative h-28">
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{ background: "radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)" }}></div>
+                <Zap className="w-24 h-24 text-lime-400 group-hover:scale-110 transition-transform drop-shadow-lg relative z-10" strokeWidth={1.4} />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-center">Electric Fencing</h3>
+              <p className="text-gray-400 mb-6 text-center">Perimeter-security solutions combining electric fencing and outdoor motion detection to help protect your property.</p>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>• Electric perimeter security</li>
+                <li>• Outdoor motion detection</li>
+                <li>• Property protection planning</li>
+              </ul>
+            </button>
+
+            {/* Keys */}
+            <button onClick={() => handleServiceSelect("keys")} className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 hover:-translate-y-1 transition-all duration-200 group text-left w-full min-h-[25rem]">
+              <div className="mb-6 flex justify-center relative h-28">
+                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{ background: "radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)" }}></div>
+                <KeyRound className="w-24 h-24 text-lime-400 group-hover:scale-110 transition-transform drop-shadow-lg relative z-10" strokeWidth={1.4} />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-center">Keys</h3>
+              <p className="text-gray-400 mb-6 text-center">Key cutting from basic cylinder keys and car keys through to integrated master-keyed and restricted-keyway systems.</p>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li>• Cylinder keys</li>
+                <li>• Car keys</li>
+                <li>• Master-keyed systems</li>
+                <li>• Restricted keyways</li>
               </ul>
             </button>
           </div>
@@ -318,10 +335,12 @@ Please follow up with this lead as soon as possible.
               onChange={(e) => setFormData({ ...formData, service: e.target.value })}
               className="w-full bg-slate-900/50 border border-lime-500/30 focus:border-lime-500 text-white rounded-md px-4 py-2 placeholder:text-gray-500"
             >
-              <option value="locksmithing">Locksmithing Services</option>
-              <option value="security">Security Systems</option>
-              <option value="diagnostics">Diagnostics & Maintenance</option>
-              <option value="other">Other Services</option>
+              <option value="locks">Locks</option>
+              <option value="cctv">CCTV</option>
+              <option value="safes">Safes</option>
+              <option value="intercoms">Intercoms</option>
+              <option value="electric-fencing">Electric Fencing</option>
+              <option value="keys">Keys</option>
             </select>
 
             <Textarea
@@ -358,9 +377,12 @@ Please follow up with this lead as soon as possible.
             <div>
               <h3 className="font-bold text-lg mb-4">Services</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-lime-400 transition">Locksmithing</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition">Security Systems</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition">Maintenance</a></li>
+                <li><button type="button" onClick={() => handleServiceSelect("locks")} className="hover:text-lime-400 transition text-left">Locks</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("cctv")} className="hover:text-lime-400 transition text-left">CCTV</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("safes")} className="hover:text-lime-400 transition text-left">Safes</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("intercoms")} className="hover:text-lime-400 transition text-left">Intercoms</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("electric-fencing")} className="hover:text-lime-400 transition text-left">Electric Fencing</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("keys")} className="hover:text-lime-400 transition text-left">Keys</button></li>
               </ul>
             </div>
             <div>

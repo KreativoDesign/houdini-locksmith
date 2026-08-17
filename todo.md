@@ -695,3 +695,12 @@ Fixed Client Dashboard button navigation:
 - [x] Update contact details across the landing page (phone: 041 365 7565, email: sales@houdini.co.za, address: 313 Cape Road, Newton Park, 6070)
 - [x] Verify test suite, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
 - [x] Save an updated deployment checkpoint
+
+
+## Phase 101: Houdini Services Page Extraction & Homepage Update (Completed)
+- [x] Browse https://houdini.co.za/services/ using webpage extract or browser tools
+- [x] Extract all offered locksmithing, security, and maintenance services - Locks, CCTV, Safes, Intercoms, Electric Fencing, and Keys
+- [x] Expand homepage service cards to display the complete range of official services
+- [x] Preserve the existing visual styling, neon glows, and interactive cards
+- [x] Verify test suite, type checking, and build - 170 tests passing, clean TypeScript, successful production build
+- [x] Save checkpoint with updated services
