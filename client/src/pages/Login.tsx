@@ -12,7 +12,7 @@ import { toast } from "sonner";
 const MASCOT_KEY_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-key_2a264431.jpeg";
 const MASCOT_LOGO_URL =
-  "https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png";
+  "https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png";
 
 const FEATURES = [
   "Manage enquiries from first call to invoice",

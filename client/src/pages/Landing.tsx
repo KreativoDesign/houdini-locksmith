@@ -72,9 +72,9 @@ Please follow up with this lead as soon as possible.
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img 
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-transparent-RfoHRF3Husuc9uP4pPA7oX.webp" 
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png" 
               alt="Houdini Logo" 
-              className="h-12 w-auto"
+              className="h-12 sm:h-14 w-auto max-w-[180px] object-contain" loading="eager"
             />
           </div>
           <div className="hidden md:flex gap-4">
@@ -139,12 +139,14 @@ Please follow up with this lead as soon as possible.
                   Request a Quote <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Button
+                  type="button"
                   size="lg"
                   variant="outline"
                   className="text-lime-400 border-lime-500/50 hover:bg-lime-500/10 text-base"
+                  onClick={() => { window.location.href = "tel:0413657565"; }}
                 >
                   <Phone className="mr-2 w-5 h-5" />
-                  +27 (0) 11 234 5678
+                  041 365 7565
                 </Button>
               </div>
 
@@ -166,12 +168,14 @@ Please follow up with this lead as soon as possible.
             </div>
 
             {/* Right side - Technician image */}
-            <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] flex items-center justify-center">
-              <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center rounded-3xl bg-gradient-to-br from-lime-500/10 via-transparent to-slate-900/40 px-2 sm:px-4">
+              <div className="relative w-full h-full min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-hero_b03acded.png"
-                  alt="Houdini Mascot" 
-                  className="h-full w-auto object-contain drop-shadow-2xl hover:drop-shadow-3xl transition-shadow duration-300"
+                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/ANBkoVbwdDKvIghm.png"
+                  alt="Lockbro, the Houdini security mascot"
+                  loading="eager"
+                  fetchPriority="high"
+                  className="h-full max-h-[560px] sm:max-h-[620px] lg:max-h-[680px] w-auto max-w-full object-contain drop-shadow-2xl hover:scale-[1.02] hover:drop-shadow-3xl transition-all duration-300"
                 />
               </div>
             </div>
@@ -346,9 +350,9 @@ Please follow up with this lead as soon as possible.
             <div>
               <h3 className="font-bold text-lg mb-4">Contact</h3>
               <div className="space-y-2 text-gray-400">
-                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> +27 (0) 11 234 5678</p>
-                <p className="flex items-center gap-2"><Mail className="w-4 h-4" /> info@houdini.co.za</p>
-                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Johannesburg, South Africa</p>
+                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> 041 365 7565</p>
+                <p className="flex items-center gap-2"><Mail className="w-4 h-4" /> sales@houdini.co.za</p>
+                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> 313 Cape Road, Newton Park, 6070</p>
               </div>
             </div>
             <div>
