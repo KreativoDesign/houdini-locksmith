@@ -722,4 +722,4 @@ Fixed Client Dashboard button navigation:
 - [x] Inspect hero container classes in Landing.tsx
 - [x] Remove background card styling around the mascot image wrapper
 - [x] Verify build, tests, and preview rendering - 170 tests pass, TypeScript clean, production build succeeds
-- [x] Save updated deployment checkpoint - pending final checkpoint after this verification
+- [x] Save updated deployment checkpoint - saved as `6df0738d`
