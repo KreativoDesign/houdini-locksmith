@@ -715,4 +715,4 @@ Fixed Client Dashboard button navigation:
 - [x] Implement premium image-backed service-card styling with dark gradient overlays for readability
 - [x] Refine surrounding homepage sections and footer polish for a high-end feel
 - [x] Verify test suite, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
-- [x] Save an updated deployment checkpoint - pending final conflict-reconciled checkpoint
+- [x] Save an updated deployment checkpoint - saved as `2fb36c75`
