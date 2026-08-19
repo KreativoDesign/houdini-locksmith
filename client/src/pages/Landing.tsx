@@ -171,7 +171,7 @@ Please follow up with this lead as soon as possible.
             </div>
 
             {/* Right side - Technician image */}
-            <div className="relative min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center rounded-3xl bg-gradient-to-br from-lime-500/10 via-transparent to-slate-900/40 px-2 sm:px-4">
+            <div className="relative min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center px-2 sm:px-4">
               <div className="relative w-full h-full min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center">
                 <img 
                   src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/ANBkoVbwdDKvIghm.png"
