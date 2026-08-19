@@ -15,7 +15,7 @@ export default function Landing() {
     name: "",
     email: "",
     phone: "",
-    service: "locksmithing",
+    service: "locks",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +49,7 @@ Please follow up with this lead as soon as possible.
         name: "",
         email: "",
         phone: "",
-        service: "locksmithing",
+        service: "locks",
         message: "",
       });
     } catch (error) {
@@ -144,7 +144,7 @@ Please follow up with this lead as soon as possible.
                   className="text-lime-400 border-lime-500/50 hover:bg-lime-500/10 text-base"
                 >
                   <Phone className="mr-2 w-5 h-5" />
-                  +27 (0) 11 234 5678
+                  041 365 7565
                 </Button>
               </div>
 
@@ -179,94 +179,90 @@ Please follow up with this lead as soon as possible.
         </div>
       </section>
 
-      {/* Services Detail Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
+      {/* Premium Services Section */}
+      <section id="services" className="relative border-t border-lime-500/20 bg-slate-950/70 py-24 px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-lime-400/70 to-transparent" />
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-              Complete Security <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-500">Solutions</span>
+          <div className="mx-auto mb-14 max-w-3xl text-center">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-lime-400">Houdini expertise</p>
+            <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+              Complete Security <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-lime-400 to-emerald-400">Solutions</span>
             </h2>
-            <p className="text-xl text-gray-400">Professional services tailored to your needs</p>
+            <p className="mt-5 text-lg leading-8 text-slate-400">From everyday access to advanced perimeter protection, every service is delivered with care, precision, and a response-first mindset.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Locksmithing */}
-            <button
-              onClick={() => setLocation("/services/locksmithing")}
-              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
-            >
-              <div className="mb-6 flex justify-center relative h-28">
-                {/* Neon glow background */}
-                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
-                <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-locksmithing-transparent_f4c51513.png" 
-                  alt="Locksmithing" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
-                />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-center">Locksmithing</h3>
-              <p className="text-gray-400 mb-6 text-center">
-                Expert lock installation, repair, and emergency unlocking services for residential and commercial properties.
-              </p>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>• Residential lock services</li>
-                <li>• Commercial security locks</li>
-                <li>• Emergency lockout assistance</li>
-                <li>• Master key systems</li>
-              </ul>
-            </button>
-
-            {/* Security Systems */}
-            <button
-              onClick={() => setLocation("/services/security")}
-              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
-            >
-              <div className="mb-6 flex justify-center relative h-28">
-                {/* Neon glow background */}
-                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
-                <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-security-transparent_e87806f7.png" 
-                  alt="Security Systems" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
-                />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-center">Security Systems</h3>
-              <p className="text-gray-400 mb-6 text-center">
-                Advanced surveillance and alarm systems with 24/7 monitoring and mobile app integration for complete peace of mind.
-              </p>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>• CCTV installation & monitoring</li>
-                <li>• Alarm system design</li>
-                <li>• Access control systems</li>
-                <li>• Mobile app integration</li>
-              </ul>
-            </button>
-
-            {/* Diagnostics & Maintenance */}
-            <button
-              onClick={() => setLocation("/services/diagnostics")}
-              className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8 hover:border-lime-500/50 transition group text-left w-full"
-            >
-              <div className="mb-6 flex justify-center relative h-28">
-                {/* Neon glow background */}
-                <div className="absolute inset-0 rounded-full blur-2xl opacity-40" style={{background: 'radial-gradient(circle, rgba(132, 204, 22, 0.6) 0%, transparent 70%)'}}></div>
-                <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/icon-diagnostics-transparent_ea7907e6.png" 
-                  alt="Diagnostics" 
-                  className="w-24 h-24 object-contain group-hover:scale-110 transition drop-shadow-lg relative z-10"
-                />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-center">Diagnostics & Maintenance</h3>
-              <p className="text-gray-400 mb-6 text-center">
-                Comprehensive system diagnostics and preventive maintenance to ensure your security infrastructure operates at peak performance.
-              </p>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>• System diagnostics</li>
-                <li>• Preventive maintenance</li>
-                <li>• Performance optimization</li>
-                <li>• Emergency repairs</li>
-              </ul>
-            </button>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                title: "Locks",
+                service: "locks",
+                image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png",
+                description: "Reliable lock solutions for homes, businesses, and urgent call-outs.",
+                points: ["Residential and commercial locks", "Emergency call-out support"],
+              },
+              {
+                title: "CCTV",
+                service: "cctv",
+                image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png",
+                description: "Tailored surveillance systems from standalone cameras to integrated monitoring.",
+                points: ["System design and installation", "On-site or remote monitoring"],
+              },
+              {
+                title: "Safes",
+                service: "safes",
+                image: "https://houdini.co.za/wp-content/uploads/2024/01/safe.png",
+                description: "Protection for valuables with solutions matched to your security requirements.",
+                points: ["Wall and floor safes", "SABS and insurance-approved options"],
+              },
+              {
+                title: "Intercoms",
+                service: "intercoms",
+                image: "https://houdini.co.za/wp-content/uploads/2024/01/safe-1.png",
+                description: "Connected entry communication for homes, offices, and controlled-access sites.",
+                points: ["Application-specific systems", "Clearer visitor management"],
+              },
+              {
+                title: "Electric Fencing",
+                service: "electric-fencing",
+                image: "https://houdini.co.za/wp-content/uploads/2024/01/fence.png",
+                description: "A strong perimeter layer designed to deter intrusion before it reaches your property.",
+                points: ["Perimeter security planning", "Electric fencing and detection"],
+              },
+              {
+                title: "Keys",
+                service: "keys",
+                image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png",
+                description: "Key cutting and access solutions from everyday keys to restricted systems.",
+                points: ["Cylinder and vehicle keys", "Master-keyed and restricted keyways"],
+              },
+            ].map((item) => (
+              <button
+                key={item.service}
+                type="button"
+                onClick={() => {
+                  setFormData((previous) => ({ ...previous, service: item.service }));
+                  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="group relative min-h-[360px] overflow-hidden rounded-2xl border border-white/10 bg-slate-900 text-left shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-lime-400/70 hover:shadow-lime-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              >
+                <div className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105" style={{ backgroundImage: `url(${item.image})` }} aria-hidden="true" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/30 transition duration-500 group-hover:via-slate-950/70" aria-hidden="true" />
+                <div className="absolute inset-0 bg-lime-400/0 transition duration-500 group-hover:bg-lime-400/5" aria-hidden="true" />
+                <div className="relative flex min-h-[360px] flex-col justify-end p-6 sm:p-7">
+                  <div className="mb-auto flex items-start justify-between">
+                    <span className="rounded-full border border-lime-300/30 bg-slate-950/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-lime-300 backdrop-blur-sm">{item.service.replace("-", " ")}</span>
+                    <ArrowRight className="h-5 w-5 text-lime-300 opacity-70 transition duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-white sm:text-3xl">{item.title}</h3>
+                    <p className="mt-3 max-w-sm text-sm leading-6 text-slate-200">{item.description}</p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {item.points.map((point) => <span key={point} className="rounded-full border border-white/15 bg-black/20 px-3 py-1 text-xs text-slate-200 backdrop-blur-sm">{point}</span>)}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </section>
@@ -314,10 +310,12 @@ Please follow up with this lead as soon as possible.
               onChange={(e) => setFormData({ ...formData, service: e.target.value })}
               className="w-full bg-slate-900/50 border border-lime-500/30 focus:border-lime-500 text-white rounded-md px-4 py-2 placeholder:text-gray-500"
             >
-              <option value="locksmithing">Locksmithing Services</option>
-              <option value="security">Security Systems</option>
-              <option value="diagnostics">Diagnostics & Maintenance</option>
-              <option value="other">Other Services</option>
+              <option value="locks">Locks</option>
+              <option value="cctv">CCTV</option>
+              <option value="safes">Safes</option>
+              <option value="intercoms">Intercoms</option>
+              <option value="electric-fencing">Electric Fencing</option>
+              <option value="keys">Keys</option>
             </select>
 
             <Textarea
@@ -346,17 +344,17 @@ Please follow up with this lead as soon as possible.
             <div>
               <h3 className="font-bold text-lg mb-4">Contact</h3>
               <div className="space-y-2 text-gray-400">
-                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> +27 (0) 11 234 5678</p>
-                <p className="flex items-center gap-2"><Mail className="w-4 h-4" /> info@houdini.co.za</p>
-                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Johannesburg, South Africa</p>
+                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> 041 365 7565</p>
+                <p className="flex items-center gap-2"><Mail className="w-4 h-4" /> sales@houdini.co.za</p>
+                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> 313 Cape Road, Newton Park, 6070</p>
               </div>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">Services</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-lime-400 transition">Locksmithing</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition">Security Systems</a></li>
-                <li><a href="#" className="hover:text-lime-400 transition">Maintenance</a></li>
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-gray-400">
+                {["Locks", "CCTV", "Safes", "Intercoms", "Electric Fencing", "Keys"].map((service) => (
+                  <li key={service}><a href="#services" className="transition hover:text-lime-400">{service}</a></li>
+                ))}
               </ul>
             </div>
             <div>
