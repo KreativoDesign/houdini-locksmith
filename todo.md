@@ -239,9 +239,9 @@ Fixed Client Dashboard button navigation:
 **Summary:** Completed comprehensive unit testing of clientPortal procedures. Created 27 test cases with full coverage of link generation, portal data retrieval, authorization checks, public/protected procedures, and quote operations. All 148 tests passing with 0 failures.
 
 ### Phase 75.7: Documentation & Deployment
-- [ ] Document customer portal URLs and link format
-- [ ] Create admin guide for generating/managing portal links
-- [ ] Add customer portal to deployment checklist
+- [x] Document customer portal URLs and link format - documented `/portal/<64-character-token>` and origin handling in `docs/deployment-readiness.md`
+- [x] Create admin guide for generating/managing portal links - documented manager/admin generation, expiry, email, and security handling
+- [x] Add customer portal to deployment checklist - included public-route acceptance testing and token handling guidance
 - [ ] Deploy to production
 - [ ] Monitor portal link usage and payment success rates
 
@@ -517,8 +517,8 @@ Fixed Client Dashboard button navigation:
 - [ ] Update todo.md with all completed items
 - [ ] Save final checkpoint with all features
 - [x] Verify all tests passing (target: 150+ tests) - ✅ 165 tests passing
-- [ ] Review code quality and documentation
-- [ ] Prepare deployment documentation
+- [x] Review code quality and documentation
+- [x] Prepare deployment documentation - added `docs/deployment-readiness.md`
 - [ ] Deploy to production
 - [ ] Monitor for issues and bugs
 
@@ -688,10 +688,31 @@ Fixed Client Dashboard button navigation:
 - [x] Re-run all tests, build, and production dependency audit after dependency remediation - 170 tests pass, build passes, audit is 2 high / 20 moderate / 7 low
 
 
+## Phase 100: Homepage Enhancement & Asset Integration (Completed)
+- [x] Upload new Houdini logo and Lockbro mascot 3D character assets
+- [x] Update header logo in AppShell and auth screens
+- [x] Update hero section right column with the new Lockbro mascot
+- [x] Update contact details across the landing page (phone: 041 365 7565, email: sales@houdini.co.za, address: 313 Cape Road, Newton Park, 6070)
+- [x] Verify test suite, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
+- [x] Save an updated deployment checkpoint
+
+
+## Phase 101: Houdini Services Page Extraction & Homepage Update (Completed)
+- [x] Browse https://houdini.co.za/services/ using webpage extract or browser tools
+- [x] Extract all offered locksmithing, security, and maintenance services - Locks, CCTV, Safes, Intercoms, Electric Fencing, and Keys
+- [x] Expand homepage service cards to display the complete range of official services
+- [x] Preserve the existing visual styling, neon glows, and interactive cards
+- [x] Verify test suite, type checking, and build - 170 tests passing, clean TypeScript, successful production build
+- [x] Save checkpoint with updated services
+
+- [x] Split public and authenticated route chunks to reduce the initial client bundle
+- [x] Verify lazy-loaded routes with tests and a production build - 170 tests pass, TypeScript clean, build succeeds
+
+
 ## Phase 102: Premium Homepage Redesign & Image-Backed Service Cards (Completed)
 - [x] Record premium homepage enhancement scope
 - [x] Inspect existing homepage service cards and available imagery
 - [x] Implement premium image-backed service-card styling with dark gradient overlays for readability
-- [x] Refine surrounding homepage sections (hero, features, call to action) for a high-end feel
+- [x] Refine surrounding homepage sections and footer polish for a high-end feel
 - [x] Verify test suite, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
-- [x] Save an updated deployment checkpoint - pending final checkpoint after this verification
+- [x] Save an updated deployment checkpoint - pending final conflict-reconciled checkpoint

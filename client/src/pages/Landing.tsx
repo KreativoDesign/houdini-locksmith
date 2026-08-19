@@ -1,15 +1,13 @@
 'use client';
 
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MapPin, ArrowRight, Menu, X } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function Landing() {
-  const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -59,6 +57,11 @@ Please follow up with this lead as soon as possible.
     }
   };
 
+  const handleServiceSelect = (service: string) => {
+    setFormData((previous) => ({ ...previous, service }));
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
       {/* Animated background elements */}
@@ -72,9 +75,9 @@ Please follow up with this lead as soon as possible.
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <img 
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-transparent-RfoHRF3Husuc9uP4pPA7oX.webp" 
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png" 
               alt="Houdini Logo" 
-              className="h-12 w-auto"
+              className="h-12 sm:h-14 w-auto max-w-[180px] object-contain" loading="eager"
             />
           </div>
           <div className="hidden md:flex gap-4">
@@ -139,9 +142,11 @@ Please follow up with this lead as soon as possible.
                   Request a Quote <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Button
+                  type="button"
                   size="lg"
                   variant="outline"
                   className="text-lime-400 border-lime-500/50 hover:bg-lime-500/10 text-base"
+                  onClick={() => { window.location.href = "tel:0413657565"; }}
                 >
                   <Phone className="mr-2 w-5 h-5" />
                   041 365 7565
@@ -166,12 +171,14 @@ Please follow up with this lead as soon as possible.
             </div>
 
             {/* Right side - Technician image */}
-            <div className="relative h-80 sm:h-96 md:h-[500px] lg:h-[600px] flex items-center justify-center">
-              <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center rounded-3xl bg-gradient-to-br from-lime-500/10 via-transparent to-slate-900/40 px-2 sm:px-4">
+              <div className="relative w-full h-full min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center">
                 <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-mascot-hero_b03acded.png"
-                  alt="Houdini Mascot" 
-                  className="h-full w-auto object-contain drop-shadow-2xl hover:drop-shadow-3xl transition-shadow duration-300"
+                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/ANBkoVbwdDKvIghm.png"
+                  alt="Lockbro, the Houdini security mascot"
+                  loading="eager"
+                  fetchPriority="high"
+                  className="h-full max-h-[560px] sm:max-h-[620px] lg:max-h-[680px] w-auto max-w-full object-contain drop-shadow-2xl hover:scale-[1.02] hover:drop-shadow-3xl transition-all duration-300"
                 />
               </div>
             </div>
@@ -193,56 +200,17 @@ Please follow up with this lead as soon as possible.
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              {
-                title: "Locks",
-                service: "locks",
-                image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png",
-                description: "Reliable lock solutions for homes, businesses, and urgent call-outs.",
-                points: ["Residential and commercial locks", "Emergency call-out support"],
-              },
-              {
-                title: "CCTV",
-                service: "cctv",
-                image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png",
-                description: "Tailored surveillance systems from standalone cameras to integrated monitoring.",
-                points: ["System design and installation", "On-site or remote monitoring"],
-              },
-              {
-                title: "Safes",
-                service: "safes",
-                image: "https://houdini.co.za/wp-content/uploads/2024/01/safe.png",
-                description: "Protection for valuables with solutions matched to your security requirements.",
-                points: ["Wall and floor safes", "SABS and insurance-approved options"],
-              },
-              {
-                title: "Intercoms",
-                service: "intercoms",
-                image: "https://houdini.co.za/wp-content/uploads/2024/01/safe-1.png",
-                description: "Connected entry communication for homes, offices, and controlled-access sites.",
-                points: ["Application-specific systems", "Clearer visitor management"],
-              },
-              {
-                title: "Electric Fencing",
-                service: "electric-fencing",
-                image: "https://houdini.co.za/wp-content/uploads/2024/01/fence.png",
-                description: "A strong perimeter layer designed to deter intrusion before it reaches your property.",
-                points: ["Perimeter security planning", "Electric fencing and detection"],
-              },
-              {
-                title: "Keys",
-                service: "keys",
-                image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png",
-                description: "Key cutting and access solutions from everyday keys to restricted systems.",
-                points: ["Cylinder and vehicle keys", "Master-keyed and restricted keyways"],
-              },
+              { title: "Locks", service: "locks", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", description: "Reliable lock solutions for homes, businesses, and urgent call-outs.", points: ["Residential and commercial locks", "Emergency call-out support"] },
+              { title: "CCTV", service: "cctv", image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png", description: "Tailored surveillance systems from standalone cameras to integrated monitoring.", points: ["System design and installation", "On-site or remote monitoring"] },
+              { title: "Safes", service: "safes", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe.png", description: "Protection for valuables with solutions matched to your security requirements.", points: ["Wall and floor safes", "SABS and insurance-approved options"] },
+              { title: "Intercoms", service: "intercoms", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe-1.png", description: "Connected entry communication for homes, offices, and controlled-access sites.", points: ["Application-specific systems", "Clearer visitor management"] },
+              { title: "Electric Fencing", service: "electric-fencing", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence.png", description: "A strong perimeter layer designed to deter intrusion before it reaches your property.", points: ["Perimeter security planning", "Electric fencing and detection"] },
+              { title: "Keys", service: "keys", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png", description: "Key cutting and access solutions from everyday keys to restricted systems.", points: ["Cylinder and vehicle keys", "Master-keyed and restricted keyways"] },
             ].map((item) => (
               <button
                 key={item.service}
                 type="button"
-                onClick={() => {
-                  setFormData((previous) => ({ ...previous, service: item.service }));
-                  document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={() => handleServiceSelect(item.service)}
                 className="group relative min-h-[360px] overflow-hidden rounded-2xl border border-white/10 bg-slate-900 text-left shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-lime-400/70 hover:shadow-lime-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
               >
                 <div className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105" style={{ backgroundImage: `url(${item.image})` }} aria-hidden="true" />
@@ -351,10 +319,13 @@ Please follow up with this lead as soon as possible.
             </div>
             <div>
               <h3 className="font-bold text-lg mb-4">Services</h3>
-              <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-gray-400">
-                {["Locks", "CCTV", "Safes", "Intercoms", "Electric Fencing", "Keys"].map((service) => (
-                  <li key={service}><a href="#services" className="transition hover:text-lime-400">{service}</a></li>
-                ))}
+              <ul className="space-y-2 text-gray-400">
+                <li><button type="button" onClick={() => handleServiceSelect("locks")} className="hover:text-lime-400 transition text-left">Locks</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("cctv")} className="hover:text-lime-400 transition text-left">CCTV</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("safes")} className="hover:text-lime-400 transition text-left">Safes</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("intercoms")} className="hover:text-lime-400 transition text-left">Intercoms</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("electric-fencing")} className="hover:text-lime-400 transition text-left">Electric Fencing</button></li>
+                <li><button type="button" onClick={() => handleServiceSelect("keys")} className="hover:text-lime-400 transition text-left">Keys</button></li>
               </ul>
             </div>
             <div>

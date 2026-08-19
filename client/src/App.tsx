@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
+import { lazy, Suspense } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch, useLocation, Redirect } from "wouter";
@@ -8,63 +9,63 @@ import AppShell from "./components/AppShell";
 import { useAuth } from "./_core/hooks/useAuth";
 
 // Auth pages (no shell)
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
 
 // Public pages (no auth required)
-import Landing from "./pages/Landing";
-import ClientPortal from "./pages/ClientPortal";
-import PublicQuoteView from "./pages/PublicQuoteView";
-import ServiceLocksmithing from "./pages/ServiceLocksmithing";
-import ServiceSecurity from "./pages/ServiceSecurity";
-import ServiceDiagnostics from "./pages/ServiceDiagnostics";
+const Landing = lazy(() => import("./pages/Landing"));
+const ClientPortal = lazy(() => import("./pages/ClientPortal"));
+const PublicQuoteView = lazy(() => import("./pages/PublicQuoteView"));
+const ServiceLocksmithing = lazy(() => import("./pages/ServiceLocksmithing"));
+const ServiceSecurity = lazy(() => import("./pages/ServiceSecurity"));
+const ServiceDiagnostics = lazy(() => import("./pages/ServiceDiagnostics"));
 
 // Dashboard pages (role-specific)
-import AdminDashboard from "./pages/AdminDashboard";
-import ManagerDashboard from "./pages/ManagerDashboard";
-import TechnicianDashboard from "./pages/TechnicianDashboard";
-import TechnicianMobileApp from "./pages/TechnicianMobileApp";
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const ManagerDashboard = lazy(() => import("./pages/ManagerDashboard"));
+const TechnicianDashboard = lazy(() => import("./pages/TechnicianDashboard"));
+const TechnicianMobileApp = lazy(() => import("./pages/TechnicianMobileApp"));
 import { useIsMobile } from "./hooks/useMobile";
 
 // Auth / settings pages
-import TeamManagement from "./pages/TeamManagement";
-import AuditLog from "./pages/AuditLog";
-import ChangePassword from "./pages/ChangePassword";
+const TeamManagement = lazy(() => import("./pages/TeamManagement"));
+const AuditLog = lazy(() => import("./pages/AuditLog"));
+const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 
 // CRM pages
-import Clients from "./pages/Clients";
-import ClientDetail from "./pages/ClientDetail";
-import Enquiries from "./pages/Enquiries";
-import EnquiryDetail from "./pages/EnquiryDetail";
-import EnquiryForm from "./pages/EnquiryForm";
+const Clients = lazy(() => import("./pages/Clients"));
+const ClientDetail = lazy(() => import("./pages/ClientDetail"));
+const Enquiries = lazy(() => import("./pages/Enquiries"));
+const EnquiryDetail = lazy(() => import("./pages/EnquiryDetail"));
+const EnquiryForm = lazy(() => import("./pages/EnquiryForm"));
 
 // Admin pages
-import Departments from "./pages/Departments";
+const Departments = lazy(() => import("./pages/Departments"));
 
 // Job Cards pages
-import JobCards from "./pages/JobCards";
-import JobCardDetail from "./pages/JobCardDetail";
-import TechnicianJobDetail from "./pages/TechnicianJobDetail";
-import JobCardForm from "./pages/JobCardForm";
-import JobCardEditForm from "./pages/JobCardEditForm";
-import Jobs from "./pages/Jobs";
+const JobCards = lazy(() => import("./pages/JobCards"));
+const JobCardDetail = lazy(() => import("./pages/JobCardDetail"));
+const TechnicianJobDetail = lazy(() => import("./pages/TechnicianJobDetail"));
+const JobCardForm = lazy(() => import("./pages/JobCardForm"));
+const JobCardEditForm = lazy(() => import("./pages/JobCardEditForm"));
+const Jobs = lazy(() => import("./pages/Jobs"));
 
 
 // Pricing page
-import Pricing from "./pages/Pricing";
-import PricingCatalogue from "./pages/PricingCatalogue";
+const Pricing = lazy(() => import("./pages/Pricing"));
+const PricingCatalogue = lazy(() => import("./pages/PricingCatalogue"));
 
 // Quotes page
-import QuoteBuilder from "./pages/QuoteBuilder";
-import Quotes from "./pages/Quotes";
-import QuoteDetails from "./pages/QuoteDetails";
+const QuoteBuilder = lazy(() => import("./pages/QuoteBuilder"));
+const Quotes = lazy(() => import("./pages/Quotes"));
+const QuoteDetails = lazy(() => import("./pages/QuoteDetails"));
 
 // Settings pages
-import DepartmentServiceSettings from "./pages/DepartmentServiceSettings";
-import Settings from "./pages/Settings";
+const DepartmentServiceSettings = lazy(() => import("./pages/DepartmentServiceSettings"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 // Schedule page
-import SchedulePage from "./pages/Schedule";
+const SchedulePage = lazy(() => import("./pages/Schedule"));
 
 // ─────────────────────────────────────────────
 // ROUTE GUARDS
@@ -416,7 +417,9 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster richColors position="top-right" />
-          <Router />
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background text-foreground">Loading Houdini…</div>}>
+            <Router />
+          </Suspense>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

@@ -245,7 +245,7 @@ function InnerSidebar({
           <SidebarHeader className="h-16 justify-center border-b border-sidebar-border">
             <div className="flex items-center gap-3 px-3">
               <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png"
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png"
                 alt="Houdini"
                 className="w-9 h-9 rounded-lg object-cover shrink-0"
               />
@@ -438,7 +438,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col items-center gap-6 p-8 max-w-sm w-full text-center">
           <div className="w-14 h-14 rounded-2xl overflow-hidden">
             <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png"
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png"
               alt="Houdini"
               className="w-full h-full object-cover"
             />
@@ -482,7 +482,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <SidebarTrigger className="h-9 w-9 rounded-lg" />
               <div className="flex items-center gap-2">
                 <img
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png"
+                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png"
                   alt="Houdini"
                   className="w-6 h-6 rounded-md object-cover"
                 />

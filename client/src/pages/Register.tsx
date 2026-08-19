@@ -120,7 +120,7 @@ export default function Register() {
         {/* Top: brand name */}
         <div className="relative z-10 px-10 pt-10 flex items-center gap-3">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png"
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png"
             alt="Houdini Locksmith logo"
             className="w-10 h-10 rounded-xl object-cover"
           />
@@ -133,7 +133,7 @@ export default function Register() {
         {/* Centre: mascot image */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png"
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png"
             alt="Houdini mascot holding the logo"
             className="w-64 h-auto object-contain drop-shadow-2xl"
             style={{ filter: "drop-shadow(0 0 40px oklch(0.73 0.22 130 / 0.5))" }}
@@ -193,7 +193,7 @@ export default function Register() {
           {/* Mobile logo */}
           <div className="flex lg:hidden items-center gap-3 mb-2">
             <img
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663346956907/RhVEFKENpu3fHPtnd8SHCE/houdini-logo-neon_8a8a6775.png"
+              src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png"
               alt="Houdini logo"
               className="w-10 h-10 rounded-xl object-cover"
             />
