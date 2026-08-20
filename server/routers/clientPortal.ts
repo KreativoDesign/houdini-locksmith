@@ -89,7 +89,7 @@ export const clientPortalRouter = router({
         expiresAt,
       });
       
-      const path = `/portal/${token}`;
+      const path = `/client-portal/${token}`;
       const url = input.origin ? `${input.origin}${path}` : path;
 
       // Auto-email the client if they have an email address
@@ -130,7 +130,7 @@ export const clientPortalRouter = router({
 
   /**
    * Public procedure — returns read-only job status for the client portal.
-   * Accessed via /portal/:token with no authentication required.
+   * Accessed via /client-portal/:token with no authentication required.
    */
   getJobStatus: publicProcedure
     .input(z.object({ token: z.string().length(64) }))

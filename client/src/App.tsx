@@ -369,6 +369,8 @@ function Router() {
 
       {/* ── Public client portal (no auth required) ── */}
       <Route path="/client-portal/:token" component={ClientPortal} />
+      {/* Legacy links copied before canonical URL alignment */}
+      <Route path="/portal/:token" component={ClientPortal} />
 
       {/* ── Admin quote creation (must come before /quotes/:token) ── */}
       <Route path="/quotes/create">

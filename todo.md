@@ -810,3 +810,10 @@ Fixed Client Dashboard button navigation:
 - [ ] Configure PayFast merchant credentials and complete a live payment test - required before clients can pay online in the portal
 - [x] Save a client portal invoice checkpoint - completed
 - [x] Use non-enumerable random storage keys for portal-published invoice PDFs
+
+## Phase 116: Share Client Link 404 Fix (Completed)
+- [x] Trace copied client portal URL construction in the job detail workflow - link generator used `/portal/:token`, while the app registered `/client-portal/:token`
+- [x] Correct portal route or link path mismatch for the published site - canonical URLs now use `/client-portal/:token`; legacy `/portal/:token` links remain supported
+- [x] Add regression coverage for copied public portal URLs
+- [x] Verify route behavior, tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
+- [x] Save a client portal routing checkpoint - pending final checkpoint after this verification

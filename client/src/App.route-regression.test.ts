@@ -15,4 +15,9 @@ describe("App route rendering regression guards", () => {
     expect(appSource).toContain("component={JobCardEditForm}");
     expect(appSource).not.toContain("component={() => <JobCardEditForm />}");
   });
+
+  it("supports the canonical and legacy public client portal routes", () => {
+    expect(appSource).toContain('<Route path="/client-portal/:token" component={ClientPortal} />');
+    expect(appSource).toContain('<Route path="/portal/:token" component={ClientPortal} />');
+  });
 });

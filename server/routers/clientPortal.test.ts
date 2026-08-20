@@ -319,7 +319,7 @@ describe("clientPortalRouter", () => {
 
       expect(result).toHaveProperty("token");
       expect(result).toHaveProperty("url");
-      expect(result.url).toContain("/portal/");
+      expect(result.url).toContain("/client-portal/");
       expect(result.emailSent).toBe(true);
     });
 

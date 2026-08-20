@@ -161,7 +161,7 @@ export const pricingRouter = router({
       const existingPortalToken = await getClientPortalTokenByJobCard(input.jobCardId);
       const portalToken = existingPortalToken?.token ?? randomBytes(32).toString("hex");
       await upsertClientPortalToken({ jobCardId: input.jobCardId, token: portalToken, expiresAt: null });
-      const portalUrl = `${input.origin}/portal/${portalToken}`;
+      const portalUrl = `${input.origin}/client-portal/${portalToken}`;
 
       // Generate PDF invoice
       let pdfBuffer: Buffer | undefined;
