@@ -9,6 +9,7 @@ vi.mock("../db", () => ({
   getClientById: vi.fn(),
   getClientPortalToken: vi.fn(),
   getClientPortalTokenByJobCard: vi.fn(),
+  getClientPortalDashboardSummary: vi.fn().mockResolvedValue({ recentJobs: [], pendingInvoices: [] }),
   upsertClientPortalToken: vi.fn(),
   getSignatureByJobCard: vi.fn(),
   listJobDocuments: vi.fn(),
@@ -180,6 +181,7 @@ describe("clientPortalRouter", () => {
       });
 
       expect(result.jobNumber).toBe("JC-2026-0001");
+      expect(result.dashboardSummary).toEqual({ recentJobs: [], pendingInvoices: [] });
     });
 
     it("exposes only the latest published invoice PDF through the secure portal token", async () => {

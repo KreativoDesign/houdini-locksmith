@@ -817,3 +817,10 @@ Fixed Client Dashboard button navigation:
 - [x] Add regression coverage for copied public portal URLs
 - [x] Verify route behavior, tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
 - [x] Save a client portal routing checkpoint - completed
+
+## Phase 117: Personalized Client Portal Dashboard (Completed)
+- [x] Add privacy-safe portal data for client job and invoice summaries
+- [x] Add a personalized welcome and smooth loading state to the public portal
+- [x] Show recent job cards and outstanding invoice summaries
+- [x] Add regression coverage and verify tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
+- [x] Save a client portal dashboard checkpoint - pending final checkpoint after this verification

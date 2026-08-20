@@ -5,6 +5,7 @@ import {
   getClientById,
   getClientPortalToken,
   getClientPortalTokenByJobCard,
+  getClientPortalDashboardSummary,
   getJobCardById,
   getSignatureByJobCard,
   listJobDocuments,
@@ -146,7 +147,7 @@ export const clientPortalRouter = router({
       const job = await getJobCardById(portalToken.jobCardId);
       if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job not found" });
 
-      const [client, technician, signature, documents, items, pricing, slot] = await Promise.all([
+      const [client, technician, signature, documents, items, pricing, slot, dashboardSummary] = await Promise.all([
         job.clientId ? getClientById(job.clientId) : Promise.resolve(undefined),
         job.assignedTechnicianId ? getUserById(job.assignedTechnicianId) : Promise.resolve(undefined),
         getSignatureByJobCard(job.id),
@@ -154,6 +155,9 @@ export const clientPortalRouter = router({
         listJobItems(job.id),
         getJobPricingByJobCard(job.id),
         job.scheduledTimeSlotId ? getSlotById(job.scheduledTimeSlotId) : Promise.resolve(undefined),
+        job.clientId
+          ? getClientPortalDashboardSummary(job.clientId)
+          : Promise.resolve({ recentJobs: [], pendingInvoices: [] }),
       ]);
 
       // Status timeline steps
@@ -191,6 +195,7 @@ export const clientPortalRouter = router({
               lastName: client.lastName,
             }
           : null,
+        dashboardSummary,
         technician: technician
           ? { name: technician.name }
           : null,

@@ -408,6 +408,50 @@ export async function listJobCards(filters?: {
   return db.select().from(jobCards).where(conditions.length ? and(...conditions) : undefined).orderBy(desc(jobCards.createdAt));
 }
 
+/**
+ * Minimal, bounded data for a token-authorized client portal dashboard. This
+ * intentionally omits staff notes, documents, addresses, and any portal links
+ * for other jobs belonging to the same client.
+ */
+export async function getClientPortalDashboardSummary(clientId: number, limit = 4) {
+  const db = await getDb();
+  if (!db) return { recentJobs: [], pendingInvoices: [] };
+
+  const rows = await db
+    .select({
+      id: jobCards.id,
+      jobNumber: jobCards.jobNumber,
+      title: jobCards.title,
+      status: jobCards.status,
+      updatedAt: jobCards.updatedAt,
+      pricingStatus: jobPricing.status,
+      total: jobPricing.total,
+      currency: jobPricing.currency,
+    })
+    .from(jobCards)
+    .leftJoin(jobPricing, eq(jobPricing.jobCardId, jobCards.id))
+    .where(eq(jobCards.clientId, clientId))
+    .orderBy(desc(jobCards.updatedAt))
+    .limit(Math.min(Math.max(limit, 1), 6));
+
+  return {
+    recentJobs: rows.map((row) => ({
+      jobNumber: row.jobNumber,
+      title: row.title,
+      status: row.status,
+      updatedAt: row.updatedAt,
+    })),
+    pendingInvoices: rows
+      .filter((row) => row.pricingStatus === "invoiced")
+      .map((row) => ({
+        jobNumber: row.jobNumber,
+        title: row.title,
+        total: row.total,
+        currency: row.currency,
+      })),
+  };
+}
+
 export async function updateJobCard(id: number, data: Partial<InsertJobCard>): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

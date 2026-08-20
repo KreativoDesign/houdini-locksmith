@@ -48,6 +48,14 @@ function formatTime(t: string | null | undefined) {
   return `${hour12}:${m} ${ampm}`;
 }
 
+function formatMoney(amount: string | number | null | undefined, currency = "ZAR") {
+  return new Intl.NumberFormat("en-ZA", {
+    style: "currency",
+    currency: currency || "ZAR",
+    maximumFractionDigits: 2,
+  }).format(Number(amount ?? 0));
+}
+
 export default function ClientPortal() {
   const params = useParams<{ token: string }>();
   const token = params.token ?? "";
@@ -66,10 +74,22 @@ export default function ClientPortal() {
   // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3 text-muted-foreground">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm">Loading your job status…</p>
+      <div className="min-h-screen flex items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_50%_30%,hsl(var(--primary)/0.14),transparent_38%),hsl(var(--background))] px-6">
+        <div className="flex w-full max-w-sm flex-col items-center gap-5 text-center">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-primary/25 blur-xl animate-pulse" />
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-background/80 shadow-lg">
+              <Lock className="w-7 h-7 text-primary animate-pulse" />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <p className="font-semibold text-foreground">Preparing your secure portal</p>
+            <p className="text-sm text-muted-foreground">Loading your job and invoice updates…</p>
+          </div>
+          <div className="grid w-full grid-cols-2 gap-3" aria-hidden="true">
+            <div className="h-20 animate-pulse rounded-xl border border-border/60 bg-muted/40" />
+            <div className="h-20 animate-pulse rounded-xl border border-border/60 bg-muted/40 [animation-delay:150ms]" />
+          </div>
         </div>
       </div>
     );
@@ -97,6 +117,9 @@ export default function ClientPortal() {
   }
 
   const statusBadgeClass = STATUS_BADGE[data.status] ?? STATUS_BADGE.pending;
+  const clientName = data.client?.firstName || "there";
+  const recentJobs = data.dashboardSummary?.recentJobs ?? [];
+  const pendingInvoices = data.dashboardSummary?.pendingInvoices ?? [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,6 +147,73 @@ export default function ClientPortal() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+        {/* ── Personalized portal overview ───────────────────────────────── */}
+        <section className="relative overflow-hidden rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,hsl(var(--primary)/0.13),transparent_60%),hsl(var(--card))] p-5 shadow-sm">
+          <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-primary/15 blur-2xl" />
+          <div className="relative">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Your Houdini Portal</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-foreground">Welcome back, {clientName}.</h1>
+            <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">Review your latest service activity, invoice status, and the current job details below.</p>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border/70 bg-background/65 p-3">
+                <p className="text-2xl font-bold text-foreground">{recentJobs.length}</p>
+                <p className="text-xs text-muted-foreground">Recent job cards</p>
+              </div>
+              <div className="rounded-xl border border-primary/20 bg-primary/[0.07] p-3">
+                <p className="text-2xl font-bold text-primary">{pendingInvoices.length}</p>
+                <p className="text-xs text-muted-foreground">Outstanding invoices</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {(recentJobs.length > 0 || pendingInvoices.length > 0) && (
+          <section className="grid gap-4 sm:grid-cols-2">
+            {recentJobs.length > 0 && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="mb-3 flex items-center gap-2">
+                    <Wrench className="h-4 w-4 text-primary" />
+                    <h2 className="text-sm font-semibold text-foreground">Recent Job Cards</h2>
+                  </div>
+                  <div className="space-y-2.5">
+                    {recentJobs.map((job) => (
+                      <div key={job.jobNumber} className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-mono text-xs font-semibold text-foreground">{job.jobNumber}</p>
+                          <Badge className={`${STATUS_BADGE[job.status] ?? STATUS_BADGE.pending} border text-[10px]`}>{job.status.replace(/_/g, " ")}</Badge>
+                        </div>
+                        <p className="mt-1 truncate text-xs text-muted-foreground">{job.title || "Houdini service job"}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {pendingInvoices.length > 0 && (
+              <Card className="border-primary/20">
+                <CardContent className="p-4">
+                  <div className="mb-3 flex items-center gap-2">
+                    <FileDown className="h-4 w-4 text-primary" />
+                    <h2 className="text-sm font-semibold text-foreground">Outstanding Invoices</h2>
+                  </div>
+                  <div className="space-y-2.5">
+                    {pendingInvoices.map((invoice) => (
+                      <div key={invoice.jobNumber} className="rounded-lg border border-primary/15 bg-primary/[0.04] px-3 py-2">
+                        <p className="font-mono text-xs font-semibold text-foreground">{invoice.jobNumber}</p>
+                        <div className="mt-1 flex items-center justify-between gap-2 text-xs">
+                          <p className="truncate text-muted-foreground">{invoice.title || "Invoice ready"}</p>
+                          <p className="shrink-0 font-semibold text-primary">{formatMoney(invoice.total, invoice.currency ?? "ZAR")}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </section>
+        )}
+
         {/* ── Job summary ──────────────────────────────────────────────────── */}
         <Card>
           <CardContent className="p-5 space-y-4">
