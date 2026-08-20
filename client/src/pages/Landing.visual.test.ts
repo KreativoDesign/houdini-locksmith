@@ -77,5 +77,9 @@ describe("Landing hero visual treatment", () => {
     expect(landingSource).toContain("Locks\", \"locks");
     expect(landingSource).toContain("Electric Fencing\", \"electric-fencing");
     expect(landingSource).toContain("Keys\", \"keys");
+    expect(landingSource).toContain('className="h-[230px] sm:h-[270px]"');
+    expect(landingSource).toContain("shadow-[inset_0_1px_1px");
+    expect(landingSource).toContain("Icon: LockKeyhole");
+    expect(landingSource).toContain("Icon: KeyRound");
   });
 });
