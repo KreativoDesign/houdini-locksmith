@@ -71,7 +71,7 @@ export const jobCardsRouter = router({
       // Enrich with client, department, and user details in parallel
       const [client, dept, tech, manager] = await Promise.all([
         job.clientId ? getClientById(job.clientId) : null,
-        getDepartmentById(job.departmentId),
+        job.departmentId ? getDepartmentById(job.departmentId) : Promise.resolve(null),
         job.assignedTechnicianId ? getUserById(job.assignedTechnicianId) : null,
         job.assignedManagerId ? getUserById(job.assignedManagerId) : null,
       ]);
@@ -95,7 +95,7 @@ export const jobCardsRouter = router({
     .input(
       z.object({
         clientId: z.number().int().positive(),
-        departmentId: z.number().int().positive(),
+        departmentId: z.number().int().positive().optional(),
         title: z.string().min(1).max(255),
         description: z.string().optional(),
         priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
@@ -107,15 +107,13 @@ export const jobCardsRouter = router({
     .mutation(async ({ input, ctx }) => {
       const client = await getClientById(input.clientId);
       if (!client) throw new TRPCError({ code: "NOT_FOUND", message: "Client not found" });
-      const dept = await getDepartmentById(input.departmentId);
-      if (!dept) throw new TRPCError({ code: "NOT_FOUND", message: "Department not found" });
 
       const jobNumber = await generateJobNumber();
       const id = await createJobCard({
         jobNumber,
         clientId: input.clientId,
         enquiryId: null,
-        departmentId: input.departmentId,
+        departmentId: input.departmentId ?? null,
         assignedTechnicianId: input.assignedTechnicianId ?? null,
         assignedManagerId: ctx.user.id,
         title: input.title,
@@ -129,7 +127,7 @@ export const jobCardsRouter = router({
       await emitNotification({
         type: "job_created",
         title: "Job Card Created",
-        message: `Job card ${jobNumber} created for ${client.firstName} ${client.lastName}. Department: ${dept.name}.`,
+        message: `Job card ${jobNumber} created for ${client.firstName} ${client.lastName}.`,
         entityType: "job_card",
         entityId: id,
         notifyOwnerPush: input.priority === "urgent",
@@ -309,7 +307,6 @@ export const jobCardsRouter = router({
         title: z.string().min(1).max(255).optional(),
         description: z.string().optional(),
         priority: z.enum(["low", "normal", "high", "urgent"]).optional(),
-        departmentId: z.number().int().positive().optional(),
         scheduledDate: z.string().datetime().nullable().optional(),
         managerNotes: z.string().optional(),
         requiresSignature: z.boolean().optional(),
@@ -388,7 +385,7 @@ export const jobCardsRouter = router({
 
       const [client, dept, tech, manager, items, documents, signature] = await Promise.all([
         job.clientId ? getClientById(job.clientId) : null,
-        getDepartmentById(job.departmentId),
+        job.departmentId ? getDepartmentById(job.departmentId) : Promise.resolve(null),
         job.assignedTechnicianId ? getUserById(job.assignedTechnicianId) : null,
         job.assignedManagerId ? getUserById(job.assignedManagerId) : null,
         listJobItems(job.id),

@@ -121,9 +121,8 @@ export const jobCards = mysqlTable("jobCards", {
     .notNull()
     .references(() => clients.id),
   enquiryId: int("enquiryId").references(() => enquiries.id), // null if created directly
-  departmentId: int("departmentId")
-    .notNull()
-    .references(() => departments.id),
+  // Legacy categorisation only. Jobs are now assigned directly to technicians.
+  departmentId: int("departmentId").references(() => departments.id),
   assignedTechnicianId: int("assignedTechnicianId").references(() => users.id),
   assignedManagerId: int("assignedManagerId").references(() => users.id),
   title: varchar("title", { length: 255 }).notNull(),

@@ -29,7 +29,6 @@ export default function JobCardForm() {
     title: "",
     description: "",
     clientId: prefillClientId ?? "",
-    departmentId: "",
     technicianId: "",
     priority: "normal" as "low" | "normal" | "high" | "urgent",
     requiresSignature: true,
@@ -38,7 +37,6 @@ export default function JobCardForm() {
   const [isNavigating, setIsNavigating] = useState(false);
 
   const { data: clients = [] } = trpc.clients.list.useQuery({ limit: 200 });
-  const { data: departments = [] } = trpc.departments.list.useQuery();
   const { data: technicians = [] } = trpc.users.technicians.useQuery();
 
   const createMutation = trpc.jobCards.create.useMutation({
@@ -68,10 +66,6 @@ export default function JobCardForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return toast.error("Title is required");
-    if (!form.departmentId) return toast.error("Department is required", {
-      description: "Please select a department",
-    });
-
     if (!form.clientId) return toast.error("Client is required", {
       description: "Please select a client",
     });
@@ -79,7 +73,6 @@ export default function JobCardForm() {
       title: form.title.trim(),
       description: form.description.trim() || undefined,
       clientId: Number(form.clientId),
-      departmentId: Number(form.departmentId),
       assignedTechnicianId: form.technicianId ? Number(form.technicianId) : undefined,
       priority: form.priority,
       requiresSignature: form.requiresSignature,
@@ -171,7 +164,7 @@ export default function JobCardForm() {
           </CardContent>
         </Card>
 
-        {/* Client & Department */}
+        {/* Client and direct technician assignment */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
@@ -189,22 +182,6 @@ export default function JobCardForm() {
                   {(clients as any[]).map((c) => (
                     <SelectItem key={c.id} value={String(c.id)}>
                       {c.firstName} {c.lastName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Department *</Label>
-              <Select value={form.departmentId} onValueChange={(v) => setForm((f) => ({ ...f, departmentId: v }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a department..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {(departments as any[]).map((d) => (
-                    <SelectItem key={d.id} value={String(d.id)}>
-                      {d.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

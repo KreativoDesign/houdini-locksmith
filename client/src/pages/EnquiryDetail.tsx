@@ -91,7 +91,6 @@ export default function EnquiryDetail() {
     { enabled: !!enquiryId }
   );
 
-  const { data: depts } = trpc.departments.list.useQuery();
   const { data: techsData } = trpc.users.technicians.useQuery();
   const techs = techsData ?? [];
 
@@ -101,7 +100,6 @@ export default function EnquiryDetail() {
 
   // Convert form state
   const [convertForm, setConvertForm] = useState({
-    departmentId: "",
     title: "",
     description: "",
     priority: "normal",
@@ -120,7 +118,6 @@ export default function EnquiryDetail() {
         title: e.subject,
         description: e.description,
         priority: e.priority,
-        departmentId: e.departmentId ? String(e.departmentId) : "",
       }));
     }
   }, [autoConvert, e?.id]);
@@ -149,7 +146,6 @@ export default function EnquiryDetail() {
   const openConvert = () => {
     if (!e) return;
     setConvertForm({
-      departmentId: e.departmentId ? String(e.departmentId) : "",
       title: e.subject,
       description: e.description,
       priority: e.priority,
@@ -160,13 +156,12 @@ export default function EnquiryDetail() {
   };
 
   const handleConvert = async () => {
-    if (!convertForm.departmentId || !convertForm.title) {
-      toast.error("Department and title are required");
+    if (!convertForm.title) {
+      toast.error("A job title is required");
       return;
     }
     await convertMutation.mutateAsync({
       enquiryId,
-      departmentId: parseInt(convertForm.departmentId),
       title: convertForm.title,
       description: convertForm.description || undefined,
       priority: convertForm.priority as any,
@@ -336,18 +331,6 @@ export default function EnquiryDetail() {
                 <span className="text-muted-foreground">Source</span>
                 <span className="font-medium">{SOURCE_LABELS[e.source] ?? e.source}</span>
               </div>
-              {e.departmentName && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground flex items-center gap-1.5"><Building2 className="h-3.5 w-3.5" /> Dept</span>
-                  <span className="font-medium">{e.departmentName}</span>
-                </div>
-              )}
-              {e.assignedToName && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Assigned To</span>
-                  <span className="font-medium">{e.assignedToName}</span>
-                </div>
-              )}
               {(e as any).createdByName && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground flex items-center gap-1.5"><User className="h-3.5 w-3.5" /> Created By</span>
@@ -415,39 +398,20 @@ export default function EnquiryDetail() {
                 placeholder="Job description (defaults to enquiry description)"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Department *</Label>
-                <Select
-                  value={convertForm.departmentId || "none"}
-                  onValueChange={(v) => setConvertForm((p) => ({ ...p, departmentId: v === "none" ? "" : v }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select…" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Select department</SelectItem>
-                    {(depts as any[] ?? []).map((d: any) => (
-                      <SelectItem key={d.id} value={String(d.id)}>{d.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>Priority</Label>
-                <Select
-                  value={convertForm.priority}
-                  onValueChange={(v) => setConvertForm((p) => ({ ...p, priority: v }))}
-                >
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="normal">Normal</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-1.5">
+              <Label>Priority</Label>
+              <Select
+                value={convertForm.priority}
+                onValueChange={(v) => setConvertForm((p) => ({ ...p, priority: v }))}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="urgent">Urgent</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label>Assign Technician (optional)</Label>
@@ -462,7 +426,7 @@ export default function EnquiryDetail() {
                   <SelectItem value="none">Unassigned</SelectItem>
                   {(techs as any[]).map((t: any) => (
                     <SelectItem key={t.id} value={String(t.id)}>
-                      {t.name} {t.departmentName ? `(${t.departmentName})` : ""}
+                      {t.name ?? t.email}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -474,7 +438,7 @@ export default function EnquiryDetail() {
             <Button variant="outline" onClick={() => setShowConvert(false)}>Cancel</Button>
             <Button
               onClick={handleConvert}
-              disabled={convertMutation.isPending || !convertForm.departmentId || !convertForm.title}
+              disabled={convertMutation.isPending || !convertForm.title}
               className="bg-green-600 hover:bg-green-700 text-white gap-2"
             >
               <ArrowRightCircle className="h-4 w-4" />

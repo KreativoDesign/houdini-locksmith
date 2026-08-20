@@ -25,7 +25,6 @@ export default function JobCardEditForm() {
   const [form, setForm] = useState({
     title: "",
     description: "",
-    departmentId: "",
     technicianId: "",
     priority: "normal" as "low" | "normal" | "high" | "urgent",
     requiresSignature: true,
@@ -38,10 +37,10 @@ export default function JobCardEditForm() {
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const { data: job, isLoading: jobLoading } = trpc.jobCards.get.useQuery({ id: jobId });
-  const { data: departments = [] } = trpc.departments.list.useQuery();
   const { data: technicians = [] } = trpc.users.technicians.useQuery();
   const { data: existingDocuments } = trpc.documents.list.useQuery({ jobCardId: jobId });
   const updateMutation = trpc.jobCards.update.useMutation();
+  const assignMutation = trpc.jobCards.assign.useMutation();
   const uploadDocumentMutation = trpc.documents.upload.useMutation();
 
   // Populate form when job data loads
@@ -50,7 +49,6 @@ export default function JobCardEditForm() {
       setForm({
         title: (job as any).title || "",
         description: (job as any).description || "",
-        departmentId: String((job as any).departmentId || ""),
         technicianId: String((job as any).assignedTechnicianId || ""),
         priority: (job as any).priority || "normal",
         requiresSignature: (job as any).requiresSignature ?? true,
@@ -119,12 +117,14 @@ export default function JobCardEditForm() {
         id: jobId,
         title: form.title,
         description: form.description,
-        departmentId: parseInt(form.departmentId),
-        technicianId: form.technicianId ? parseInt(form.technicianId) : undefined,
         priority: form.priority,
         requiresSignature: form.requiresSignature,
         scheduledDate: (scheduledDate as any) || undefined,
       } as any);
+
+      if (form.technicianId) {
+        await assignMutation.mutateAsync({ id: jobId, technicianId: parseInt(form.technicianId) });
+      }
 
       toast.success("Job card updated successfully");
       navigate(`/jobs/${jobId}`);
@@ -215,26 +215,6 @@ export default function JobCardEditForm() {
                 placeholder="Enter job description"
                 rows={4}
               />
-            </div>
-
-            {/* Department */}
-            <div className="space-y-2">
-              <Label htmlFor="department">Department *</Label>
-              <Select
-                value={form.departmentId}
-                onValueChange={(value) => setForm({ ...form, departmentId: value })}
-              >
-                <SelectTrigger id="department">
-                  <SelectValue placeholder="Select department" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(departments as any[]).map((dept) => (
-                    <SelectItem key={dept.id} value={String(dept.id)}>
-                      {dept.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Technician */}

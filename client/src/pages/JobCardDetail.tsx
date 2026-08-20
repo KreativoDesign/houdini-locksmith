@@ -182,26 +182,16 @@ function SlotPicker({
   jobCardId,
   currentSlotId,
   onBooked,
-  departmentId,
-  departmentName,
 }: {
   technicianId: number;
   jobCardId: number;
   currentSlotId?: number | null;
   onBooked: () => void;
-  departmentId?: number;
-  departmentName?: string;
 }) {
   const [date, setDate] = useState(() => format(new Date(), "yyyy-MM-dd"));
   // Allow browsing slots for any dept technician; default to the assigned one
   const [selectedTechId, setSelectedTechId] = useState<number>(initialTechnicianId);
   const utils = trpc.useUtils();
-
-  // Fetch technicians in this department for the selector
-  const { data: deptTechnicians = [] } = trpc.users.technicians.useQuery(
-    departmentId ? { departmentId } : undefined,
-    { enabled: !!departmentId }
-  );
 
   const technicianId = selectedTechId || initialTechnicianId;
 
@@ -241,30 +231,6 @@ function SlotPicker({
 
   return (
     <div className="space-y-3">
-      {/* Technician selector — filtered by department */}
-      {departmentId && (deptTechnicians as any[]).length > 0 && (
-        <div className="space-y-1">
-          <p className="text-xs text-muted-foreground font-medium">
-            {departmentName ? `Technicians — ${departmentName}` : "Technician"}
-          </p>
-          <Select
-            value={String(selectedTechId)}
-            onValueChange={(v) => setSelectedTechId(Number(v))}
-          >
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Select technician" />
-            </SelectTrigger>
-            <SelectContent>
-              {(deptTechnicians as any[]).map((t: any) => (
-                <SelectItem key={t.id} value={String(t.id)}>
-                  {t.name ?? t.email}
-                  {t.id === initialTechnicianId ? " (assigned)" : ""}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
       <div className="flex items-center gap-2">
         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)}
           className="h-9 w-44" min={format(new Date(), "yyyy-MM-dd")} />
@@ -1421,11 +1387,9 @@ export default function JobCardDetail() {
     { enabled: !!enquiryId }
   );
 
-  // Filter technicians by the job card's department once the job is loaded
-  const deptId = (job as any)?.departmentId as number | undefined;
   const { data: technicians = [] } = trpc.users.technicians.useQuery(
-    deptId ? { departmentId: deptId } : undefined,
-    { enabled: isManager && !!deptId }
+    undefined,
+    { enabled: isManager }
   );
 
   const statusMutation = trpc.jobCards.updateStatus.useMutation({
@@ -1441,6 +1405,7 @@ export default function JobCardDetail() {
     onSuccess: () => {
       toast.success("Technician assigned");
       utils.jobCards.get.invalidate({ id: jobId });
+      utils.jobCards.list.invalidate();
       setAssignOpen(false);
     },
     onError: (err) => toast.error(err.message),
@@ -1742,8 +1707,6 @@ export default function JobCardDetail() {
                     jobCardId={jobId}
                     currentSlotId={j.scheduledTimeSlotId}
                     onBooked={() => setScheduleOpen(false)}
-                    departmentId={(j as any).departmentId ?? undefined}
-                    departmentName={(j as any).departmentName ?? undefined}
                   />
                 </CardContent>
               )}
@@ -1861,14 +1824,6 @@ export default function JobCardDetail() {
                 </div>
               </div>
               )}
-              {/* Department */}
-              <div className="flex items-start gap-2">
-                <Building2 className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Department</p>
-                  <p className="font-medium">{j.departmentName ?? "—"}</p>
-                </div>
-              </div>
               {/* Technician */}
               <div className="flex items-start gap-2">
                 <User className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
@@ -2000,14 +1955,14 @@ export default function JobCardDetail() {
           <DialogHeader>
             <DialogTitle>Assign Technician</DialogTitle>
             <DialogDescription>
-              Showing technicians in the <span className="font-semibold">{(job as any)?.departmentName ?? "selected"}</span> department.
+              Select the technician responsible for this job card.
             </DialogDescription>
           </DialogHeader>
           <Select value={selectedTechId} onValueChange={setSelectedTechId}>
             <SelectTrigger><SelectValue placeholder="Select technician" /></SelectTrigger>
             <SelectContent>
               {(technicians as any[]).length === 0 ? (
-                <div className="px-3 py-2 text-sm text-muted-foreground">No technicians in this department</div>
+                <div className="px-3 py-2 text-sm text-muted-foreground">No technicians are currently available</div>
               ) : (
                 (technicians as any[]).map((t: any) => (
                   <SelectItem key={t.id} value={String(t.id)}>

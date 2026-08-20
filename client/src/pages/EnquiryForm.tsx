@@ -13,10 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Save, UserPlus, Users, User } from "lucide-react";
+import { ArrowLeft, Save, UserPlus, Users } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/_core/hooks/useAuth";
-import { getServiceTypesForDepartment, SERVICE_TYPE_LABELS } from "@/lib/departmentServiceTypesStorage";
+import { SERVICE_TYPE_LABELS } from "@/lib/departmentServiceTypesStorage";
 import { useState, useEffect } from "react";
 
 type ClientMode = "existing" | "new";
@@ -27,8 +26,6 @@ export default function EnquiryForm() {
   const searchStr = useSearch();
   const urlParams = new URLSearchParams(searchStr);
   const presetClientId = urlParams.get("clientId") ? parseInt(urlParams.get("clientId")!) : undefined;
-  const { user } = useAuth();
-
   const isEdit = !!id;
   const enquiryId = id ? parseInt(id) : undefined;
 
@@ -47,24 +44,15 @@ export default function EnquiryForm() {
   const { data: clientsData } = trpc.clients.list.useQuery({ limit: 200 });
   const clientsList = clientsData?.rows ?? [];
 
-  // ── Load departments ──────────────────────────────────────────────────────
-  const { data: depts } = trpc.departments.list.useQuery();
-  const deptsList = depts ?? [];
-
-  // ── Load technicians/employees ──────────────────────────────────────────────
-  const { data: technicians = [] } = trpc.users.technicians.useQuery();
-
   // ── Enquiry form state ────────────────────────────────────────────────────
   const [form, setForm] = useState({
     clientId: presetClientId ? String(presetClientId) : "",
-    departmentId: "",
     subject: "",
     description: "",
     serviceType: "other",
     priority: "normal",
     source: "phone",
     notes: "",
-    assignedToId: user?.id ? String(user.id) : "",
   });
 
   // ── New client form state ─────────────────────────────────────────────────
@@ -78,44 +66,23 @@ export default function EnquiryForm() {
 
   const [saving, setSaving] = useState(false);
 
-  // Get current user's name for display
-  const currentUserName = user?.name || "";
-
-  // Initialize assignedToId when user loads
-  useEffect(() => {
-    if (!isEdit && user?.id && !form.assignedToId) {
-      setForm((p) => ({ ...p, assignedToId: String(user.id) }));
-    }
-  }, [user?.id, isEdit]);
-
   // Populate form when editing
   useEffect(() => {
     if (existing && isEdit) {
       const e = existing as any;
       setForm({
         clientId: String(e.clientId),
-        departmentId: e.departmentId ? String(e.departmentId) : "",
         subject: e.subject,
         description: e.description,
         serviceType: e.serviceType ?? "other",
         priority: e.priority,
         source: e.source,
         notes: e.notes ?? "",
-        assignedToId: e.assignedToId ? String(e.assignedToId) : (user?.id ? String(user.id) : ""),
       });
     }
   }, [existing, isEdit]);
 
-  // Get available service types for selected department
-  const availableServiceTypes = getServiceTypesForDepartment(form.departmentId) as any[];
-
-  // Reset service type when department changes if current type is not available
-  const handleDepartmentChange = (v: string) => {
-    const newDeptId = v === "none" ? "" : v;
-    const availableTypes = getServiceTypesForDepartment(newDeptId) as any[];
-    const newServiceType = availableTypes.includes(form.serviceType) ? form.serviceType : availableTypes[0];
-    setForm((p) => ({ ...p, departmentId: newDeptId, serviceType: newServiceType }));
-  };
+  const availableServiceTypes = Object.keys(SERVICE_TYPE_LABELS) as any[];
 
   // ── Mutations ─────────────────────────────────────────────────────────────
   const createClientMutation = trpc.clients.create.useMutation({
@@ -189,9 +156,7 @@ export default function EnquiryForm() {
           serviceType: form.serviceType as any,
           priority: form.priority as any,
           source: form.source as any,
-          departmentId: form.departmentId ? parseInt(form.departmentId) : undefined,
           notes: form.notes || undefined,
-          assignedToId: form.assignedToId ? parseInt(form.assignedToId) : undefined,
         });
       } else {
         // Create new client first if needed
@@ -208,14 +173,12 @@ export default function EnquiryForm() {
         }
         await createMutation.mutateAsync({
           clientId,
-          departmentId: form.departmentId ? parseInt(form.departmentId) : undefined,
           subject: form.subject,
           description: form.description,
           serviceType: form.serviceType as any,
           priority: form.priority as any,
           source: form.source as any,
           notes: form.notes || undefined,
-          assignedToId: form.assignedToId ? parseInt(form.assignedToId) : undefined,
         });
       }
     } finally {
@@ -397,68 +360,18 @@ export default function EnquiryForm() {
           </CardContent>
         </Card>
 
-        {/* ── Employee Assignment ── */}
+        {/* ── Requested Service ── */}
         <Card>
-          <CardHeader><CardTitle className="text-base">Assignment</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Assigned To
-              </Label>
-              <Select
-                value={form.assignedToId}
-                onValueChange={(v) => setForm((p) => ({ ...p, assignedToId: v }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select employee…" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(technicians as any[]).map((t: any) => (
-                    <SelectItem key={t.id} value={String(t.id)}>
-                      {t.name}
-                      {user?.id === t.id && " (You)"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground mt-1">
-                {form.assignedToId === String(user?.id) ? `Currently assigned to you (${currentUserName})` : "Select who is handling this enquiry"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ── Department & Service ── */}
-        <Card>
-          <CardHeader><CardTitle className="text-base">Department & Service</CardTitle></CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label>Department</Label>
-              <Select
-                value={form.departmentId || "none"}
-                onValueChange={handleDepartmentChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select department…" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Not specified</SelectItem>
-                  {(deptsList as any[]).map((d: any) => (
-                    <SelectItem key={d.id} value={String(d.id)}>{d.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <CardHeader><CardTitle className="text-base">Requested Service</CardTitle></CardHeader>
+          <CardContent>
             <div className="space-y-1.5">
               <Label>Service Type *</Label>
               <Select
                 value={form.serviceType}
                 onValueChange={(v) => setForm((p) => ({ ...p, serviceType: v }))}
-                disabled={!form.departmentId}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={!form.departmentId ? "Select department first" : "Select service type…"} />
+                  <SelectValue placeholder="Select service type…" />
                 </SelectTrigger>
                 <SelectContent>
                   {availableServiceTypes.map((type: any) => (

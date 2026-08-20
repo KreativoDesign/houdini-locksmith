@@ -56,25 +56,21 @@ export const enquiriesRouter = router({
     .input(
       z.object({
         clientId: z.number().int().positive(),
-        departmentId: z.number().int().positive().optional(),
         subject: z.string().min(1).max(255),
         description: z.string().min(1),
         serviceType: z.enum(["locksmithing", "security", "diagnostics", "workshop", "other"]).default("other"),
         priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
         source: z.enum(["phone", "email", "walk_in", "online", "referral"]).default("phone"),
         notes: z.string().optional(),
-        assignedToId: z.number().int().positive().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const client = await getClientById(input.clientId);
       if (!client) throw new TRPCError({ code: "NOT_FOUND", message: "Client not found" });
 
-      // Use provided assignedToId or default to current user
-      const assignedToId = input.assignedToId ?? ctx.user.id;
-      const id = await createEnquiry({ ...input, status: "new", assignedToId, createdById: ctx.user.id } as any);
+      const id = await createEnquiry({ ...input, status: "new", assignedToId: null, createdById: ctx.user.id } as any);
 
-      // Notify owner and assigned employee of new enquiry
+      // Notify the owner; technicians are assigned only when a job card is created.
       await emitNotification({
         type: "new_enquiry",
         title: "New Enquiry Received",
@@ -83,18 +79,6 @@ export const enquiriesRouter = router({
         entityId: id,
         notifyOwnerPush: true,
       });
-
-      // Notify assigned employee if different from current user
-      if (assignedToId !== ctx.user.id) {
-        await emitNotification({
-          type: "enquiry_assigned",
-          title: "Enquiry Assigned to You",
-          message: `Enquiry from ${client.firstName} ${client.lastName}: "${input.subject}"`,
-          entityType: "enquiry",
-          entityId: id,
-          userId: assignedToId,
-        });
-      }
 
       return { id };
     }),
@@ -109,8 +93,6 @@ export const enquiriesRouter = router({
         status: z.enum(["new", "in_review", "converted", "closed"]).optional(),
         priority: z.enum(["low", "normal", "high", "urgent"]).optional(),
         source: z.enum(["phone", "email", "walk_in", "online", "referral"]).optional(),
-        departmentId: z.number().int().positive().nullable().optional(),
-        assignedToId: z.number().int().positive().nullable().optional(),
         notes: z.string().optional(),
       })
     )
@@ -125,7 +107,10 @@ export const enquiriesRouter = router({
       return { success: true };
     }),
 
-  /** Assign an enquiry to a staff member for review */
+  /**
+   * Enquiries are intake records only. Technicians are assigned directly to job cards
+   * after conversion so their dashboard reflects actionable work.
+   */
   assign: managerProcedure
     .input(
       z.object({
@@ -133,24 +118,11 @@ export const enquiriesRouter = router({
         assignedToId: z.number().int().positive(),
       })
     )
-    .mutation(async ({ input }) => {
-      const enquiry = await getEnquiryById(input.id);
-      if (!enquiry) throw new TRPCError({ code: "NOT_FOUND", message: "Enquiry not found" });
-      const assignee = await getUserById(input.assignedToId);
-      if (!assignee) throw new TRPCError({ code: "NOT_FOUND", message: "Assignee not found" });
-
-      await updateEnquiry(input.id, { assignedToId: input.assignedToId, status: "in_review" });
-
-      await emitNotification({
-        type: "enquiry_assigned",
-        title: "Enquiry Assigned to You",
-        message: `Enquiry #${input.id} "${enquiry.subject}" has been assigned to you for review.`,
-        entityType: "enquiry",
-        entityId: input.id,
-        userId: input.assignedToId,
+    .mutation(async () => {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Enquiries are not assigned to technicians. Convert the enquiry to a job card and assign its technician there.",
       });
-
-      return { success: true };
     }),
 
   /**
@@ -161,7 +133,6 @@ export const enquiriesRouter = router({
     .input(
       z.object({
         enquiryId: z.number().int().positive(),
-        departmentId: z.number().int().positive(),
         title: z.string().min(1).max(255),
         description: z.string().optional(),
         priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
@@ -180,9 +151,6 @@ export const enquiriesRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot convert a closed enquiry" });
       }
 
-      const dept = await getDepartmentById(input.departmentId);
-      if (!dept) throw new TRPCError({ code: "NOT_FOUND", message: "Department not found" });
-
       if (input.assignedTechnicianId) {
         const tech = await getUserById(input.assignedTechnicianId);
         if (!tech) throw new TRPCError({ code: "NOT_FOUND", message: "Technician not found" });
@@ -193,7 +161,7 @@ export const enquiriesRouter = router({
         jobNumber,
         clientId: enquiry.clientId,
         enquiryId: enquiry.id,
-        departmentId: input.departmentId,
+        departmentId: null,
         assignedTechnicianId: input.assignedTechnicianId ?? null,
         assignedManagerId: ctx.user.id,
         title: input.title,
@@ -215,7 +183,7 @@ export const enquiriesRouter = router({
       await emitNotification({
         type: "job_created",
         title: "Job Card Created",
-        message: `Job card ${jobNumber} created from enquiry #${input.enquiryId}. Department: ${dept.name}.`,
+        message: `Job card ${jobNumber} created from enquiry #${input.enquiryId}.`,
         entityType: "job_card",
         entityId: jobCardId,
         notifyOwnerPush: true,

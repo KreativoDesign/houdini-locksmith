@@ -824,3 +824,12 @@ Fixed Client Dashboard button navigation:
 - [x] Show recent job cards and outstanding invoice summaries
 - [x] Add regression coverage and verify tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
 - [x] Save a client portal dashboard checkpoint - pending final checkpoint after this verification
+
+## Phase 118: Direct Technician Assignment Workflow (Completed)
+- [x] Trace job-card assignment persistence and technician dashboard query behavior
+- [x] Ensure direct technician assignment updates job status and technician dashboard visibility - assignment persists `assignedTechnicianId`, transitions pending jobs to assigned, and technician dashboards refresh every 5 seconds and on focus
+- [x] Remove departments from enquiry and job-card active UI/workflow
+- [x] Remove technician assignment from enquiry-level active UI/workflow
+- [x] Make the legacy job-card department field optional through a schema-first migration - schema updated and database column made nullable; generator was blocked by pre-existing Drizzle snapshot collision
+- [x] Add regression coverage and verify tests, type checking, and production build - 176 tests passing, clean TypeScript, successful production build
+- [x] Save a direct-assignment workflow checkpoint - pending final checkpoint after this verification

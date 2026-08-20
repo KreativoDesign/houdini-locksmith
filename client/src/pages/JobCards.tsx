@@ -454,7 +454,6 @@ export default function JobCards() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
-  const [deptFilter, setDeptFilter] = useState<string>("all");
 
   const isAdmin = user?.role === "admin";
   const isManager = user?.role === "manager" || isAdmin;
@@ -465,8 +464,6 @@ export default function JobCards() {
     statusFilter !== "all" ? { status: statusFilter as JobStatus } : undefined,
     { refetchInterval: 30_000 }
   );
-
-  const { data: departments = [] } = trpc.departments.list.useQuery();
 
   const statusMutation = trpc.jobCards.updateStatus.useMutation({
     onSuccess: (_, vars) => {
@@ -493,10 +490,9 @@ export default function JobCards() {
         j.title?.toLowerCase().includes(search.toLowerCase()) ||
         j.clientName?.toLowerCase().includes(search.toLowerCase());
       const matchPriority = priorityFilter === "all" || j.priority === priorityFilter;
-      const matchDept = deptFilter === "all" || String(j.departmentId) === deptFilter;
-      return matchSearch && matchPriority && matchDept;
+      return matchSearch && matchPriority;
     });
-  }, [jobs, search, priorityFilter, deptFilter]);
+  }, [jobs, search, priorityFilter]);
 
   const stats = useMemo(() => {
     const all = jobs as any[];
@@ -586,19 +582,6 @@ export default function JobCards() {
             <SelectItem value="urgent">Urgent</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={deptFilter} onValueChange={setDeptFilter}>
-          <SelectTrigger className="h-9 w-44">
-            <SelectValue placeholder="All departments" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All departments</SelectItem>
-            {(departments as any[]).map((d) => (
-              <SelectItem key={d.id} value={String(d.id)}>
-                {d.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         {/* View toggle */}
         <div className="flex items-center border rounded-lg overflow-hidden ml-auto">
           <button
@@ -671,7 +654,6 @@ export default function JobCards() {
                   <TableHead className="w-32">Job #</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>Client</TableHead>
-                  <TableHead>Department</TableHead>
                   <TableHead>Technician</TableHead>
                   <TableHead>Enquiry Taken By</TableHead>
                   <TableHead>Status</TableHead>
@@ -696,7 +678,6 @@ export default function JobCards() {
                         {job.title}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{job.clientName ?? "—"}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{job.departmentName ?? "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{job.technicianName ?? "—"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{job.enquiryTakenByName ?? "—"}</TableCell>
                       <TableCell><StatusBadge status={job.status as JobStatus} /></TableCell>

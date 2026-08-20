@@ -33,7 +33,6 @@ export function CreateJobModal({
     clientId: "",
     title: "",
     description: "",
-    departmentId: "",
     priority: "normal",
     assignedTechnicianId: "",
   });
@@ -48,19 +47,16 @@ export function CreateJobModal({
 
   const createJobMutation = trpc.jobCards.create.useMutation();
   const createClientMutation = trpc.clients.create.useMutation();
-  const { data: departments } = trpc.departments.list.useQuery();
   const { data: clientsData, refetch: refetchClients } = trpc.clients.list.useQuery();
   const { data: techniciansData } = trpc.users.technicians.useQuery();
 
   // Normalize data to arrays and filter out undefined entries
   const clients = Array.isArray(clientsData) ? clientsData : (clientsData && typeof clientsData === 'object' ? (clientsData as any)?.rows : undefined) ?? [];
   const technicians = Array.isArray(techniciansData) ? techniciansData : (techniciansData && typeof techniciansData === 'object' ? (techniciansData as any)?.rows : undefined) ?? [];
-  const deptsList = Array.isArray(departments) ? departments : (departments && typeof departments === 'object' ? (departments as any)?.rows : undefined) ?? [];
   
   // Filter out any undefined or null entries
   const validClients = (clients as any[]).filter((c: any) => c && c.id != null);
   const validTechnicians = (technicians as any[]).filter((t: any) => t && t.id != null);
-  const validDepts = (deptsList as any[]).filter((d: any) => d && d.id != null);
 
   // Validate new client form
   const isNewClientFormValid = () => {
@@ -118,7 +114,7 @@ export function CreateJobModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.clientId || !formData.title || !formData.departmentId) {
+    if (!formData.clientId || !formData.title) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -128,7 +124,6 @@ export function CreateJobModal({
         clientId: parseInt(formData.clientId),
         title: formData.title,
         description: formData.description,
-        departmentId: parseInt(formData.departmentId),
         priority: formData.priority as any,
         assignedTechnicianId: formData.assignedTechnicianId
           ? parseInt(formData.assignedTechnicianId)
@@ -142,7 +137,6 @@ export function CreateJobModal({
         clientId: "",
         title: "",
         description: "",
-        departmentId: "",
         priority: "normal",
         assignedTechnicianId: "",
       });
@@ -227,27 +221,7 @@ export function CreateJobModal({
                     className="text-sm"
                   />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
-                  <div>
-                    <label className="text-xs sm:text-sm font-medium">Department *</label>
-                    <Select
-                      value={formData.departmentId}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, departmentId: value })
-                      }
-                    >
-                      <SelectTrigger className="h-9 sm:h-10 text-sm">
-                        <SelectValue placeholder="Select department" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {validDepts.map((dept: any) => (
-                          <SelectItem key={dept.id} value={dept.id.toString()}>
-                            {dept.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                   <div>
                     <label className="text-xs sm:text-sm font-medium">Priority</label>
                     <Select

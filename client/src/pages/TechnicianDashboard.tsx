@@ -36,7 +36,7 @@ export default function TechnicianDashboard() {
   // Fetch jobs assigned to this technician
   const jobsQuery = trpc.jobCards.list.useQuery(
     { assignedTechnicianId: user?.id },
-    { enabled: !!user?.id }
+    { enabled: !!user?.id, refetchInterval: 5_000, refetchOnWindowFocus: true }
   );
 
   const notifsQuery = trpc.notifications.list.useQuery({});
