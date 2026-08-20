@@ -44,7 +44,10 @@ const STATUS_LABELS: Record<string, string> = {
   assigned: "Technician Assigned",
   in_progress: "In Progress",
   completed: "Work Completed",
-  invoiced: "Invoice Sent",
+  awaiting_pricing: "Awaiting Pricing Approval",
+  pricing_approved: "Pricing Approved",
+  invoice_published: "Invoice Published",
+  invoiced: "Invoice Published",
   closed: "Closed",
 };
 
@@ -160,25 +163,35 @@ export const clientPortalRouter = router({
           : Promise.resolve({ recentJobs: [], pendingInvoices: [] }),
       ]);
 
-      // Status timeline steps
-      const STATUS_ORDER = [
-        "pending",
-        "assigned",
-        "in_progress",
-        "completed",
-        "invoiced",
-        "closed",
-      ] as const;
-      const currentStatusIndex = STATUS_ORDER.indexOf(job.status as typeof STATUS_ORDER[number]);
       const invoiceDocument = pricing?.status === "invoiced"
         ? documents
             .filter((d) => d.category === "document" && d.mimeType === "application/pdf" && d.description === "Client invoice PDF")
             .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]
         : undefined;
+      const WORKFLOW_STEPS = [
+        "pending",
+        "assigned",
+        "in_progress",
+        "completed",
+        "awaiting_pricing",
+        "pricing_approved",
+        "invoice_published",
+        "closed",
+      ] as const;
+      const workflowStage = pricing?.status === "invoiced"
+        ? "invoice_published"
+        : pricing?.status === "approved"
+          ? "pricing_approved"
+          : job.status === "awaiting_pricing" || pricing?.status === "pending_approval"
+            ? "awaiting_pricing"
+            : job.status;
+      const currentWorkflowIndex = WORKFLOW_STEPS.indexOf(workflowStage as typeof WORKFLOW_STEPS[number]);
+      const payfastConfigured = Boolean(process.env.PAYFAST_MERCHANT_ID && process.env.PAYFAST_MERCHANT_KEY);
 
       return {
         jobNumber: job.jobNumber,
         status: job.status,
+        workflowStage,
         description: job.description,
         priority: job.priority,
         scheduledDate: job.scheduledDate,
@@ -224,6 +237,14 @@ export const clientPortalRouter = router({
         invoicePdf: invoiceDocument
           ? { url: invoiceDocument.fileUrl, fileName: invoiceDocument.fileName }
           : null,
+        payment: invoiceDocument
+          ? {
+              paymentRequired: true,
+              providerConfigured: payfastConfigured,
+              amount: pricing?.total ?? "0",
+              currency: pricing?.currency ?? "ZAR",
+            }
+          : null,
         // Job items (visible to client)
         items: items.map((i) => ({
           name: i.name,
@@ -232,11 +253,11 @@ export const clientPortalRouter = router({
           unitPrice: i.unitPrice,
           type: i.type,
         })),
-        statusTimeline: STATUS_ORDER.map((s, idx) => ({
+        statusTimeline: WORKFLOW_STEPS.map((s, idx) => ({
           status: s,
           label: STATUS_LABELS[s],
-          completed: idx <= currentStatusIndex,
-          current: s === job.status,
+          completed: idx <= currentWorkflowIndex,
+          current: s === workflowStage,
         })),
         isSigned: job.isSigned,
         requiresSignature: job.requiresSignature,

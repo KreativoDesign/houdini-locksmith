@@ -15,4 +15,11 @@ describe("Client portal dashboard visual regression guards", () => {
     expect(portalSource).toContain("Outstanding Invoices");
     expect(portalSource).toContain("data.dashboardSummary?.recentJobs");
   });
+
+  it("shows pricing approval and published invoice payment workflow copy", () => {
+    expect(portalSource).toContain("Awaiting Pricing Approval");
+    expect(portalSource).toContain("Your Invoice Is Ready");
+    expect(portalSource).toContain("Pay Invoice Online");
+    expect(portalSource).toContain("Online payment is being enabled");
+  });
 });

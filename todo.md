@@ -833,3 +833,19 @@ Fixed Client Dashboard button navigation:
 - [x] Make the legacy job-card department field optional through a schema-first migration - schema updated and database column made nullable; generator was blocked by pre-existing Drizzle snapshot collision
 - [x] Add regression coverage and verify tests, type checking, and production build - 176 tests passing, clean TypeScript, successful production build
 - [x] Save a direct-assignment workflow checkpoint - completed
+
+## Phase 119: Client Portal Workflow Timeline and Payment Readiness (Completed with PayFast Configuration Blocker)
+- [x] Align the portal timeline with technician completion, pricing approval, invoice publication, and payment stages
+- [x] Show pricing-approval waiting state before an invoice is available
+- [x] Show a portal invoice summary and payment action once pricing is approved and invoice is published
+- [x] Preserve the clear PayFast configuration state when live payment is unavailable
+- [x] Add regression coverage and verify tests, type checking, and production build - 177 tests passing, clean TypeScript, successful production build
+- [ ] Configure PayFast merchant credentials and activate the online payment action - external merchant setup required
+- [x] Save a client portal workflow checkpoint - pending final checkpoint after this verification
+
+## Phase 120: Branded Priced Invoice PDF (Completed)
+- [x] Trace missing invoice values from pricing records through PDF generation
+- [x] Render approved job line items, subtotal, VAT, and total in the client invoice PDF
+- [x] Apply Houdini Locksmith logo and professional branded invoice layout
+- [x] Add PDF content regression coverage and verify tests, type checking, and production build - 177 tests passing, clean TypeScript, successful production build
+- [x] Save a branded invoice PDF checkpoint - pending final checkpoint after this verification

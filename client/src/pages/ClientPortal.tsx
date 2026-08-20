@@ -16,6 +16,7 @@ import {
   Loader2,
   Lock,
   FileDown,
+  CreditCard,
 } from "lucide-react";
 
 // ─── Status colour map ────────────────────────────────────────────────────────
@@ -24,6 +25,9 @@ const STATUS_BADGE: Record<string, string> = {
   assigned:    "bg-blue-100 text-blue-800 border-blue-200",
   in_progress: "bg-purple-100 text-purple-800 border-purple-200",
   completed:   "bg-green-100 text-green-800 border-green-200",
+  awaiting_pricing: "bg-amber-100 text-amber-800 border-amber-200",
+  pricing_approved: "bg-cyan-100 text-cyan-800 border-cyan-200",
+  invoice_published: "bg-primary/15 text-primary border-primary/30",
   invoiced:    "bg-orange-100 text-orange-800 border-orange-200",
   closed:      "bg-gray-100 text-gray-700 border-gray-200",
 };
@@ -116,7 +120,7 @@ export default function ClientPortal() {
     );
   }
 
-  const statusBadgeClass = STATUS_BADGE[data.status] ?? STATUS_BADGE.pending;
+  const statusBadgeClass = STATUS_BADGE[data.workflowStage] ?? STATUS_BADGE[data.status] ?? STATUS_BADGE.pending;
   const clientName = data.client?.firstName || "there";
   const recentJobs = data.dashboardSummary?.recentJobs ?? [];
   const pendingInvoices = data.dashboardSummary?.pendingInvoices ?? [];
@@ -141,7 +145,7 @@ export default function ClientPortal() {
             </div>
           </div>
           <Badge className={`${statusBadgeClass} border text-xs font-medium`}>
-            {data.status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+            {data.workflowStage.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
           </Badge>
         </div>
       </header>
@@ -405,9 +409,22 @@ export default function ClientPortal() {
 
         {/* ── Pricing summary ──────────────────────────────────────────────── */}
         {data.pricingSummary && data.pricingSummary.status !== "draft" && (
-          <Card>
+          <Card className={data.workflowStage === "awaiting_pricing" ? "border-amber-300 bg-amber-50/50" : undefined}>
             <CardContent className="p-5 space-y-3">
-              <h2 className="text-sm font-semibold text-foreground">Invoice Summary</h2>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground">Invoice Summary</h2>
+                  {data.workflowStage === "awaiting_pricing" && (
+                    <p className="mt-1 text-xs text-amber-800">Your technician’s work is complete. We are waiting for pricing approval before issuing your invoice.</p>
+                  )}
+                  {data.workflowStage === "pricing_approved" && (
+                    <p className="mt-1 text-xs text-cyan-800">Pricing has been approved. Your invoice is being prepared for this portal.</p>
+                  )}
+                </div>
+                <Badge className={`${STATUS_BADGE[data.workflowStage] ?? STATUS_BADGE.pending} border text-[10px]`}>
+                  {data.workflowStage.replace(/_/g, " ")}
+                </Badge>
+              </div>
               <div className="space-y-1.5 text-sm">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal</span>
@@ -452,6 +469,25 @@ export default function ClientPortal() {
                   <FileDown className="w-4 h-4" /> Download Invoice PDF
                 </a>
               </Button>
+              {data.payment && (
+                <div className="rounded-xl border border-primary/20 bg-background/70 p-3">
+                  <div className="flex items-start gap-2">
+                    <CreditCard className="mt-0.5 h-4 w-4 text-primary" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-foreground">Ready to pay {formatMoney(data.payment.amount, data.payment.currency)}</p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                        {data.payment.providerConfigured
+                          ? "Secure online payment is available for this invoice."
+                          : "Online payment is being enabled. Please contact Houdini for payment assistance in the meantime."}
+                      </p>
+                    </div>
+                  </div>
+                  <Button className="mt-3 w-full gap-2" disabled={!data.payment.providerConfigured}>
+                    <CreditCard className="h-4 w-4" />
+                    Pay Invoice Online
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

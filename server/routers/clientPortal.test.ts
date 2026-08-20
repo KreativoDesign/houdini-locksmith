@@ -512,7 +512,9 @@ describe("clientPortalRouter", () => {
       expect(result.client?.firstName).toBe("John");
       expect(result.technician?.name).toBe("Jane Smith");
       expect(result.statusTimeline).toBeDefined();
-      expect(result.statusTimeline.length).toBe(6);
+      expect(result.statusTimeline.length).toBe(8);
+      expect(result.statusTimeline.map((step) => step.status)).toContain("awaiting_pricing");
+      expect(result.statusTimeline.map((step) => step.status)).toContain("invoice_published");
     });
 
     it("should throw NOT_FOUND for invalid token", async () => {
