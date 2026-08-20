@@ -841,11 +841,11 @@ Fixed Client Dashboard button navigation:
 - [x] Preserve the clear PayFast configuration state when live payment is unavailable
 - [x] Add regression coverage and verify tests, type checking, and production build - 177 tests passing, clean TypeScript, successful production build
 - [ ] Configure PayFast merchant credentials and activate the online payment action - external merchant setup required
-- [x] Save a client portal workflow checkpoint - pending final checkpoint after this verification
+- [x] Save a client portal workflow checkpoint - completed
 
 ## Phase 120: Branded Priced Invoice PDF (Completed)
 - [x] Trace missing invoice values from pricing records through PDF generation
 - [x] Render approved job line items, subtotal, VAT, and total in the client invoice PDF
 - [x] Apply Houdini Locksmith logo and professional branded invoice layout
 - [x] Add PDF content regression coverage and verify tests, type checking, and production build - 177 tests passing, clean TypeScript, successful production build
-- [x] Save a branded invoice PDF checkpoint - pending final checkpoint after this verification
+- [x] Save a branded invoice PDF checkpoint - completed
