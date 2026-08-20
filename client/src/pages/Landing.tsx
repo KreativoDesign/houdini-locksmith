@@ -80,7 +80,13 @@ Please follow up with this lead as soon as possible.
               className="h-12 sm:h-14 w-auto max-w-[180px] object-contain" loading="eager"
             />
           </div>
-          <div className="hidden md:flex gap-4">
+          <div className="hidden md:flex items-center gap-5">
+            <button type="button" onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="text-sm font-medium text-gray-300 transition hover:text-lime-400">
+              About Us
+            </button>
+            <button type="button" onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })} className="text-sm font-medium text-gray-300 transition hover:text-lime-400">
+              Services
+            </button>
             <a href="/login" className="text-gray-300 hover:text-lime-400 font-medium transition">
               Login
             </a>
@@ -102,6 +108,12 @@ Please follow up with this lead as soon as possible.
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-slate-900 border-t border-lime-500/20 p-4 space-y-4">
+            <button type="button" onClick={() => { setMobileMenuOpen(false); document.getElementById("about")?.scrollIntoView({ behavior: "smooth" }); }} className="block text-left text-gray-300 hover:text-lime-400 font-medium">
+              About Us
+            </button>
+            <button type="button" onClick={() => { setMobileMenuOpen(false); document.getElementById("services")?.scrollIntoView({ behavior: "smooth" }); }} className="block text-left text-gray-300 hover:text-lime-400 font-medium">
+              Services
+            </button>
             <a href="/login" className="block text-gray-300 hover:text-lime-400 font-medium">
               Login
             </a>
@@ -202,6 +214,59 @@ Please follow up with this lead as soon as possible.
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Houdini */}
+      <section id="about" className="relative isolate overflow-hidden border-t border-lime-500/20 bg-slate-950/55 py-24 px-4 sm:px-6 lg:px-8">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute -left-28 top-16 h-72 w-72 rounded-full bg-lime-400/10 blur-3xl" />
+          <div className="absolute right-0 top-0 h-full w-1/3 bg-[linear-gradient(135deg,transparent_0%,rgba(132,204,22,0.04)_50%,transparent_100%)]" />
+        </div>
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+          <div className="relative mx-auto w-full max-w-xl">
+            <div className="absolute inset-4 rounded-[2rem] border border-lime-300/15 bg-lime-400/[0.03]" aria-hidden="true" />
+            <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-7 shadow-2xl shadow-black/30 sm:p-10">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(163,230,53,0.2),transparent_26%)]" aria-hidden="true" />
+              <div className="relative">
+                <div className="mb-12 flex items-center justify-between">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-lime-300/25 bg-lime-300/10 text-lime-300 shadow-lg shadow-lime-500/10">
+                    <ShieldCheck className="h-7 w-7" />
+                  </div>
+                  <span className="rounded-full border border-lime-300/20 bg-black/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-lime-300">Established 1975</span>
+                </div>
+                <p className="max-w-sm text-3xl font-bold leading-tight text-white sm:text-4xl">Securing tomorrow, today.</p>
+                <p className="mt-5 max-w-md text-base leading-7 text-slate-300">Smart security solutions and expert locksmith services, thoughtfully combined to help secure the places that matter most.</p>
+                <div className="mt-10 grid grid-cols-3 gap-3">
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center"><LockKeyhole className="mx-auto h-5 w-5 text-lime-300" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Locks</p></div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center"><Camera className="mx-auto h-5 w-5 text-lime-300" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">CCTV</p></div>
+                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center"><Zap className="mx-auto h-5 w-5 text-lime-300" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Perimeter</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-lime-400">About Houdini</p>
+            <h2 className="max-w-2xl text-4xl font-bold tracking-tight text-white sm:text-5xl">Your Security <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-lime-400 to-emerald-400">Superheroes</span></h2>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Houdini Locksmiths and Security has been established in the security industry since 1975, delivering domestic and industrial security solutions with a response-first approach.</p>
+            <p className="mt-4 max-w-2xl leading-7 text-slate-400">Our work is grounded in quality workmanship and fair labour practices. We welcome accountability through regular inspections as members of the Locksmiths Association of South Africa and the Security Industries Regulatory Authority.</p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-lime-300/30 hover:bg-lime-300/[0.04]">
+                <ShieldCheck className="h-6 w-6 text-lime-300" />
+                <h3 className="mt-4 font-semibold text-white">Quality you can trust</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">Proven workmanship and practices built around protecting people, property, and peace of mind.</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-lime-300/30 hover:bg-lime-300/[0.04]">
+                <Radio className="h-6 w-6 text-lime-300" />
+                <h3 className="mt-4 font-semibold text-white">Accountable security</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">From locks to smart security systems, every recommendation is shaped around the right solution for your site.</p>
+              </div>
+            </div>
+            <Button type="button" variant="outline" className="mt-8 border-lime-300/40 text-lime-300 hover:bg-lime-300/10" onClick={() => document.getElementById("services")?.scrollIntoView({ behavior: "smooth" })}>
+              Explore our solutions <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
         </div>
       </section>

@@ -30,4 +30,14 @@ describe("Landing hero visual treatment", () => {
     expect(stylesheet).toContain("@keyframes hero-circuit-flow");
     expect(stylesheet).toContain("@media (prefers-reduced-motion: reduce)");
   });
+
+  it("includes the official About Us positioning and homepage navigation", () => {
+    expect(landingSource).toContain('id="about"');
+    expect(landingSource).toContain("Your Security");
+    expect(landingSource).toContain("Superheroes");
+    expect(landingSource).toContain("Established 1975");
+    expect(landingSource).toContain("Locksmiths Association of South Africa");
+    expect(landingSource).toContain("Security Industries Regulatory Authority");
+    expect(landingSource).toContain('document.getElementById("about")?.scrollIntoView');
+  });
 });
