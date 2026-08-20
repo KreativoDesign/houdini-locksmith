@@ -212,6 +212,16 @@
   50% { opacity: 1; transform: scale(1.45); }
 }
 
+@keyframes hero-support-badge {
+  0%, 100% { box-shadow: 0 0 0 rgba(132, 204, 22, 0), 0 20px 35px rgba(0, 0, 0, 0.25); }
+  50% { box-shadow: 0 0 28px rgba(163, 230, 53, 0.25), 0 20px 35px rgba(0, 0, 0, 0.25); }
+}
+
+@keyframes hero-support-ping {
+  0% { opacity: 0.65; transform: scale(1); }
+  75%, 100% { opacity: 0; transform: scale(1.65); }
+}
+
 .hero-mascot-float {
   animation: hero-mascot-float 7s ease-in-out infinite;
   will-change: transform;
@@ -233,11 +243,21 @@
   animation: hero-security-node 4.8s ease-in-out infinite;
 }
 
+.hero-support-badge {
+  animation: hero-support-badge 3.8s ease-in-out infinite;
+}
+
+.hero-support-ping {
+  animation: hero-support-ping 2.8s ease-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-mascot-float,
   .hero-mascot-aura,
   .hero-circuit-flow,
-  .hero-security-node {
+  .hero-security-node,
+  .hero-support-badge,
+  .hero-support-ping {
     animation: none !important;
   }
 }

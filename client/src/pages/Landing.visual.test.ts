@@ -31,6 +31,17 @@ describe("Landing hero visual treatment", () => {
     expect(stylesheet).toContain("@media (prefers-reduced-motion: reduce)");
   });
 
+  it("prioritizes a reduced-motion-aware 24/7 support badge instead of hero statistic cards", () => {
+    expect(landingSource).toContain("24/7 Support");
+    expect(landingSource).toContain("Emergency security assistance, whenever you need it.");
+    expect(landingSource).toContain("hero-support-badge");
+    expect(landingSource).toContain("hero-support-ping");
+    expect(landingSource).not.toContain('>500+</div>');
+    expect(landingSource).not.toContain('>15 min</div>');
+    expect(stylesheet).toContain("@keyframes hero-support-badge");
+    expect(stylesheet).toContain("@keyframes hero-support-ping");
+  });
+
   it("includes the official About Us positioning and homepage navigation", () => {
     expect(landingSource).toContain('id="about"');
     expect(landingSource).toContain("Your Security");

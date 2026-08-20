@@ -751,3 +751,10 @@ Fixed Client Dashboard button navigation:
 - [x] Add responsive visual treatment for 50+, 2,300+, 1,560+, and 120 metrics
 - [x] Update regression coverage and verify tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
 - [x] Save a company statistics checkpoint - pending final checkpoint after this verification
+
+## Phase 108: Hero 24/7 Support Badge (Completed)
+- [x] Remove the current hero statistics cards
+- [x] Add a prominent animated 24/7 Support badge in the hero
+- [x] Honor reduced-motion preferences and preserve responsive hero layout
+- [x] Add regression coverage and verify tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
+- [x] Save a hero support-badge checkpoint - pending final checkpoint after this verification

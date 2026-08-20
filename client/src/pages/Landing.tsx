@@ -182,21 +182,17 @@ Please follow up with this lead as soon as possible.
                 </Button>
               </div>
 
-              {/* Trust indicators */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-lime-400">500+</div>
-                  <p className="text-sm text-gray-400">Customers</p>
-                </div>
-                <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-lime-400">15 min</div>
-                  <p className="text-sm text-gray-400">Response</p>
-                </div>
-                <div className="bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-lime-400">24/7</div>
-                  <p className="text-sm text-gray-400">Support</p>
-                </div>
-              </div>
+              <a href="tel:0413657565" className="hero-support-badge group inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime-300/50 bg-slate-950/75 px-4 py-3 shadow-xl shadow-lime-500/15 backdrop-blur-md transition hover:border-lime-200 hover:bg-lime-300/10 sm:px-5" aria-label="Call Houdini for 24/7 support">
+                <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime-400 text-slate-950 shadow-lg shadow-lime-400/30">
+                  <span className="hero-support-ping absolute inset-0 rounded-xl bg-lime-300" aria-hidden="true" />
+                  <Radio className="relative h-5 w-5" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-bold uppercase tracking-[0.16em] text-lime-300">24/7 Support</span>
+                  <span className="mt-0.5 block text-sm text-slate-300">Emergency security assistance, whenever you need it.</span>
+                </span>
+                <ArrowRight className="ml-1 h-5 w-5 shrink-0 text-lime-300 transition group-hover:translate-x-1" />
+              </a>
             </div>
 
             {/* Right side - Lockbro mascot */}
