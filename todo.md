@@ -808,5 +808,5 @@ Fixed Client Dashboard button navigation:
 - [x] Preserve invoice PDF availability and payment readiness without sending an email - PDF is stored and downloadable through the secure portal
 - [x] Add regression coverage and verify tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
 - [ ] Configure PayFast merchant credentials and complete a live payment test - required before clients can pay online in the portal
-- [x] Save a client portal invoice checkpoint - pending final checkpoint after this verification
+- [x] Save a client portal invoice checkpoint - completed
 - [x] Use non-enumerable random storage keys for portal-published invoice PDFs
