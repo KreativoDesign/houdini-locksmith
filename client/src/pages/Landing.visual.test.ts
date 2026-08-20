@@ -53,6 +53,15 @@ describe("Landing hero visual treatment", () => {
     expect(stylesheet).toContain(".hero-support-reveal");
   });
 
+  it("keeps the bold hero readable and animated safely on mobile", () => {
+    expect(landingSource).toContain("text-[clamp(2.75rem,12vw,7.25rem)]");
+    expect(landingSource).toContain("sm:text-[clamp(4.2rem,8vw,7.25rem)]");
+    expect(landingSource).toContain("min-h-[21rem]");
+    expect(landingSource).toContain("text-center hero-content-entrance lg:text-left");
+    expect(stylesheet).toContain("@media (max-width: 639px)");
+    expect(stylesheet).toContain("@keyframes hero-mascot-float-mobile");
+  });
+
   it("includes the official About Us positioning and homepage navigation", () => {
     expect(landingSource).toContain('id="about"');
     expect(landingSource).toContain("Your Security");

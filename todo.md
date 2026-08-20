@@ -786,3 +786,10 @@ Fixed Client Dashboard button navigation:
 - [x] Preserve reduced-motion preferences and responsive readability
 - [x] Add regression coverage and verify tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
 - [x] Save a hero typography checkpoint - pending final checkpoint after this verification
+
+## Phase 113: Mobile Hero Typography and Motion Refinement (Completed)
+- [x] Reduce hero display headline scale and improve line height on mobile widths
+- [x] Tune mobile spacing and animation presentation for hero content and mascot
+- [x] Preserve reduced-motion support and mobile action usability
+- [x] Add regression coverage and verify tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
+- [x] Save a mobile hero refinement checkpoint - pending final checkpoint after this verification
