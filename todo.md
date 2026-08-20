@@ -869,4 +869,4 @@ Fixed Client Dashboard button navigation:
 - [x] Rebuild client and job-detail sections with clear labels, safe wrapping, and balanced spacing
 - [x] Refine item, photo, and signature sections with the Houdini brand palette and reliable pagination
 - [x] Add regression coverage and verify tests, type checking, and generated PDF output - 181 tests passing, clean TypeScript, successful production build, and visual validation confirms a one-page long-field PDF
-- [ ] Save a refined job-card PDF checkpoint
+- [x] Save a refined job-card PDF checkpoint - completed as `783c5838`
