@@ -40,4 +40,11 @@ describe("Landing hero visual treatment", () => {
     expect(landingSource).toContain("Security Industries Regulatory Authority");
     expect(landingSource).toContain('document.getElementById("about")?.scrollIntoView');
   });
+
+  it("renders the supplied company statistics in the About panel", () => {
+    expect(landingSource).toContain('["50+", "Years of experience"]');
+    expect(landingSource).toContain('["2,300+", "Projects completed"]');
+    expect(landingSource).toContain('["1,560+", "Satisfied customers"]');
+    expect(landingSource).toContain('["120", "Professionals"]');
+  });
 });

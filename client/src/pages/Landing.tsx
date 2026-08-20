@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, KeyRound } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 export default function Landing() {
@@ -238,10 +238,18 @@ Please follow up with this lead as soon as possible.
                 </div>
                 <p className="max-w-sm text-3xl font-bold leading-tight text-white sm:text-4xl">Securing tomorrow, today.</p>
                 <p className="mt-5 max-w-md text-base leading-7 text-slate-300">Smart security solutions and expert locksmith services, thoughtfully combined to help secure the places that matter most.</p>
-                <div className="mt-10 grid grid-cols-3 gap-3">
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center"><LockKeyhole className="mx-auto h-5 w-5 text-lime-300" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Locks</p></div>
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center"><Camera className="mx-auto h-5 w-5 text-lime-300" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">CCTV</p></div>
-                  <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-center"><Zap className="mx-auto h-5 w-5 text-lime-300" /><p className="mt-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">Perimeter</p></div>
+                <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4">
+                  {[
+                    ["50+", "Years of experience"],
+                    ["2,300+", "Projects completed"],
+                    ["1,560+", "Satisfied customers"],
+                    ["120", "Professionals"],
+                  ].map(([value, label]) => (
+                    <div key={label} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center transition duration-300 hover:border-lime-300/30 hover:bg-lime-300/[0.05]">
+                      <p className="text-2xl font-bold tracking-tight text-white sm:text-3xl">{value}</p>
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-lime-300/90 sm:text-xs">{label}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
