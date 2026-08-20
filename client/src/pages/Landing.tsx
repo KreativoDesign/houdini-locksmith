@@ -118,13 +118,30 @@ Please follow up with this lead as soon as possible.
         )}
       </nav>
 
-      {/* Hero Section with Technician Image */}
-      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8">
+      {/* Hero Section */}
+      <section className="relative isolate overflow-hidden py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_44%,rgba(132,204,22,0.16),transparent_25%),radial-gradient(circle_at_25%_82%,rgba(16,185,129,0.08),transparent_30%)]" />
+          <svg className="absolute inset-0 h-full w-full opacity-40" viewBox="0 0 1440 760" fill="none" preserveAspectRatio="xMidYMid slice">
+            <path d="M760 100H1140L1280 240H1440M700 280H980L1090 390H1370M790 530H1050L1190 670H1440" stroke="rgba(163,230,53,0.22)" strokeWidth="1" />
+            <path d="M0 560H250L380 430H620M190 760L390 560H700" stroke="rgba(74,222,128,0.13)" strokeWidth="1" />
+            <circle cx="1140" cy="100" r="5" fill="rgba(190,242,100,0.78)" />
+            <circle cx="1090" cy="390" r="4" fill="rgba(190,242,100,0.62)" />
+            <circle cx="1050" cy="530" r="4" fill="rgba(190,242,100,0.55)" />
+            <circle cx="380" cy="430" r="4" fill="rgba(52,211,153,0.48)" />
+          </svg>
+          <ShieldCheck className="absolute right-[11%] top-[14%] h-24 w-24 text-lime-300/[0.07] sm:h-32 sm:w-32" />
+          <LockKeyhole className="absolute bottom-[11%] right-[40%] h-16 w-16 text-lime-300/[0.06] sm:h-20 sm:w-20" />
+          <Camera className="absolute right-[4%] top-[54%] h-16 w-16 text-emerald-300/[0.06] sm:h-20 sm:w-20" />
+        </div>
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left side - Text content */}
             <div className="relative z-10">
               <div className="mb-8">
+                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-lime-300/20 bg-lime-300/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-lime-300 backdrop-blur-sm">
+                  <ShieldCheck className="h-3.5 w-3.5" /> Local security specialists
+                </div>
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
                   We Lock Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-500">World</span>
                 </h1>
@@ -170,8 +187,8 @@ Please follow up with this lead as soon as possible.
               </div>
             </div>
 
-            {/* Right side - Technician image */}
-            <div className="relative min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center px-2 sm:px-4">
+            {/* Right side - Lockbro mascot */}
+            <div className="relative z-10 min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center px-2 sm:px-4">
               <div className="relative w-full h-full min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center">
                 <img 
                   src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/ANBkoVbwdDKvIghm.png"
@@ -236,16 +253,18 @@ Please follow up with this lead as soon as possible.
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-lime-500/20">
-        <div className="max-w-3xl mx-auto">
+      <section id="contact" className="relative overflow-hidden border-t border-lime-500/20 bg-slate-950/45 py-24 px-4 sm:px-6 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_15%,rgba(132,204,22,0.11),transparent_32%)]" aria-hidden="true" />
+        <div className="relative max-w-3xl mx-auto">
           <div className="text-center mb-12">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-lime-400">Request a consultation</p>
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">
               Get in Touch
             </h2>
             <p className="text-xl text-gray-400">Our sales team will respond within 1 hour</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 bg-slate-800/50 backdrop-blur border border-lime-500/20 rounded-xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-lime-300/20 bg-gradient-to-br from-slate-800/75 via-slate-900/75 to-slate-950/80 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
                 placeholder="Your Name"
@@ -306,7 +325,7 @@ Please follow up with this lead as soon as possible.
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-lime-500/20 py-12 px-4 sm:px-6 lg:px-8">
+      <footer className="border-t border-lime-500/20 bg-black/20 py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>

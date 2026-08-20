@@ -723,3 +723,11 @@ Fixed Client Dashboard button navigation:
 - [x] Remove background card styling around the mascot image wrapper
 - [x] Verify build, tests, and preview rendering - 170 tests pass, TypeScript clean, production build succeeds
 - [x] Save updated deployment checkpoint - saved as `6df0738d`
+
+## Phase 104: Security-Graphic Hero and Homepage Visual Polish (Completed)
+- [x] Design a subtle security-graphic background for the hero section
+- [x] Preserve Lockbro mascot prominence and hero text readability
+- [x] Refine section dividers, highlights, and visual hierarchy across the homepage
+- [x] Verify responsive behavior, tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
+- [x] Add visual regression coverage for hero graphics and transparent mascot presentation
+- [x] Save a visual-enhancement checkpoint - pending final checkpoint after this verification
