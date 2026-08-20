@@ -68,4 +68,14 @@ describe("Landing hero visual treatment", () => {
     expect(landingSource).toContain("Your enquiry is sent directly to the Houdini team");
     expect(landingSource).toContain("Request my consultation");
   });
+
+  it("includes the interactive Newton Park map and all service quick links in the footer", () => {
+    expect(landingSource).toContain('import { MapView } from "@/components/Map"');
+    expect(landingSource).toContain("handleLocationMapReady");
+    expect(landingSource).toContain("313 Cape Road, Newton Park, Gqeberha, 6070");
+    expect(landingSource).toContain("Open directions");
+    expect(landingSource).toContain("Locks\", \"locks");
+    expect(landingSource).toContain("Electric Fencing\", \"electric-fencing");
+    expect(landingSource).toContain("Keys\", \"keys");
+  });
 });

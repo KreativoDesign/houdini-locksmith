@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, KeyRound } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { MapView } from "@/components/Map";
 
 export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,6 +62,26 @@ Please follow up with this lead as soon as possible.
     setFormData((previous) => ({ ...previous, service }));
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  const handleLocationMapReady = useCallback((map: google.maps.Map) => {
+    if (!window.google) return;
+
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode(
+      { address: "313 Cape Road, Newton Park, Gqeberha, 6070, South Africa" },
+      (results, status) => {
+        const location = results?.[0]?.geometry.location;
+        if (status !== "OK" || !location) return;
+
+        map.setCenter(location);
+        new window.google.maps.marker.AdvancedMarkerElement({
+          map,
+          position: location,
+          title: "Houdini Locksmith & Security",
+        });
+      },
+    );
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
@@ -392,40 +413,63 @@ Please follow up with this lead as soon as possible.
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-lime-500/20 bg-black/20 py-14 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <footer className="relative isolate overflow-hidden border-t border-lime-500/20 bg-slate-950 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div className="absolute -bottom-40 -right-24 h-96 w-96 rounded-full bg-lime-400/[0.07] blur-3xl" />
+          <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-lime-300/70 to-transparent" />
+        </div>
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid gap-10 border-b border-white/10 pb-12 xl:grid-cols-[0.85fr_1.15fr] xl:gap-16">
             <div>
-              <h3 className="font-bold text-lg mb-4">Contact</h3>
-              <div className="space-y-2 text-gray-400">
-                <p className="flex items-center gap-2"><Phone className="w-4 h-4" /> 041 365 7565</p>
-                <p className="flex items-center gap-2"><Mail className="w-4 h-4" /> sales@houdini.co.za</p>
-                <p className="flex items-center gap-2"><MapPin className="w-4 h-4" /> 313 Cape Road, Newton Park, 6070</p>
+              <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png" alt="Houdini Locksmith" className="h-14 w-auto max-w-[190px] object-contain" loading="lazy" />
+              <p className="mt-6 max-w-md text-lg leading-8 text-slate-300">Security and locksmith solutions with the expertise to protect homes, businesses, and the moments that matter.</p>
+
+              <div className="mt-8 space-y-4">
+                <a href="tel:0413657565" className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-4 transition hover:border-lime-300/35 hover:bg-lime-300/[0.05]">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-300/10 text-lime-300"><Phone className="h-5 w-5" /></span>
+                  <span><span className="block text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Call our team</span><span className="mt-1 block font-semibold text-white group-hover:text-lime-300">041 365 7565</span></span>
+                </a>
+                <a href="mailto:sales@houdini.co.za" className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-4 transition hover:border-lime-300/35 hover:bg-lime-300/[0.05]">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-300/10 text-lime-300"><Mail className="h-5 w-5" /></span>
+                  <span><span className="block text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Email sales</span><span className="mt-1 block font-semibold text-white group-hover:text-lime-300">sales@houdini.co.za</span></span>
+                </a>
+              </div>
+
+              <div className="mt-10">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-lime-300">Security solutions</p>
+                <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:max-w-md">
+                  {[
+                    ["Locks", "locks"], ["CCTV", "cctv"], ["Safes", "safes"], ["Intercoms", "intercoms"], ["Electric Fencing", "electric-fencing"], ["Keys", "keys"],
+                  ].map(([label, service]) => (
+                    <button key={service} type="button" onClick={() => handleServiceSelect(service)} className="group flex items-center justify-between border-b border-white/10 pb-2 text-left text-sm text-slate-400 transition hover:border-lime-300/50 hover:text-lime-300">
+                      {label}<ArrowRight className="h-3.5 w-3.5 opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-            <div>
-              <h3 className="font-bold text-lg mb-4">Services</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><button type="button" onClick={() => handleServiceSelect("locks")} className="hover:text-lime-400 transition text-left">Locks</button></li>
-                <li><button type="button" onClick={() => handleServiceSelect("cctv")} className="hover:text-lime-400 transition text-left">CCTV</button></li>
-                <li><button type="button" onClick={() => handleServiceSelect("safes")} className="hover:text-lime-400 transition text-left">Safes</button></li>
-                <li><button type="button" onClick={() => handleServiceSelect("intercoms")} className="hover:text-lime-400 transition text-left">Intercoms</button></li>
-                <li><button type="button" onClick={() => handleServiceSelect("electric-fencing")} className="hover:text-lime-400 transition text-left">Electric Fencing</button></li>
-                <li><button type="button" onClick={() => handleServiceSelect("keys")} className="hover:text-lime-400 transition text-left">Keys</button></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-lg mb-4">Hours</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>Monday - Friday: 7am - 6pm</li>
-                <li>Saturday: 8am - 4pm</li>
-                <li>Sunday: Emergency Only</li>
-                <li>24/7 Emergency Service</li>
-              </ul>
+
+            <div className="overflow-hidden rounded-3xl border border-lime-300/20 bg-slate-900/70 shadow-2xl shadow-black/30">
+              <div className="flex flex-col gap-4 border-b border-white/10 bg-slate-900/80 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-lime-300">Visit Houdini</p>
+                  <h2 className="mt-2 text-2xl font-bold text-white">Newton Park, Gqeberha</h2>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query=313%20Cape%20Road%2C%20Newton%20Park%2C%20Gqeberha%2C%206070" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-lime-300 transition hover:text-lime-200">
+                  <MapPin className="h-4 w-4" /> Open directions <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+              <MapView initialCenter={{ lat: -33.957, lng: 25.585 }} initialZoom={15} onMapReady={handleLocationMapReady} className="h-[340px] sm:h-[400px]" />
+              <div className="flex items-start gap-3 bg-slate-950/90 p-5 text-sm text-slate-300">
+                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-lime-300" />
+                <span><strong className="font-semibold text-white">313 Cape Road</strong><br />Newton Park, Gqeberha, 6070</span>
+              </div>
             </div>
           </div>
-          <div className="border-t border-lime-500/20 pt-8 text-center text-gray-500">
-            <p>&copy; 2026 Houdini Locksmith & Security. All rights reserved.</p>
+
+          <div className="flex flex-col gap-4 pt-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <p>&copy; 2026 Houdini Locksmith &amp; Security. All rights reserved.</p>
+            <div className="flex items-center gap-4"><span className="inline-flex items-center gap-2 text-lime-300"><span className="h-2 w-2 rounded-full bg-lime-300 shadow-[0_0_10px_rgba(190,242,100,0.85)]" /> 24/7 Emergency Support</span><button type="button" onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })} className="transition hover:text-lime-300">About Houdini</button></div>
           </div>
         </div>
       </footer>
