@@ -832,4 +832,4 @@ Fixed Client Dashboard button navigation:
 - [x] Remove technician assignment from enquiry-level active UI/workflow
 - [x] Make the legacy job-card department field optional through a schema-first migration - schema updated and database column made nullable; generator was blocked by pre-existing Drizzle snapshot collision
 - [x] Add regression coverage and verify tests, type checking, and production build - 176 tests passing, clean TypeScript, successful production build
-- [x] Save a direct-assignment workflow checkpoint - pending final checkpoint after this verification
+- [x] Save a direct-assignment workflow checkpoint - completed
