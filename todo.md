@@ -862,4 +862,4 @@ Fixed Client Dashboard button navigation:
 - [x] Show a success toast when pricing synchronization completes
 - [x] Add a Download as PDF action for the corrected job pricing summary
 - [x] Add regression coverage and verify tests, type checking, and production build - 180 tests passing, clean TypeScript, successful production build
-- [ ] Save a pricing feedback and PDF export checkpoint
+- [x] Save a pricing feedback and PDF export checkpoint - completed as `e69af79b`
