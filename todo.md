@@ -855,4 +855,4 @@ Fixed Client Dashboard button navigation:
 - [x] Auto-populate pricing records from job-card line items when cost fields are not entered separately
 - [x] Block approval and invoice publication when a priced job has zero total despite positive job items
 - [x] Add regression coverage and verify tests, type checking, and production build - 179 tests passing, clean TypeScript, successful production build
-- [ ] Save a pricing synchronization checkpoint
+- [x] Save a pricing synchronization checkpoint - completed as `f3d425db`
