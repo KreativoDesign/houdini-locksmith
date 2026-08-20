@@ -197,7 +197,7 @@ export const pricingRouter = router({
         });
 
         // Store PDF in S3 for archival
-        const pdfKey = `invoices/${job.jobNumber}/${invoiceNumber}-${Date.now()}.pdf`;
+        const pdfKey = `invoices/${job.id}/${randomBytes(18).toString("hex")}.pdf`;
         const { url } = await storagePut(pdfKey, pdfBuffer, "application/pdf");
         invoicePdfUrl = url;
         await createJobDocument({

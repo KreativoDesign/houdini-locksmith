@@ -809,3 +809,4 @@ Fixed Client Dashboard button navigation:
 - [x] Add regression coverage and verify tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
 - [ ] Configure PayFast merchant credentials and complete a live payment test - required before clients can pay online in the portal
 - [x] Save a client portal invoice checkpoint - pending final checkpoint after this verification
+- [x] Use non-enumerable random storage keys for portal-published invoice PDFs
