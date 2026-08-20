@@ -152,9 +152,9 @@ Please follow up with this lead as soon as possible.
       </nav>
 
       {/* Hero Section */}
-      <section className="relative isolate overflow-hidden py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8">
+      <section className="hero-section-reveal relative isolate overflow-hidden py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_44%,rgba(132,204,22,0.16),transparent_25%),radial-gradient(circle_at_25%_82%,rgba(16,185,129,0.08),transparent_30%)]" />
+          <div className="hero-background-drift absolute inset-0 bg-[radial-gradient(circle_at_74%_44%,rgba(132,204,22,0.16),transparent_25%),radial-gradient(circle_at_25%_82%,rgba(16,185,129,0.08),transparent_30%)]" />
           <svg className="absolute inset-0 h-full w-full opacity-40" viewBox="0 0 1440 760" fill="none" preserveAspectRatio="xMidYMid slice">
             <path className="hero-circuit-flow" d="M760 100H1140L1280 240H1440M700 280H980L1090 390H1370M790 530H1050L1190 670H1440" stroke="rgba(163,230,53,0.22)" strokeWidth="1" />
             <path d="M0 560H250L380 430H620M190 760L390 560H700" stroke="rgba(74,222,128,0.13)" strokeWidth="1" />
@@ -170,20 +170,20 @@ Please follow up with this lead as soon as possible.
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left side - Text content */}
-            <div className="relative z-10">
+            <div className="relative z-10 hero-content-entrance">
               <div className="mb-8">
-                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-lime-300/20 bg-lime-300/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-lime-300 backdrop-blur-sm">
+                <div className="hero-eyebrow-reveal mb-5 inline-flex items-center gap-2 rounded-full border border-lime-300/20 bg-lime-300/[0.06] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-lime-300 backdrop-blur-sm">
                   <ShieldCheck className="h-3.5 w-3.5" /> Local security specialists
                 </div>
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                  We Lock Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-500">World</span>
+                <h1 className="hero-headline-reveal mb-7 max-w-3xl text-[clamp(3.3rem,8vw,7.25rem)] font-black leading-[0.86] tracking-[-0.065em] text-white drop-shadow-[0_8px_28px_rgba(0,0,0,0.28)]">
+                  <span className="block">We Lock Your</span><span className="hero-headline-gradient block text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-lime-400 to-emerald-400">World</span>
                 </h1>
-                <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                <p className="hero-copy-reveal max-w-xl text-lg leading-relaxed text-slate-300 sm:text-xl mb-8">
                   Enterprise-grade security solutions for homes and businesses. 24/7 emergency response. Professional locksmithing and advanced security systems.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <div className="hero-actions-reveal flex flex-col sm:flex-row gap-4 mb-12">
                 <Button
                   size="lg"
                   className="bg-lime-500 hover:bg-lime-600 text-black font-semibold shadow-lg shadow-lime-500/50 text-base"
@@ -203,7 +203,7 @@ Please follow up with this lead as soon as possible.
                 </Button>
               </div>
 
-              <a href="tel:0413657565" className="hero-support-badge group inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime-300/50 bg-slate-950/75 px-4 py-3 shadow-xl shadow-lime-500/15 backdrop-blur-md transition hover:border-lime-200 hover:bg-lime-300/10 sm:px-5" aria-label="Call Houdini for 24/7 support">
+              <a href="tel:0413657565" className="hero-support-reveal hero-support-badge group inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime-300/50 bg-slate-950/75 px-4 py-3 shadow-xl shadow-lime-500/15 backdrop-blur-md transition hover:border-lime-200 hover:bg-lime-300/10 sm:px-5" aria-label="Call Houdini for 24/7 support">
                 <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime-400 text-slate-950 shadow-lg shadow-lime-400/30">
                   <span className="hero-support-ping absolute inset-0 rounded-xl bg-lime-300" aria-hidden="true" />
                   <Radio className="relative h-5 w-5" />
@@ -217,7 +217,7 @@ Please follow up with this lead as soon as possible.
             </div>
 
             {/* Right side - Lockbro mascot */}
-            <div className="relative z-10 min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center px-2 sm:px-4">
+            <div className="hero-mascot-reveal relative z-10 min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center px-2 sm:px-4">
               <div className="relative w-full h-full min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center">
                 <div className="hero-mascot-aura absolute h-56 w-56 rounded-full bg-lime-400/20 blur-3xl sm:h-72 sm:w-72" aria-hidden="true" />
                 <div className="hero-mascot-float relative flex h-full w-full items-center justify-center">

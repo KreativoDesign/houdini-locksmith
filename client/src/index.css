@@ -222,6 +222,31 @@
   75%, 100% { opacity: 0; transform: scale(1.65); }
 }
 
+@keyframes hero-content-rise {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes hero-headline-reveal {
+  from { opacity: 0; transform: translate3d(0, 30px, 0) scale(0.985); filter: blur(6px); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+
+@keyframes hero-mascot-reveal {
+  from { opacity: 0; transform: translate3d(26px, 18px, 0) scale(0.97); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes hero-background-drift {
+  0%, 100% { transform: scale(1) translate3d(0, 0, 0); opacity: 0.9; }
+  50% { transform: scale(1.06) translate3d(-1.5%, 1%, 0); opacity: 1; }
+}
+
+@keyframes hero-headline-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 .hero-mascot-float {
   animation: hero-mascot-float 7s ease-in-out infinite;
   will-change: transform;
@@ -251,13 +276,57 @@
   animation: hero-support-ping 2.8s ease-out infinite;
 }
 
+.hero-eyebrow-reveal {
+  animation: hero-content-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-headline-reveal {
+  animation: hero-headline-reveal 0.82s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity, filter;
+}
+
+.hero-copy-reveal {
+  animation: hero-content-rise 0.7s 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-actions-reveal {
+  animation: hero-content-rise 0.7s 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-support-reveal {
+  animation: hero-content-rise 0.7s 0.46s cubic-bezier(0.16, 1, 0.3, 1) both, hero-support-badge 3.8s 0.9s ease-in-out infinite;
+}
+
+.hero-mascot-reveal {
+  animation: hero-mascot-reveal 0.95s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.hero-background-drift {
+  animation: hero-background-drift 15s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.hero-headline-gradient {
+  background-size: 200% 100%;
+  animation: hero-headline-gradient 8s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-mascot-float,
   .hero-mascot-aura,
   .hero-circuit-flow,
   .hero-security-node,
   .hero-support-badge,
-  .hero-support-ping {
+  .hero-support-ping,
+  .hero-eyebrow-reveal,
+  .hero-headline-reveal,
+  .hero-copy-reveal,
+  .hero-actions-reveal,
+  .hero-support-reveal,
+  .hero-mascot-reveal,
+  .hero-background-drift,
+  .hero-headline-gradient {
     animation: none !important;
   }
 }

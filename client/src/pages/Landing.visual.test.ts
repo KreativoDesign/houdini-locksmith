@@ -42,6 +42,17 @@ describe("Landing hero visual treatment", () => {
     expect(stylesheet).toContain("@keyframes hero-support-ping");
   });
 
+  it("uses bold display typography with layered hero entrance transitions", () => {
+    expect(landingSource).toContain("font-black leading-[0.86] tracking-[-0.065em]");
+    expect(landingSource).toContain("hero-headline-reveal");
+    expect(landingSource).toContain("hero-headline-gradient");
+    expect(landingSource).toContain("hero-background-drift");
+    expect(landingSource).toContain("hero-mascot-reveal");
+    expect(stylesheet).toContain("@keyframes hero-headline-reveal");
+    expect(stylesheet).toContain("@keyframes hero-headline-gradient");
+    expect(stylesheet).toContain(".hero-support-reveal");
+  });
+
   it("includes the official About Us positioning and homepage navigation", () => {
     expect(landingSource).toContain('id="about"');
     expect(landingSource).toContain("Your Security");
