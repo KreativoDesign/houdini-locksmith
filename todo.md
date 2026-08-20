@@ -731,3 +731,10 @@ Fixed Client Dashboard button navigation:
 - [x] Verify responsive behavior, tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
 - [x] Add visual regression coverage for hero graphics and transparent mascot presentation
 - [x] Save a visual-enhancement checkpoint - completed
+
+## Phase 105: Accessible Hero Motion Enhancement (Completed)
+- [x] Add low-intensity floating and glow animations to Lockbro
+- [x] Add subtle animated signal flow to the security circuit graphic
+- [x] Honor reduced-motion preferences for all new animation
+- [x] Add regression coverage and verify tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
+- [x] Save an animated hero checkpoint - pending final checkpoint after this verification

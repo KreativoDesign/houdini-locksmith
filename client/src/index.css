@@ -192,3 +192,52 @@
     }
   }
 }
+
+@keyframes hero-mascot-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -12px, 0); }
+}
+
+@keyframes hero-mascot-aura {
+  0%, 100% { opacity: 0.38; transform: scale(0.92); }
+  50% { opacity: 0.72; transform: scale(1.12); }
+}
+
+@keyframes hero-circuit-flow {
+  to { stroke-dashoffset: -144; }
+}
+
+@keyframes hero-security-node {
+  0%, 100% { opacity: 0.35; transform: scale(0.78); }
+  50% { opacity: 1; transform: scale(1.45); }
+}
+
+.hero-mascot-float {
+  animation: hero-mascot-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.hero-mascot-aura {
+  animation: hero-mascot-aura 5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.hero-circuit-flow {
+  stroke-dasharray: 10 18;
+  animation: hero-circuit-flow 14s linear infinite;
+}
+
+.hero-security-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-security-node 4.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-mascot-float,
+  .hero-mascot-aura,
+  .hero-circuit-flow,
+  .hero-security-node {
+    animation: none !important;
+  }
+}

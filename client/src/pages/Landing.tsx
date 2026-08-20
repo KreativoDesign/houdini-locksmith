@@ -123,12 +123,12 @@ Please follow up with this lead as soon as possible.
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_74%_44%,rgba(132,204,22,0.16),transparent_25%),radial-gradient(circle_at_25%_82%,rgba(16,185,129,0.08),transparent_30%)]" />
           <svg className="absolute inset-0 h-full w-full opacity-40" viewBox="0 0 1440 760" fill="none" preserveAspectRatio="xMidYMid slice">
-            <path d="M760 100H1140L1280 240H1440M700 280H980L1090 390H1370M790 530H1050L1190 670H1440" stroke="rgba(163,230,53,0.22)" strokeWidth="1" />
+            <path className="hero-circuit-flow" d="M760 100H1140L1280 240H1440M700 280H980L1090 390H1370M790 530H1050L1190 670H1440" stroke="rgba(163,230,53,0.22)" strokeWidth="1" />
             <path d="M0 560H250L380 430H620M190 760L390 560H700" stroke="rgba(74,222,128,0.13)" strokeWidth="1" />
-            <circle cx="1140" cy="100" r="5" fill="rgba(190,242,100,0.78)" />
-            <circle cx="1090" cy="390" r="4" fill="rgba(190,242,100,0.62)" />
-            <circle cx="1050" cy="530" r="4" fill="rgba(190,242,100,0.55)" />
-            <circle cx="380" cy="430" r="4" fill="rgba(52,211,153,0.48)" />
+            <circle className="hero-security-node" cx="1140" cy="100" r="5" fill="rgba(190,242,100,0.78)" />
+            <circle className="hero-security-node" style={{ animationDelay: "-1.2s" }} cx="1090" cy="390" r="4" fill="rgba(190,242,100,0.62)" />
+            <circle className="hero-security-node" style={{ animationDelay: "-2.4s" }} cx="1050" cy="530" r="4" fill="rgba(190,242,100,0.55)" />
+            <circle className="hero-security-node" style={{ animationDelay: "-3.6s" }} cx="380" cy="430" r="4" fill="rgba(52,211,153,0.48)" />
           </svg>
           <ShieldCheck className="absolute right-[11%] top-[14%] h-24 w-24 text-lime-300/[0.07] sm:h-32 sm:w-32" />
           <LockKeyhole className="absolute bottom-[11%] right-[40%] h-16 w-16 text-lime-300/[0.06] sm:h-20 sm:w-20" />
@@ -190,6 +190,8 @@ Please follow up with this lead as soon as possible.
             {/* Right side - Lockbro mascot */}
             <div className="relative z-10 min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center px-2 sm:px-4">
               <div className="relative w-full h-full min-h-[26rem] sm:min-h-[32rem] md:min-h-[38rem] lg:min-h-[42rem] flex items-center justify-center">
+                <div className="hero-mascot-aura absolute h-56 w-56 rounded-full bg-lime-400/20 blur-3xl sm:h-72 sm:w-72" aria-hidden="true" />
+                <div className="hero-mascot-float relative flex h-full w-full items-center justify-center">
                 <img 
                   src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/ANBkoVbwdDKvIghm.png"
                   alt="Lockbro, the Houdini security mascot"
@@ -197,6 +199,7 @@ Please follow up with this lead as soon as possible.
                   fetchPriority="high"
                   className="h-full max-h-[560px] sm:max-h-[620px] lg:max-h-[680px] w-auto max-w-full object-contain drop-shadow-2xl hover:scale-[1.02] hover:drop-shadow-3xl transition-all duration-300"
                 />
+                </div>
               </div>
             </div>
           </div>
