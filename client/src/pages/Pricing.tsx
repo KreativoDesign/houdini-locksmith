@@ -102,10 +102,15 @@ export default function Pricing() {
     }
   }, [pricing, itemsSummary, useItemsParts]);
 
+  const jobItemTotal = Number(itemsSummary?.subtotal) || 0;
+  const shouldDisplayItemTotals = !!pricing && pricing.status !== "invoiced" && jobItemTotal > 0 && (Number(pricing.total) || 0) <= 0;
+  const displayLabour = shouldDisplayItemTotals ? Number(itemsSummary?.labourCost) || 0 : Number(labour) || 0;
+  const displayParts = shouldDisplayItemTotals ? Math.max(0, jobItemTotal - displayLabour) : Number(parts) || 0;
+
   // Live totals
   const live = computeLive(
-    Number(labour) || 0,
-    Number(parts) || 0,
+    displayLabour,
+    displayParts,
     Number(fees) || 0,
     Number(discount) || 0,
     Number(vat) || 0
@@ -113,6 +118,20 @@ export default function Pricing() {
 
   // ── Mutations ──
   const utils = trpc.useUtils();
+
+  const synchronizeMutation = trpc.pricing.synchronizeFromJobItems.useMutation({
+    onSuccess: () => {
+      refetchPricing();
+      utils.jobCards.get.invalidate({ id: jobCardId });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  useEffect(() => {
+    if (shouldDisplayItemTotals && isManager && !synchronizeMutation.isPending && !synchronizeMutation.isSuccess) {
+      synchronizeMutation.mutate({ jobCardId });
+    }
+  }, [jobCardId, isManager, shouldDisplayItemTotals, synchronizeMutation]);
 
   const createMutation = trpc.pricing.create.useMutation({
     onSuccess: () => {
@@ -260,6 +279,15 @@ export default function Pricing() {
               <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
               <p className="text-sm text-emerald-800 font-medium">
                 This pricing record is {pricingStatus} and cannot be edited.
+              </p>
+            </div>
+          )}
+
+          {shouldDisplayItemTotals && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 flex items-center gap-3">
+              <Loader2 className="w-5 h-5 text-amber-600 animate-spin shrink-0" />
+              <p className="text-sm text-amber-800 font-medium">
+                Synchronizing the approved invoice total from the job-card items.
               </p>
             </div>
           )}
@@ -459,11 +487,11 @@ export default function Pricing() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-muted-foreground">
                 <span>Labour</span>
-                <span>{fmt(Number(labour) || 0, currency)}</span>
+                <span>{fmt(displayLabour, currency)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
                 <span>Parts / Materials</span>
-                <span>{fmt(Number(parts) || 0, currency)}</span>
+                <span>{fmt(displayParts, currency)}</span>
               </div>
               {Number(fees) > 0 && (
                 <div className="flex justify-between text-muted-foreground">

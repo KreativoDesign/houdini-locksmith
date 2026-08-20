@@ -681,6 +681,13 @@ export async function getJobPricing(jobCardId: number): Promise<JobPricing | und
   return result[0];
 }
 
+export async function getJobPricingById(id: number): Promise<JobPricing | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(jobPricing).where(eq(jobPricing.id, id)).limit(1);
+  return result[0];
+}
+
 export async function updateJobPricing(id: number, data: Partial<InsertJobPricing>): Promise<void> {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

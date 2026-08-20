@@ -849,3 +849,10 @@ Fixed Client Dashboard button navigation:
 - [x] Apply Houdini Locksmith logo and professional branded invoice layout
 - [x] Add PDF content regression coverage and verify tests, type checking, and production build - 177 tests passing, clean TypeScript, successful production build
 - [x] Save a branded invoice PDF checkpoint - completed
+
+## Phase 121: Job-Item Pricing Synchronization (In Progress)
+- [x] Trace item totals through pricing record creation and approval
+- [x] Auto-populate pricing records from job-card line items when cost fields are not entered separately
+- [x] Block approval and invoice publication when a priced job has zero total despite positive job items
+- [x] Add regression coverage and verify tests, type checking, and production build - 179 tests passing, clean TypeScript, successful production build
+- [ ] Save a pricing synchronization checkpoint

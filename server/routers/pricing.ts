@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import {
   createJobPricing,
   getJobCardById,
+  getJobPricingById,
   getJobPricingByJobCard,
   getClientById,
   getClientPortalTokenByJobCard,
@@ -20,7 +21,7 @@ import { generateInvoicePdf } from "../_core/invoicePdf";
 import { storagePut } from "../storage";
 
 /** Compute pricing totals */
-function computeTotals(
+export function computeTotals(
   labourCost: number,
   partsCost: number,
   additionalFees: number,
@@ -35,6 +36,49 @@ function computeTotals(
     vatAmount: vatAmount.toFixed(2),
     total: total.toFixed(2),
   };
+}
+
+/** Split job-card items into the invoice's labour and materials buckets. */
+export function getJobItemCosts(items: Awaited<ReturnType<typeof listJobItems>>) {
+  return items.reduce(
+    (costs, item) => {
+      const amount = Number(item.lineTotal) || 0;
+      costs.itemTotal += amount;
+      if (item.type === "labour") {
+        costs.labourCost += amount;
+      } else {
+        costs.partsCost += amount;
+      }
+      return costs;
+    },
+    { labourCost: 0, partsCost: 0, itemTotal: 0 }
+  );
+}
+
+/** Repair a legacy R0 pricing record from the authoritative job-card item values. */
+async function synchronizePricingFromJobItems(pricing: NonNullable<Awaited<ReturnType<typeof getJobPricingByJobCard>>>) {
+  const itemCosts = getJobItemCosts(await listJobItems(pricing.jobCardId));
+  if (itemCosts.itemTotal <= 0 || (Number(pricing.total) || 0) > 0) {
+    return { pricing, itemCosts };
+  }
+
+  const totals = computeTotals(
+    itemCosts.labourCost,
+    itemCosts.partsCost,
+    Number(pricing.additionalFees) || 0,
+    Number(pricing.discountAmount) || 0,
+    Number(pricing.vatPct) || 15
+  );
+
+  await updateJobPricing(pricing.id, {
+    labourCost: itemCosts.labourCost.toFixed(2),
+    partsCost: itemCosts.partsCost.toFixed(2),
+    subtotal: totals.subtotal,
+    vatAmount: totals.vatAmount,
+    total: totals.total,
+  });
+
+  return { pricing: (await getJobPricingById(pricing.id)) ?? pricing, itemCosts };
 }
 
 export const pricingRouter = router({
@@ -73,8 +117,10 @@ export const pricingRouter = router({
         });
       }
 
-      const labourCost = input.labourCost;
-      const partsCost = input.partsCost ?? 0;
+      const itemCosts = getJobItemCosts(await listJobItems(input.jobCardId));
+      const useJobItemCosts = input.labourCost === 0 && (input.partsCost === undefined || input.partsCost === 0);
+      const labourCost = useJobItemCosts ? itemCosts.labourCost : input.labourCost;
+      const partsCost = useJobItemCosts ? itemCosts.partsCost : input.partsCost ?? 0;
       const additionalFees = input.additionalFees ?? 0;
       const discountAmount = input.discountAmount ?? 0;
       const vatPercentage = input.vatPercentage ?? 15;
@@ -106,6 +152,18 @@ export const pricingRouter = router({
       return pricing;
     }),
 
+  /** Synchronize legacy pricing records before they are approved or invoiced. */
+  synchronizeFromJobItems: managerProcedure
+    .input(z.object({ jobCardId: z.number().int().positive() }))
+    .mutation(async ({ input }) => {
+      const pricing = await getJobPricingByJobCard(input.jobCardId);
+      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found for this job" });
+      if (pricing.status === "invoiced") {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "An invoiced pricing record cannot be changed" });
+      }
+      return synchronizePricingFromJobItems(pricing);
+    }),
+
   /** Request approval for pricing */
   requestApproval: managerProcedure
     .input(z.object({ pricingId: z.number().int().positive() }))
@@ -117,9 +175,25 @@ export const pricingRouter = router({
   /** Approve pricing */
   approve: adminProcedure
     .input(z.object({ pricingId: z.number().int().positive() }))
-    .mutation(async ({ input }) => {
-      const pricing = await updateJobPricing(input.pricingId, { status: "approved" });
-      return pricing;
+    .mutation(async ({ input, ctx }) => {
+      const pricing = await getJobPricingById(input.pricingId);
+      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "Pricing record not found" });
+
+      const synchronized = await synchronizePricingFromJobItems(pricing);
+      if (synchronized.itemCosts.itemTotal > 0 && (Number(synchronized.pricing.total) || 0) <= 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Pricing cannot be approved while billable job items total more than R0.00 but the invoice total is R0.00.",
+        });
+      }
+
+      await updateJobPricing(input.pricingId, {
+        status: "approved",
+        approvedById: ctx.user.id,
+        approvedAt: new Date(),
+      });
+      await updateJobCard(pricing.jobCardId, { status: "priced" });
+      return getJobPricingById(input.pricingId);
     }),
 
   /** Reject pricing and request changes */
@@ -143,7 +217,8 @@ export const pricingRouter = router({
       const job = await getJobCardById(input.jobCardId);
       if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
 
-      const pricing = await getJobPricingByJobCard(input.jobCardId);
+      const storedPricing = await getJobPricingByJobCard(input.jobCardId);
+      const pricing = storedPricing ? (await synchronizePricingFromJobItems(storedPricing)).pricing : undefined;
       if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found for this job" });
       if (pricing.status !== "approved") {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Only approved pricing can be invoiced" });
