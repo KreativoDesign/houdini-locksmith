@@ -166,6 +166,11 @@ export const clientPortalRouter = router({
         "closed",
       ] as const;
       const currentStatusIndex = STATUS_ORDER.indexOf(job.status as typeof STATUS_ORDER[number]);
+      const invoiceDocument = pricing?.status === "invoiced"
+        ? documents
+            .filter((d) => d.category === "document" && d.mimeType === "application/pdf" && d.description === "Client invoice PDF")
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]
+        : undefined;
 
       return {
         jobNumber: job.jobNumber,
@@ -209,6 +214,10 @@ export const clientPortalRouter = router({
               currency: pricing.currency,
               status: pricing.status,
             }
+          : null,
+        // Invoice PDFs are exposed only through the unguessable portal token.
+        invoicePdf: invoiceDocument
+          ? { url: invoiceDocument.fileUrl, fileName: invoiceDocument.fileName }
           : null,
         // Job items (visible to client)
         items: items.map((i) => ({

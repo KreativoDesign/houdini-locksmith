@@ -346,6 +346,26 @@ export default function ClientPortal() {
           </Card>
         )}
 
+        {/* ── Published invoice ───────────────────────────────────────────── */}
+        {data.invoicePdf && (
+          <Card className="border-primary/25 bg-primary/[0.04]">
+            <CardContent className="p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <FileDown className="w-4 h-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">Your Invoice Is Ready</h2>
+              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Your invoice is securely available in this portal. Download a copy for your records or contact Houdini for payment assistance.
+              </p>
+              <Button asChild className="w-full gap-2">
+                <a href={data.invoicePdf.url} target="_blank" rel="noopener noreferrer">
+                  <FileDown className="w-4 h-4" /> Download Invoice PDF
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
            {/* ── PDF Download ─────────────────────────────────────────────── */}
         {data.jobCardId && (
           <div className="flex justify-center pb-2">

@@ -182,6 +182,45 @@ describe("clientPortalRouter", () => {
       expect(result.jobNumber).toBe("JC-2026-0001");
     });
 
+    it("exposes only the latest published invoice PDF through the secure portal token", async () => {
+      const token = { token: "a".repeat(64), jobCardId: 1, expiresAt: null };
+      const job = {
+        id: 1,
+        jobNumber: "JC-2026-0001",
+        description: "Test job",
+        clientId: 1,
+        status: "completed",
+        priority: "normal",
+        scheduledDate: null,
+        scheduledTimeSlotId: null,
+        isSigned: false,
+        requiresSignature: false,
+        assignedTechnicianId: null,
+        createdAt: new Date("2026-01-01T00:00:00Z"),
+        updatedAt: new Date("2026-01-01T00:00:00Z"),
+      };
+
+      vi.mocked(db.getClientPortalToken).mockResolvedValue(token as any);
+      vi.mocked(db.getJobCardById).mockResolvedValue(job as any);
+      vi.mocked(db.getClientById).mockResolvedValue(null);
+      vi.mocked(db.getUserById).mockResolvedValue(null);
+      vi.mocked(db.getSignatureByJobCard).mockResolvedValue(null);
+      vi.mocked(db.listJobItems).mockResolvedValue([]);
+      vi.mocked(db.getSlotById).mockResolvedValue(null);
+      vi.mocked(db.getJobPricingByJobCard).mockResolvedValue({ status: "invoiced", subtotal: "100.00", vatAmount: "15.00", total: "115.00", currency: "ZAR" } as any);
+      vi.mocked(db.listJobDocuments).mockResolvedValue([
+        { category: "document", mimeType: "application/pdf", description: "Client invoice PDF", fileUrl: "https://files.example.com/old.pdf", fileName: "Invoice-old.pdf", createdAt: new Date("2026-01-01T00:00:00Z") },
+        { category: "document", mimeType: "application/pdf", description: "Client invoice PDF", fileUrl: "https://files.example.com/latest.pdf", fileName: "Invoice-latest.pdf", createdAt: new Date("2026-01-02T00:00:00Z") },
+      ] as any);
+
+      const result = await clientPortalRouter.createCaller({} as any).getJobStatus({ token: "a".repeat(64) });
+
+      expect(result.invoicePdf).toEqual({
+        url: "https://files.example.com/latest.pdf",
+        fileName: "Invoice-latest.pdf",
+      });
+    });
+
     it("should allow public access to getQuoteByToken", async () => {
       const mockQuoteToken = {
         token: "quote-token",

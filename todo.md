@@ -801,3 +801,11 @@ Fixed Client Dashboard button navigation:
 - [x] Add regression coverage and verify tests, type checking, and production build - 172 tests passing, clean TypeScript, successful production build
 - [ ] Verify `houdini.co.za` in Resend and complete a live invoice email delivery test - external DNS/Resend action required
 - [x] Save an invoice email fix checkpoint - pending final checkpoint after this verification
+
+## Phase 115: Client Portal Invoice Publishing (Completed with Online Payment Configuration Blocker)
+- [x] Audit client portal invoice and payment data already available to customers
+- [x] Make an approved invoice client-visible in the portal independently of email delivery
+- [x] Preserve invoice PDF availability and payment readiness without sending an email - PDF is stored and downloadable through the secure portal
+- [x] Add regression coverage and verify tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
+- [ ] Configure PayFast merchant credentials and complete a live payment test - required before clients can pay online in the portal
+- [x] Save a client portal invoice checkpoint - pending final checkpoint after this verification

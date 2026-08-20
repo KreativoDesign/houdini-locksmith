@@ -1483,12 +1483,16 @@ export default function JobCardDetail() {
   const generateInvoiceMutation = trpc.pricing.generateAndSendInvoice.useMutation({
     onSuccess: (result) => {
       if (result.emailSent) {
-        toast.success("Invoice generated and sent to client");
+        toast.success("Invoice published to the client portal and sent to client");
       } else {
-        toast.error(
-          result.deliveryMessage ?? "Invoice PDF generated, but the email could not be sent. Please retry after checking email delivery settings."
+        if (result.portalUrl) {
+          navigator.clipboard.writeText(result.portalUrl).catch(() => undefined);
+        }
+        toast.warning(
+          result.deliveryMessage ?? "Invoice is available in the secure client portal, but the email could not be sent. The portal link has been copied."
         );
       }
+      utils.clientPortal.getLink.invalidate({ jobCardId: jobId });
       utils.pricing.getByJobCard.invalidate({ jobCardId: jobId });
     },
     onError: (err) => toast.error(`Failed to send invoice: ${err.message}`),
@@ -1972,16 +1976,16 @@ export default function JobCardDetail() {
                   onClick={() =>
                     generateInvoiceMutation.mutate({
                       jobCardId: jobId,
-                      portalUrl: `${window.location.origin}/client-portal?jobId=${jobId}`,
+                      origin: window.location.origin,
                       paymentTerms: "Due upon receipt",
                     })
                   }
                   className="w-full gap-1.5 bg-green-600 hover:bg-green-700"
                 >
                   {generateInvoiceMutation.isPending ? (
-                    <><Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />Sending Invoice…</>
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin mr-2" />Publishing Invoice…</>
                   ) : (
-                    <><Mail className="w-3.5 h-3.5 mr-2" />Generate & Email Invoice</>
+                    <><Mail className="w-3.5 h-3.5 mr-2" />Publish Invoice & Email Client</>
                   )}
                 </Button>
               )}

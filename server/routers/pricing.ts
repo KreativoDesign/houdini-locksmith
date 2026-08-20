@@ -1,13 +1,17 @@
 import { z } from "zod";
+import { randomBytes } from "node:crypto";
 import { TRPCError } from "@trpc/server";
 import {
   createJobPricing,
   getJobCardById,
   getJobPricingByJobCard,
   getClientById,
+  getClientPortalTokenByJobCard,
   listJobItems,
+  createJobDocument,
   updateJobCard,
   updateJobPricing,
+  upsertClientPortalToken,
 } from "../db";
 import { adminProcedure, managerProcedure, technicianProcedure, emitNotification } from "./middleware";
 import { router } from "../_core/trpc";
@@ -131,7 +135,7 @@ export const pricingRouter = router({
     .input(
       z.object({
         jobCardId: z.number().int().positive(),
-        portalUrl: z.string().url(),
+        origin: z.string().url(),
         paymentTerms: z.string().optional(),
       })
     )
@@ -146,13 +150,18 @@ export const pricingRouter = router({
       }
 
       const client = job.clientId ? await getClientById(job.clientId) : null;
-      if (!client || !client.email) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Client email not found" });
-      }
+      if (!client) throw new TRPCError({ code: "BAD_REQUEST", message: "Client record not found" });
 
       const clientName = `${client.firstName} ${client.lastName}`.trim();
       const totalAmount = parseFloat(pricing.total as any);
       const jobItems = await listJobItems(input.jobCardId);
+
+      // Publish every invoice to an unguessable client portal URL first, so the
+      // customer can access it even when email delivery is temporarily blocked.
+      const existingPortalToken = await getClientPortalTokenByJobCard(input.jobCardId);
+      const portalToken = existingPortalToken?.token ?? randomBytes(32).toString("hex");
+      await upsertClientPortalToken({ jobCardId: input.jobCardId, token: portalToken, expiresAt: null });
+      const portalUrl = `${input.origin}/portal/${portalToken}`;
 
       // Generate PDF invoice
       let pdfBuffer: Buffer | undefined;
@@ -168,7 +177,7 @@ export const pricingRouter = router({
           jobNumber: job.jobNumber,
           jobTitle: job.title,
           clientName,
-          clientEmail: client.email,
+          clientEmail: client.email ?? "",
           clientPhone: client.phone,
           clientAddress: client.address || undefined,
           jobDescription: job.description || undefined,
@@ -184,13 +193,23 @@ export const pricingRouter = router({
           paymentTerms: input.paymentTerms || "Due within 30 days",
           issuedDate: new Date(),
           dueDate,
-          portalUrl: input.portalUrl,
+          portalUrl,
         });
 
         // Store PDF in S3 for archival
         const pdfKey = `invoices/${job.jobNumber}/${invoiceNumber}-${Date.now()}.pdf`;
         const { url } = await storagePut(pdfKey, pdfBuffer, "application/pdf");
         invoicePdfUrl = url;
+        await createJobDocument({
+          jobCardId: input.jobCardId,
+          category: "document",
+          fileName: `Invoice-${job.jobNumber}.pdf`,
+          mimeType: "application/pdf",
+          fileSize: pdfBuffer.length,
+          fileUrl: url,
+          fileKey: pdfKey,
+          description: "Client invoice PDF",
+        });
       } catch (pdfError) {
         console.warn("[Invoice] Failed to generate PDF:", pdfError);
         // Continue without PDF - email will still be sent
@@ -199,52 +218,62 @@ export const pricingRouter = router({
       // Send invoice email with PDF attachment
       const emailDelivery = await sendInvoiceEmail(
         {
-          to: client.email,
+          to: client.email ?? "",
           clientName,
           jobNumber: job.jobNumber,
           jobTitle: job.title,
           totalAmount,
-          portalUrl: input.portalUrl,
+          portalUrl,
           invoiceDate: new Date(),
           paymentTerms: input.paymentTerms || "Due upon receipt",
         },
         pdfBuffer
       );
 
+      // The invoice is live in the secure portal before notification is attempted.
+      await updateJobPricing(pricing.id, { status: "invoiced" });
+
       if (!emailDelivery.sent) {
         const deliveryMessage = emailDelivery.failureCode === "sender_domain_unverified"
-          ? "Invoice PDF generated, but email delivery is unavailable until the Houdini sending domain is verified in Resend. Please verify houdini.co.za, then retry this invoice."
+          ? "Invoice has been published to the secure client portal, but email delivery is unavailable until the Houdini sending domain is verified in Resend. Share the portal link with the client or verify houdini.co.za to enable email delivery."
           : emailDelivery.failureCode === "invalid_recipient"
-            ? "Invoice PDF generated, but the client email address is invalid. Update the client email address and retry."
-            : "Invoice PDF generated, but email delivery is currently unavailable. Please retry shortly or check the email configuration.";
+            ? "Invoice has been published to the secure client portal, but the client email address is invalid. Update the email address before retrying delivery."
+            : "Invoice has been published to the secure client portal, but email delivery is currently unavailable. Share the portal link with the client or retry shortly.";
 
         console.warn("[Invoice] Email delivery blocked", {
           jobCardId: input.jobCardId,
           failureCode: emailDelivery.failureCode,
         });
 
+        await emitNotification({
+          type: "pricing_approved",
+          title: "Invoice Published to Client Portal",
+          message: `Invoice for job ${job.jobNumber} is available in the client portal. Email delivery is blocked: ${emailDelivery.failureCode ?? "unknown"}.`,
+          entityType: "job_card",
+          entityId: input.jobCardId,
+          notifyOwnerPush: true,
+        });
+
         return {
-          success: false,
+          success: true,
           emailSent: false,
           invoicePdfUrl,
+          portalUrl,
           deliveryBlocked: emailDelivery.failureCode,
           deliveryMessage,
         };
       }
 
-      // Mark as invoiced
-      await updateJobPricing(pricing.id, { status: "invoiced" });
-
       // Emit notification
       await emitNotification({
         type: "pricing_approved",
-        title: "Invoice Sent",
-        message: `Invoice for job ${job.jobNumber} has been sent to ${client.email}. Total: ${pricing.currency} ${pricing.total}.`,
+        title: "Invoice Published and Sent",
+        message: `Invoice for job ${job.jobNumber} has been published to the client portal and sent to ${client.email}. Total: ${pricing.currency} ${pricing.total}.`,
         entityType: "job_card",
         entityId: input.jobCardId,
         notifyOwnerPush: true,
       });
 
-      return { success: true, emailSent: true, invoicePdfUrl, deliveryBlocked: null, deliveryMessage: null };
+      return { success: true, emailSent: true, invoicePdfUrl, portalUrl, deliveryBlocked: null, deliveryMessage: null };
     }),
 });
