@@ -55,6 +55,10 @@ export function getJobItemCosts(items: Awaited<ReturnType<typeof listJobItems>>)
   );
 }
 
+export function getPricingPdfFileName(jobNumber: string) {
+  return `Pricing-Summary-${jobNumber}.pdf`;
+}
+
 /** Repair a legacy R0 pricing record from the authoritative job-card item values. */
 async function synchronizePricingFromJobItems(pricing: NonNullable<Awaited<ReturnType<typeof getJobPricingByJobCard>>>) {
   const itemCosts = getJobItemCosts(await listJobItems(pricing.jobCardId));
@@ -162,6 +166,55 @@ export const pricingRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "An invoiced pricing record cannot be changed" });
       }
       return synchronizePricingFromJobItems(pricing);
+    }),
+
+  /** Create a branded PDF copy of the corrected job-pricing summary without publishing an invoice. */
+  downloadPdf: managerProcedure
+    .input(z.object({ jobCardId: z.number().int().positive() }))
+    .mutation(async ({ input }) => {
+      const job = await getJobCardById(input.jobCardId);
+      if (!job) throw new TRPCError({ code: "NOT_FOUND", message: "Job card not found" });
+
+      const storedPricing = await getJobPricingByJobCard(input.jobCardId);
+      const pricing = storedPricing ? (await synchronizePricingFromJobItems(storedPricing)).pricing : undefined;
+      if (!pricing) throw new TRPCError({ code: "NOT_FOUND", message: "No pricing found for this job" });
+
+      const client = job.clientId ? await getClientById(job.clientId) : null;
+      const jobItems = await listJobItems(input.jobCardId);
+      const generatedAt = new Date();
+      const pdfBuffer = await generateInvoicePdf({
+        invoiceNumber: `PRICING-${job.jobNumber}`,
+        jobNumber: job.jobNumber,
+        jobTitle: job.title,
+        clientName: client ? `${client.firstName} ${client.lastName}`.trim() : "Client",
+        clientEmail: client?.email ?? "",
+        clientPhone: client?.phone ?? "",
+        clientAddress: client?.address || undefined,
+        jobDescription: job.description || undefined,
+        lineItems: jobItems.map((item) => ({
+          description: item.name,
+          quantity: Number(item.quantity) || 1,
+          unitPrice: Number(item.unitPrice) || 0,
+          total: Number(item.lineTotal) || 0,
+        })),
+        labourCost: Number(pricing.labourCost) || 0,
+        partsCost: Number(pricing.partsCost) || 0,
+        additionalFees: Number(pricing.additionalFees) || 0,
+        discountAmount: Number(pricing.discountAmount) || 0,
+        vatPercentage: Number(pricing.vatPct) || 0,
+        subtotal: Number(pricing.subtotal) || 0,
+        vatAmount: Number(pricing.vatAmount) || 0,
+        total: Number(pricing.total) || 0,
+        currency: pricing.currency || "ZAR",
+        paymentTerms: "Pricing summary — not a tax invoice",
+        issuedDate: generatedAt,
+        dueDate: generatedAt,
+      });
+
+      const fileName = getPricingPdfFileName(job.jobNumber);
+      const pdfKey = `pricing-exports/${job.id}/${randomBytes(18).toString("hex")}.pdf`;
+      const { url } = await storagePut(pdfKey, pdfBuffer, "application/pdf");
+      return { url, fileName };
     }),
 
   /** Request approval for pricing */

@@ -24,6 +24,7 @@ import {
   ThumbsUp,
   Send,
   Ban,
+  Download,
 } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -121,8 +122,26 @@ export default function Pricing() {
 
   const synchronizeMutation = trpc.pricing.synchronizeFromJobItems.useMutation({
     onSuccess: () => {
+      toast.success("Pricing synchronized from job-card items", {
+        description: "The invoice summary has been updated with the corrected ZAR total.",
+      });
       refetchPricing();
       utils.jobCards.get.invalidate({ id: jobCardId });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const downloadPdfMutation = trpc.pricing.downloadPdf.useMutation({
+    onSuccess: ({ url, fileName }) => {
+      const downloadLink = document.createElement("a");
+      downloadLink.href = url;
+      downloadLink.download = fileName;
+      downloadLink.target = "_blank";
+      downloadLink.rel = "noopener noreferrer";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      toast.success("Pricing PDF is ready", { description: "Your corrected pricing summary has been opened for download." });
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -284,7 +303,10 @@ export default function Pricing() {
           )}
 
           {shouldDisplayItemTotals && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 flex items-center gap-3">
+            <div className="relative overflow-hidden rounded-lg border border-amber-200 bg-amber-50 p-4 flex items-center gap-3">
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-amber-200 overflow-hidden">
+                <div className="h-full w-1/3 bg-amber-500 animate-pulse" />
+              </div>
               <Loader2 className="w-5 h-5 text-amber-600 animate-spin shrink-0" />
               <p className="text-sm text-amber-800 font-medium">
                 Synchronizing the approved invoice total from the job-card items.
@@ -520,6 +542,18 @@ export default function Pricing() {
                 <span className="text-primary">{fmt(live.total, currency)}</span>
               </div>
             </div>
+            {isManager && pricing && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full gap-2"
+                onClick={() => downloadPdfMutation.mutate({ jobCardId })}
+                disabled={downloadPdfMutation.isPending || synchronizeMutation.isPending || shouldDisplayItemTotals}
+              >
+                {downloadPdfMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                {downloadPdfMutation.isPending ? "Preparing PDF…" : "Download as PDF"}
+              </Button>
+            )}
           </div>
 
           {/* Job Items Breakdown */}

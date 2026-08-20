@@ -856,3 +856,10 @@ Fixed Client Dashboard button navigation:
 - [x] Block approval and invoice publication when a priced job has zero total despite positive job items
 - [x] Add regression coverage and verify tests, type checking, and production build - 179 tests passing, clean TypeScript, successful production build
 - [x] Save a pricing synchronization checkpoint - completed as `f3d425db`
+
+## Phase 122: Pricing Synchronization Feedback and PDF Export (In Progress)
+- [x] Add a subtle loading animation while legacy pricing totals synchronize from job items
+- [x] Show a success toast when pricing synchronization completes
+- [x] Add a Download as PDF action for the corrected job pricing summary
+- [x] Add regression coverage and verify tests, type checking, and production build - 180 tests passing, clean TypeScript, successful production build
+- [ ] Save a pricing feedback and PDF export checkpoint
