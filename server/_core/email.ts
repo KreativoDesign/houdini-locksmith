@@ -933,6 +933,21 @@ export type InvoiceEmailParams = {
   paymentTerms?: string;
 };
 
+export type InvoiceEmailDeliveryResult = {
+  sent: boolean;
+  failureCode?: "resend_not_configured" | "invalid_recipient" | "sender_domain_unverified" | "provider_error";
+};
+
+export function classifyInvoiceEmailFailure(error: unknown): InvoiceEmailDeliveryResult["failureCode"] {
+  const message = typeof error === "object" && error && "message" in error
+    ? String((error as { message?: unknown }).message ?? "").toLowerCase()
+    : "";
+
+  return message.includes("domain is not verified") || message.includes("verify your domain")
+    ? "sender_domain_unverified"
+    : "provider_error";
+}
+
 function buildInvoiceHtml(p: InvoiceEmailParams): string {
   const dateStr = formatDate(p.invoiceDate);
   const paymentTerms = p.paymentTerms || "Due upon receipt";
@@ -1035,14 +1050,14 @@ function buildInvoiceHtml(p: InvoiceEmailParams): string {
 </html>`;
 }
 
-export async function sendInvoiceEmail(params: InvoiceEmailParams, pdfBuffer?: Buffer): Promise<boolean> {
+export async function sendInvoiceEmail(params: InvoiceEmailParams, pdfBuffer?: Buffer): Promise<InvoiceEmailDeliveryResult> {
   if (!ENV.resendApiKey) {
     console.warn("[Email] RESEND_API_KEY not configured — skipping invoice email.");
-    return false;
+    return { sent: false, failureCode: "resend_not_configured" };
   }
   if (!params.to || !params.to.includes("@")) {
     console.warn("[Email] Invalid recipient — skipping invoice email.");
-    return false;
+    return { sent: false, failureCode: "invalid_recipient" };
   }
   try {
     const resend = getResend();
@@ -1066,13 +1081,13 @@ export async function sendInvoiceEmail(params: InvoiceEmailParams, pdfBuffer?: B
     const { error } = await resend.emails.send(emailOptions);
     if (error) {
       console.warn("[Email] Resend error sending invoice email:", error);
-      return false;
+      return { sent: false, failureCode: classifyInvoiceEmailFailure(error) };
     }
     console.log(`[Email] Invoice email sent to ${params.to} for job ${params.jobNumber}`);
-    return true;
+    return { sent: true };
   } catch (err) {
     console.warn("[Email] Failed to send invoice email:", err);
-    return false;
+    return { sent: false, failureCode: classifyInvoiceEmailFailure(err) };
   }
 }
 

@@ -9,7 +9,7 @@
  *    This test is skipped when RESEND_API_KEY is not set so CI stays green.
  */
 import { describe, expect, it, vi } from "vitest";
-import { sendSignatureConfirmationEmail, sendInviteEmail } from "./_core/email";
+import { classifyInvoiceEmailFailure, sendSignatureConfirmationEmail, sendInviteEmail } from "./_core/email";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -74,6 +74,17 @@ describe("sendInviteEmail – unit", () => {
     });
     expect(result).toBe(false);
     warnSpy.mockRestore();
+  });
+});
+
+describe("invoice email delivery classification – unit", () => {
+  it("identifies an unverified Resend sender domain without exposing provider details to clients", () => {
+    expect(classifyInvoiceEmailFailure({ message: "The houdini.co.za domain is not verified. Please, add and verify your domain." }))
+      .toBe("sender_domain_unverified");
+  });
+
+  it("classifies unknown provider failures without leaking provider details", () => {
+    expect(classifyInvoiceEmailFailure({ message: "Unexpected provider response" })).toBe("provider_error");
   });
 });
 

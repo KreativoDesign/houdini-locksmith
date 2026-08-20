@@ -197,7 +197,7 @@ export const pricingRouter = router({
       }
 
       // Send invoice email with PDF attachment
-      const emailSent = await sendInvoiceEmail(
+      const emailDelivery = await sendInvoiceEmail(
         {
           to: client.email,
           clientName,
@@ -211,8 +211,25 @@ export const pricingRouter = router({
         pdfBuffer
       );
 
-      if (!emailSent) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to send invoice email" });
+      if (!emailDelivery.sent) {
+        const deliveryMessage = emailDelivery.failureCode === "sender_domain_unverified"
+          ? "Invoice PDF generated, but email delivery is unavailable until the Houdini sending domain is verified in Resend. Please verify houdini.co.za, then retry this invoice."
+          : emailDelivery.failureCode === "invalid_recipient"
+            ? "Invoice PDF generated, but the client email address is invalid. Update the client email address and retry."
+            : "Invoice PDF generated, but email delivery is currently unavailable. Please retry shortly or check the email configuration.";
+
+        console.warn("[Invoice] Email delivery blocked", {
+          jobCardId: input.jobCardId,
+          failureCode: emailDelivery.failureCode,
+        });
+
+        return {
+          success: false,
+          emailSent: false,
+          invoicePdfUrl,
+          deliveryBlocked: emailDelivery.failureCode,
+          deliveryMessage,
+        };
       }
 
       // Mark as invoiced
@@ -228,6 +245,6 @@ export const pricingRouter = router({
         notifyOwnerPush: true,
       });
 
-      return { success: true, emailSent: true, invoicePdfUrl };
+      return { success: true, emailSent: true, invoicePdfUrl, deliveryBlocked: null, deliveryMessage: null };
     }),
 });

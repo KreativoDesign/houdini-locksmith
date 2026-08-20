@@ -1481,8 +1481,14 @@ export default function JobCardDetail() {
   });
 
   const generateInvoiceMutation = trpc.pricing.generateAndSendInvoice.useMutation({
-    onSuccess: () => {
-      toast.success("Invoice generated and sent to client");
+    onSuccess: (result) => {
+      if (result.emailSent) {
+        toast.success("Invoice generated and sent to client");
+      } else {
+        toast.error(
+          result.deliveryMessage ?? "Invoice PDF generated, but the email could not be sent. Please retry after checking email delivery settings."
+        );
+      }
       utils.pricing.getByJobCard.invalidate({ jobCardId: jobId });
     },
     onError: (err) => toast.error(`Failed to send invoice: ${err.message}`),

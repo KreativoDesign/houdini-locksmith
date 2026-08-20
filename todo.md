@@ -793,3 +793,11 @@ Fixed Client Dashboard button navigation:
 - [x] Preserve reduced-motion support and mobile action usability
 - [x] Add regression coverage and verify tests, type checking, and production build - 170 tests passing, clean TypeScript, successful production build
 - [x] Save a mobile hero refinement checkpoint - pending final checkpoint after this verification
+
+## Phase 114: Generate & Email Invoice Failure Fix (Completed with External Configuration Blocker)
+- [x] Trace the completed-job invoice generation and email dispatch failure - Resend rejects delivery because `houdini.co.za` is not verified
+- [x] Fix the confirmed invoice email root cause in application behavior - preserve retryable pricing state and return delivery-specific feedback
+- [x] Improve actionable invoice delivery feedback - explain sender-domain verification, invalid recipient, and provider failure cases without exposing provider details
+- [x] Add regression coverage and verify tests, type checking, and production build - 172 tests passing, clean TypeScript, successful production build
+- [ ] Verify `houdini.co.za` in Resend and complete a live invoice email delivery test - external DNS/Resend action required
+- [x] Save an invoice email fix checkpoint - pending final checkpoint after this verification
