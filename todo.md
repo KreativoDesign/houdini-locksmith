@@ -816,4 +816,4 @@ Fixed Client Dashboard button navigation:
 - [x] Correct portal route or link path mismatch for the published site - canonical URLs now use `/client-portal/:token`; legacy `/portal/:token` links remain supported
 - [x] Add regression coverage for copied public portal URLs
 - [x] Verify route behavior, tests, type checking, and production build - 173 tests passing, clean TypeScript, successful production build
-- [x] Save a client portal routing checkpoint - pending final checkpoint after this verification
+- [x] Save a client portal routing checkpoint - completed
