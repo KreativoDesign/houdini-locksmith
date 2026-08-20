@@ -328,70 +328,65 @@ Please follow up with this lead as soon as possible.
       <section id="contact" className="relative overflow-hidden border-t border-lime-500/20 bg-slate-950/45 py-24 px-4 sm:px-6 lg:px-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_15%,rgba(132,204,22,0.11),transparent_32%)]" aria-hidden="true" />
         <div className="relative max-w-3xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-lime-400">Request a consultation</p>
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-              Get in Touch
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-lime-400">Request a consultation</p>
+            <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+              Let’s secure your <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-lime-400 to-emerald-400">world.</span>
             </h2>
-            <p className="text-xl text-gray-400">Our sales team will respond within 1 hour</p>
+            <p className="mt-5 text-lg leading-8 text-slate-400">Share a few details and our sales team will respond within one hour with the right next step.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-lime-300/20 bg-gradient-to-br from-slate-800/75 via-slate-900/75 to-slate-950/80 p-6 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Input
-                placeholder="Your Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500"
-                required
-              />
-              <Input
-                type="email"
-                placeholder="Your Email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500"
-                required
-              />
+          <form onSubmit={handleSubmit} className="overflow-hidden rounded-2xl border border-lime-300/20 bg-gradient-to-br from-slate-800/80 via-slate-900/80 to-slate-950/85 shadow-2xl shadow-black/30 backdrop-blur-xl">
+            <div className="flex flex-col gap-3 border-b border-white/10 bg-white/[0.025] px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-lime-300/10 text-lime-300"><ShieldCheck className="h-5 w-5" /></span>
+                <div><p className="text-sm font-semibold text-white">Tell us what you need</p><p className="text-xs text-slate-400">Fields marked <span className="text-lime-300">*</span> are required.</p></div>
+              </div>
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-lime-300"><span className="h-2 w-2 rounded-full bg-lime-300 shadow-[0_0_10px_rgba(190,242,100,0.9)]" /> Typical response: within 1 hour</span>
             </div>
 
-            <Input
-              type="tel"
-              placeholder="Your Phone"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500"
-              required
-            />
+            <div className="space-y-6 p-6 sm:p-8">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label htmlFor="consultation-name" className="text-sm font-medium text-slate-200">Full name <span className="text-lime-300">*</span></label>
+                  <Input id="consultation-name" autoComplete="name" placeholder="e.g. Jamie Woodhead" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-12 border-lime-500/25 bg-slate-950/55 text-white placeholder:text-slate-500 focus-visible:border-lime-300 focus-visible:ring-lime-300/30" required />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="consultation-email" className="text-sm font-medium text-slate-200">Email address <span className="text-lime-300">*</span></label>
+                  <Input id="consultation-email" type="email" autoComplete="email" placeholder="you@example.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="h-12 border-lime-500/25 bg-slate-950/55 text-white placeholder:text-slate-500 focus-visible:border-lime-300 focus-visible:ring-lime-300/30" required />
+                </div>
+              </div>
 
-            <select
-              value={formData.service}
-              onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-              className="w-full bg-slate-900/50 border border-lime-500/30 focus:border-lime-500 text-white rounded-md px-4 py-2 placeholder:text-gray-500"
-            >
-              <option value="locks">Locks</option>
-              <option value="cctv">CCTV</option>
-              <option value="safes">Safes</option>
-              <option value="intercoms">Intercoms</option>
-              <option value="electric-fencing">Electric Fencing</option>
-              <option value="keys">Keys</option>
-            </select>
+              <div className="space-y-2">
+                <label htmlFor="consultation-phone" className="text-sm font-medium text-slate-200">Phone number <span className="text-lime-300">*</span></label>
+                <Input id="consultation-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="e.g. 041 365 7565" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="h-12 border-lime-500/25 bg-slate-950/55 text-white placeholder:text-slate-500 focus-visible:border-lime-300 focus-visible:ring-lime-300/30" required />
+                <p className="text-xs text-slate-500">We’ll use this only to follow up on your consultation request.</p>
+              </div>
 
-            <Textarea
-              placeholder="Tell us about your security needs..."
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="bg-slate-900/50 border-lime-500/30 focus:border-lime-500 text-white placeholder:text-gray-500 min-h-32"
-              required
-            />
+              <div className="space-y-2">
+                <label htmlFor="consultation-service" className="text-sm font-medium text-slate-200">What can we help secure? <span className="text-lime-300">*</span></label>
+                <select id="consultation-service" value={formData.service} onChange={(e) => setFormData({ ...formData, service: e.target.value })} className="h-12 w-full rounded-md border border-lime-500/25 bg-slate-950/55 px-4 text-white transition focus:border-lime-300 focus:outline-none focus:ring-2 focus:ring-lime-300/30">
+                  <option value="locks">Locks</option>
+                  <option value="cctv">CCTV</option>
+                  <option value="safes">Safes</option>
+                  <option value="intercoms">Intercoms</option>
+                  <option value="electric-fencing">Electric Fencing</option>
+                  <option value="keys">Keys</option>
+                </select>
+              </div>
 
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold shadow-lg shadow-lime-500/50 disabled:opacity-50"
-            >
-              {isSubmitting ? "Sending..." : "Send Inquiry"}
-            </Button>
+              <div className="space-y-2">
+                <label htmlFor="consultation-message" className="text-sm font-medium text-slate-200">How can we help? <span className="text-lime-300">*</span></label>
+                <Textarea id="consultation-message" placeholder="Tell us about your property, the concern you have, and the solution you’re looking for..." value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="min-h-36 border-lime-500/25 bg-slate-950/55 text-white placeholder:text-slate-500 focus-visible:border-lime-300 focus-visible:ring-lime-300/30" required />
+              </div>
+
+              <div className="flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="flex max-w-sm items-center gap-2 text-xs leading-5 text-slate-400"><ShieldCheck className="h-4 w-4 shrink-0 text-lime-300" />Your enquiry is sent directly to the Houdini team for a personal response.</p>
+                <Button type="submit" disabled={isSubmitting} className="h-12 w-full bg-lime-500 px-6 text-black shadow-lg shadow-lime-500/30 transition hover:bg-lime-400 hover:shadow-lime-500/50 disabled:opacity-50 sm:w-auto">
+                  {isSubmitting ? "Sending request..." : <>Request my consultation <ArrowRight className="ml-2 h-4 w-4" /></>}
+                </Button>
+              </div>
+            </div>
           </form>
         </div>
       </section>

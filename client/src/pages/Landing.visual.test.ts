@@ -58,4 +58,14 @@ describe("Landing hero visual treatment", () => {
     expect(landingSource).toContain('["1,560+", "Satisfied customers"]');
     expect(landingSource).toContain('["120", "Professionals"]');
   });
+
+  it("provides a clear, premium consultation form experience", () => {
+    expect(landingSource).toContain("Let’s secure your");
+    expect(landingSource).toContain("Tell us what you need");
+    expect(landingSource).toContain('htmlFor="consultation-name"');
+    expect(landingSource).toContain('htmlFor="consultation-service"');
+    expect(landingSource).toContain("Typical response: within 1 hour");
+    expect(landingSource).toContain("Your enquiry is sent directly to the Houdini team");
+    expect(landingSource).toContain("Request my consultation");
+  });
 });
