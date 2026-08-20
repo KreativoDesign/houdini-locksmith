@@ -863,3 +863,10 @@ Fixed Client Dashboard button navigation:
 - [x] Add a Download as PDF action for the corrected job pricing summary
 - [x] Add regression coverage and verify tests, type checking, and production build - 180 tests passing, clean TypeScript, successful production build
 - [x] Save a pricing feedback and PDF export checkpoint - completed as `e69af79b`
+
+## Phase 123: Job-Card PDF Layout and Branding Refinement (In Progress)
+- [x] Audit the job-card PDF generator for text overlap, missing fields, and layout constraints
+- [x] Rebuild client and job-detail sections with clear labels, safe wrapping, and balanced spacing
+- [x] Refine item, photo, and signature sections with the Houdini brand palette and reliable pagination
+- [x] Add regression coverage and verify tests, type checking, and generated PDF output - 181 tests passing, clean TypeScript, successful production build, and visual validation confirms a one-page long-field PDF
+- [ ] Save a refined job-card PDF checkpoint

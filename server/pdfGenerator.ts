@@ -156,6 +156,46 @@ function drawSectionHeading(
   return y + 22;
 }
 
+type DetailRow = [label: string, value: string];
+
+function detailBoxHeight(doc: InstanceType<typeof PDFDocument>, rows: DetailRow[], width: number) {
+  const valueWidth = width - 16;
+  let height = 26;
+  for (const [, value] of rows) {
+    if (!value) continue;
+    doc.font("Helvetica").fontSize(8.5);
+    height += 9 + doc.heightOfString(value, { width: valueWidth, lineGap: 1 }) + 7;
+  }
+  return Math.max(86, height + 6);
+}
+
+function drawDetailBox(
+  doc: InstanceType<typeof PDFDocument>,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  title: string,
+  rows: DetailRow[]
+) {
+  doc.rect(x, y, width, height).fill(GRAY_BG).stroke(GRAY_LIGHT);
+  doc.rect(x, y, width, 16).fill(BRAND_DARK2);
+  doc.rect(x, y, 4, 16).fill(BRAND_GREEN);
+  doc.fillColor(WHITE).fontSize(7.2).font("Helvetica-Bold")
+    .text(title, x + 10, y + 4.5, { width: width - 18 });
+
+  let rowY = y + 24;
+  for (const [label, value] of rows) {
+    if (!value) continue;
+    doc.fillColor(GRAY_MED).fontSize(6.8).font("Helvetica-Bold")
+      .text(label.toUpperCase(), x + 8, rowY, { width: width - 16 });
+    rowY += 9;
+    doc.fillColor(BRAND_DARK).fontSize(8.5).font("Helvetica")
+      .text(value, x + 8, rowY, { width: width - 16, lineGap: 1 });
+    rowY += doc.heightOfString(value, { width: width - 16, lineGap: 1 }) + 7;
+  }
+}
+
 // ─── Main generator ──────────────────────────────────────────────────────────
 
 export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buffer> {
@@ -178,7 +218,8 @@ export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buff
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
-      margins: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN },
+      bufferPages: true,
+      margins: { top: MARGIN, bottom: 30, left: MARGIN, right: MARGIN },
       info: {
         Title: `Job Card ${params.jobNumber}`,
         Author: "Houdini Locksmith & Security",
@@ -231,8 +272,8 @@ export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buff
 
     // ── Job title + meta row ──────────────────────────────────────────────
     doc.fillColor(BRAND_DARK).fontSize(14).font("Helvetica-Bold")
-       .text(params.title, MARGIN, y, { width: CONTENT_W });
-    y += 20;
+       .text(params.title, MARGIN, y, { width: CONTENT_W, lineGap: 1 });
+    y += doc.heightOfString(params.title, { width: CONTENT_W, lineGap: 1 }) + 8;
 
     // Status badge
     const sc = statusColour(params.status);
@@ -251,68 +292,36 @@ export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buff
       `Created: ${fmtDate(params.createdAt)}`,
       params.scheduledDate ? `Scheduled: ${fmtDate(params.scheduledDate)}` : null,
     ].filter(Boolean).join("   ·   ");
-    doc.text(metaParts, metaX, y, { width: CONTENT_W - statusW - 10 });
-    y += 20;
+    const metaWidth = CONTENT_W - statusW - 10;
+    doc.text(metaParts, metaX, y, { width: metaWidth, lineGap: 1 });
+    y += Math.max(18, doc.heightOfString(metaParts, { width: metaWidth, lineGap: 1 })) + 4;
 
     if (params.description) {
       doc.fillColor(GRAY_MED).fontSize(9).font("Helvetica")
-         .text(params.description, MARGIN, y, { width: CONTENT_W });
-      y += doc.heightOfString(params.description, { width: CONTENT_W }) + 10;
+         .text(params.description, MARGIN, y, { width: CONTENT_W, lineGap: 1 });
+      y += doc.heightOfString(params.description, { width: CONTENT_W, lineGap: 1 }) + 12;
     }
 
     // ── Two-column: Client | Job Details ──────────────────────────────────
     const colW = (CONTENT_W - 12) / 2;
-    const boxH = 110;
-
-    // Client box
-    doc.rect(MARGIN, y, colW, boxH).fill(GRAY_BG).stroke(GRAY_LIGHT);
-    doc.rect(MARGIN, y, colW, 14).fill(BRAND_DARK2);
-    doc.rect(MARGIN, y, 3, 14).fill(BRAND_GREEN);
-    doc.fillColor(WHITE).fontSize(7).font("Helvetica-Bold")
-       .text("CLIENT INFORMATION", MARGIN + 8, y + 4, { width: colW - 16 });
-
-    let cy = y + 18;
-    doc.fillColor(BRAND_DARK).fontSize(10).font("Helvetica-Bold")
-       .text(fmt(params.clientName) || "Unknown Client", MARGIN + 8, cy, { width: colW - 16 });
-    cy += 14;
     const clientRows: [string, string][] = [
-      ["Phone",     fmt(params.clientPhone)],
-      ["Alt Phone", fmt(params.clientAlternatePhone)],
-      ["Email",     fmt(params.clientEmail)],
-      ["Address",   [params.clientAddress, params.clientCity, params.clientPostalCode].filter(Boolean).join(", ")],
+      ["Client", fmt(params.clientName) || "Unknown Client"],
+      ["Phone", fmt(params.clientPhone)],
+      ["Alternative phone", fmt(params.clientAlternatePhone)],
+      ["Email", fmt(params.clientEmail)],
+      ["Address", [params.clientAddress, params.clientCity, params.clientPostalCode].filter(Boolean).join(", ")],
     ];
-    for (const [label, val] of clientRows) {
-      if (!val || cy > y + boxH - 8) continue;
-      doc.fillColor(GRAY_MED).fontSize(8).font("Helvetica")
-         .text(`${label}:`, MARGIN + 8, cy, { width: 52, continued: true })
-         .fillColor(BRAND_DARK)
-         .text(val, { width: colW - 66 });
-      cy += 12;
-    }
-
-    // Job details box
     const jx = MARGIN + colW + 12;
-    doc.rect(jx, y, colW, boxH).fill(GRAY_BG).stroke(GRAY_LIGHT);
-    doc.rect(jx, y, colW, 14).fill(BRAND_DARK2);
-    doc.rect(jx, y, 3, 14).fill(BRAND_GREEN);
-    doc.fillColor(WHITE).fontSize(7).font("Helvetica-Bold")
-       .text("JOB DETAILS", jx + 8, y + 4, { width: colW - 16 });
-
-    let jy = y + 18;
     const jobRows: [string, string][] = [
+      ["Job reference", params.jobNumber],
       ["Department", fmt(params.departmentName)],
       ["Technician", fmt(params.technicianName)],
-      ["Manager",    fmt(params.managerName)],
+      ["Manager", fmt(params.managerName)],
+      ["Scheduled", params.scheduledDate ? fmtDate(params.scheduledDate) : "Not scheduled"],
     ];
-    for (const [label, val] of jobRows) {
-      if (!val) continue;
-      doc.fillColor(GRAY_MED).fontSize(8).font("Helvetica")
-         .text(`${label}:`, jx + 8, jy, { width: 65, continued: true })
-         .fillColor(BRAND_DARK)
-         .text(val, { width: colW - 80 });
-      jy += 12;
-    }
-
+    const boxH = Math.max(detailBoxHeight(doc, clientRows, colW), detailBoxHeight(doc, jobRows, colW));
+    drawDetailBox(doc, MARGIN, y, colW, boxH, "CLIENT INFORMATION", clientRows);
+    drawDetailBox(doc, jx, y, colW, boxH, "JOB DETAILS", jobRows);
     y += boxH + 16;
 
     // ── Line items table ──────────────────────────────────────────────────
@@ -322,31 +331,40 @@ export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buff
       const cols = { name: 195, type: 60, qty: 40, unit: 65, disc: 40, total: 65 };
       const headerH = 16;
 
-      // Table header — lime-green background
-      doc.rect(MARGIN, y, CONTENT_W, headerH).fill(BRAND_GREEN);
-      let hx = MARGIN + 6;
-      doc.fillColor(BRAND_DARK).fontSize(7.5).font("Helvetica-Bold");
-      doc.text("Item",  hx, y + 4, { width: cols.name });         hx += cols.name;
-      doc.text("Type",  hx, y + 4, { width: cols.type });         hx += cols.type;
-      doc.text("Qty",   hx, y + 4, { width: cols.qty });          hx += cols.qty;
-      doc.text("Unit",  hx, y + 4, { width: cols.unit });         hx += cols.unit;
-      doc.text("Disc%", hx, y + 4, { width: cols.disc });         hx += cols.disc;
-      doc.text("Total", hx, y + 4, { width: cols.total, align: "right" });
-      y += headerH;
+      const drawItemTableHeader = () => {
+        doc.rect(MARGIN, y, CONTENT_W, headerH).fill(BRAND_GREEN);
+        let hx = MARGIN + 6;
+        doc.fillColor(BRAND_DARK).fontSize(7.5).font("Helvetica-Bold");
+        doc.text("Item", hx, y + 4, { width: cols.name }); hx += cols.name;
+        doc.text("Type", hx, y + 4, { width: cols.type }); hx += cols.type;
+        doc.text("Qty", hx, y + 4, { width: cols.qty }); hx += cols.qty;
+        doc.text("Unit", hx, y + 4, { width: cols.unit }); hx += cols.unit;
+        doc.text("Disc%", hx, y + 4, { width: cols.disc }); hx += cols.disc;
+        doc.text("Total", hx, y + 4, { width: cols.total, align: "right" });
+        y += headerH;
+      };
+      drawItemTableHeader();
 
       let grandTotal = 0;
       params.items.forEach((item, idx) => {
-        const rowH = 17;
-        if (y + rowH > PAGE_H - 60) { doc.addPage(); y = MARGIN; }
+        const nameH = doc.font("Helvetica").fontSize(8).heightOfString(item.name, { width: cols.name - 4, lineGap: 1 });
+        const typeH = doc.heightOfString(statusLabel(item.type), { width: cols.type - 2, lineGap: 1 });
+        const rowH = Math.max(20, nameH + 8, typeH + 8);
+        if (y + rowH > PAGE_H - 60) {
+          doc.addPage();
+          y = MARGIN;
+          y = drawSectionHeading(doc, "JOB ITEMS (CONTINUED)", y);
+          drawItemTableHeader();
+        }
         doc.rect(MARGIN, y, CONTENT_W, rowH).fill(idx % 2 === 0 ? WHITE : GRAY_BG);
         // Left accent line on alternating rows
         if (idx % 2 !== 0) doc.rect(MARGIN, y, 2, rowH).fill(BRAND_GREEN);
 
         let rx = MARGIN + 6;
         doc.fillColor(BRAND_DARK).fontSize(8).font("Helvetica");
-        doc.text(item.name, rx, y + 4, { width: cols.name - 4, ellipsis: true }); rx += cols.name;
+        doc.text(item.name, rx, y + 4, { width: cols.name - 4, lineGap: 1, ellipsis: true }); rx += cols.name;
         doc.fillColor(GRAY_MED);
-        doc.text(statusLabel(item.type), rx, y + 4, { width: cols.type });        rx += cols.type;
+        doc.text(statusLabel(item.type), rx, y + 4, { width: cols.type - 2, lineGap: 1, ellipsis: true }); rx += cols.type;
         doc.fillColor(BRAND_DARK);
         doc.text(fmt(item.quantity), rx, y + 4, { width: cols.qty });             rx += cols.qty;
         doc.text(fmtRand(item.unitPrice), rx, y + 4, { width: cols.unit });       rx += cols.unit;
@@ -361,7 +379,10 @@ export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buff
       });
 
       // Grand total row — lime-green
-      if (y + 22 > PAGE_H - 60) { doc.addPage(); y = MARGIN; }
+      if (y + 22 > PAGE_H - 60) {
+        doc.addPage();
+        y = drawSectionHeading(doc, "JOB ITEMS (CONTINUED)", MARGIN);
+      }
       doc.rect(MARGIN, y, CONTENT_W, 22).fill(BRAND_GREEN);
       doc.fillColor(BRAND_DARK).fontSize(9).font("Helvetica-Bold")
          .text("TOTAL (excl. VAT)", MARGIN + 6, y + 6, { width: CONTENT_W - 12 - 80 });
@@ -437,25 +458,19 @@ export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buff
 
       const sigInfoX = sigBuffer ? MARGIN + 224 : MARGIN + 16;
       let siy = y + 14;
-      if (params.signerName) {
-        doc.fillColor(GRAY_MED).fontSize(8).font("Helvetica")
-           .text("Signed by:", sigInfoX, siy, { continued: true })
-           .fillColor(BRAND_DARK).font("Helvetica-Bold")
-           .text(` ${params.signerName}`);
-        siy += 14;
-      }
-      if (params.signerRole) {
-        doc.fillColor(GRAY_MED).fontSize(8).font("Helvetica")
-           .text("Role:", sigInfoX, siy, { continued: true })
-           .fillColor(BRAND_DARK).font("Helvetica")
-           .text(` ${params.signerRole}`);
-        siy += 14;
-      }
-      if (params.signedAt) {
-        doc.fillColor(GRAY_MED).fontSize(8).font("Helvetica")
-           .text("Date & Time:", sigInfoX, siy, { continued: true })
-           .fillColor(BRAND_DARK).font("Helvetica")
-           .text(` ${fmtDateTime(params.signedAt)}`);
+      const signatureRows: DetailRow[] = [
+        ["Signed by", fmt(params.signerName)],
+        ["Role", fmt(params.signerRole)],
+        ["Date & time", params.signedAt ? fmtDateTime(params.signedAt) : ""],
+      ];
+      for (const [label, value] of signatureRows) {
+        if (!value) continue;
+        doc.fillColor(GRAY_MED).fontSize(7).font("Helvetica-Bold")
+          .text(label.toUpperCase(), sigInfoX, siy, { width: CONTENT_W - (sigInfoX - MARGIN) - 12 });
+        siy += 9;
+        doc.fillColor(BRAND_DARK).fontSize(8.5).font("Helvetica")
+          .text(value, sigInfoX, siy, { width: CONTENT_W - (sigInfoX - MARGIN) - 12, lineGap: 1 });
+        siy += doc.heightOfString(value, { width: CONTENT_W - (sigInfoX - MARGIN) - 12, lineGap: 1 }) + 6;
       }
       y += sigBoxH + 12;
     }
@@ -467,13 +482,13 @@ export async function generateJobCardPdf(params: JobCardPdfParams): Promise<Buff
       : 1;
     for (let i = 0; i < totalPages; i++) {
       if (i > 0) doc.switchToPage(i);
-      const footerY = PAGE_H - 30;
-      doc.rect(0, footerY - 6, PAGE_W, 36).fill(BRAND_DARK);
-      doc.rect(0, footerY - 6, PAGE_W, 2).fill(BRAND_GREEN);
+      const footerTop = PAGE_H - 52;
+      doc.rect(0, footerTop, PAGE_W, 52).fill(BRAND_DARK);
+      doc.rect(0, footerTop, PAGE_W, 2).fill(BRAND_GREEN);
       doc.fillColor(GRAY_MED).fontSize(7.5).font("Helvetica")
          .text(
            `Generated ${fmtDateTime(new Date())}  ·  Houdini Locksmith & Security  ·  ${params.jobNumber}`,
-           MARGIN, footerY + 2,
+           MARGIN, footerTop + 6,
            { width: CONTENT_W, align: "center" }
          );
     }
