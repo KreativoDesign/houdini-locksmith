@@ -901,4 +901,4 @@ Fixed Client Dashboard button navigation:
 - [x] Create isolated administrator, manager, technician, and client walkthrough accounts
 - [x] Verify each account authenticates and receives the intended least-privilege role access - local login succeeds for admin, manager, and technician; client portal token is 64 characters and bound to the dedicated job
 - [x] Document account purpose, temporary credential handling, and walkthrough sequence
-- [ ] Save a role-based walkthrough account checkpoint
+- [x] Save a role-based walkthrough account checkpoint - completed as `219625eb`
