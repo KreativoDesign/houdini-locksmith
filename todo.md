@@ -895,3 +895,10 @@ Fixed Client Dashboard button navigation:
 - [x] Run full regression, type, build, dependency, and runtime-log validation - 182 tests pass, TypeScript and build are clean, dependency audit is clean, no reviewed production exception
 - [x] Generate a consolidated pre-launch readiness checklist report
 - [x] Save a checkout and job-card PDF verification checkpoint - completed as `d6d60a47`
+
+## Phase 127: Role-Based Live Walkthrough Accounts (In Progress)
+- [x] Inspect the account credential, client identity, and role-assignment model
+- [x] Create isolated administrator, manager, technician, and client walkthrough accounts
+- [x] Verify each account authenticates and receives the intended least-privilege role access - local login succeeds for admin, manager, and technician; client portal token is 64 characters and bound to the dedicated job
+- [x] Document account purpose, temporary credential handling, and walkthrough sequence
+- [ ] Save a role-based walkthrough account checkpoint
