@@ -886,4 +886,12 @@ Fixed Client Dashboard button navigation:
 - [ ] Verify PayFast merchant configuration and complete sandbox callback acceptance tests when credentials are available
 - [ ] Complete a role-based production smoke pass for administrator, manager, technician, and client portal flows
 - [x] Publish a final launch-gate checklist with a clear deployment decision and outstanding user actions
-- [ ] Save an external launch-gate verification checkpoint
+- [x] Save an external launch-gate verification checkpoint - completed as `02f038ef`
+
+## Phase 126: Checkout and Job-Card PDF End-to-End Verification (In Progress)
+- [x] Re-verify the published deployment, Resend sender-domain, and PayFast configuration gates - production HTTPS 200 with hardened headers; Resend domain remains not_started; PayFast configuration remains absent
+- [x] Exercise the item-backed pricing-to-job-card PDF export flow with long-field layout validation - branded multi-page signature continuation has no overlap, clipping, or blank trailing page
+- [x] Exercise the invoice publication and client-portal checkout readiness path - portal invoice/PDF regression coverage passes and unconfigured checkout remains safely disabled
+- [x] Run full regression, type, build, dependency, and runtime-log validation - 182 tests pass, TypeScript and build are clean, dependency audit is clean, no reviewed production exception
+- [x] Generate a consolidated pre-launch readiness checklist report
+- [ ] Save a checkout and job-card PDF verification checkpoint
