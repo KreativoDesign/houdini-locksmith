@@ -908,4 +908,4 @@ Fixed Client Dashboard button navigation:
 - [x] Add a visible, accessible top-navigation role indicator for the logged-in test account
 - [x] Provision isolated sample walkthrough job cards, pricing records, and invoices for the test client portal
 - [x] Verify role badge behavior, portal summary data, and test-account access boundaries - visual desktop indicator confirmed; public portal shows four jobs, two invoice summaries, invoices, and safely disabled PayFast action
-- [ ] Save a walkthrough UI and data checkpoint
+- [x] Save a walkthrough UI and data checkpoint - completed as `126da96a`
