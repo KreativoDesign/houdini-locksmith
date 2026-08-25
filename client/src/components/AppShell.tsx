@@ -405,6 +405,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { loading, user } = useAuth();
   const isMobile = useIsMobile();
   const [location] = useLocation();
+  const topNavigationRole = (user?.role ?? "technician") as "admin" | "manager" | "technician";
+  const topNavigationRoleBadge = ROLE_BADGE[topNavigationRole];
 
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     try {
@@ -491,7 +493,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 </span>
               </div>
             </div>
-            <NotificationsBell />
+            <div className="flex items-center gap-2">
+              <Badge
+                data-testid="top-nav-role-indicator"
+                aria-label={`Logged in as ${topNavigationRoleBadge.label}`}
+                title={`Logged in as ${topNavigationRoleBadge.label}`}
+                className={`gap-1 border px-2 py-1 text-[10px] ${topNavigationRoleBadge.className}`}
+              >
+                <ShieldCheck className="h-3 w-3" />
+                {topNavigationRoleBadge.label}
+              </Badge>
+              <NotificationsBell />
+            </div>
           </div>
         )}
 
@@ -511,6 +524,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               )}
             </div>
             <div className="flex items-center gap-3">
+              <Badge
+                data-testid="top-nav-role-indicator"
+                aria-label={`Logged in as ${topNavigationRoleBadge.label}`}
+                title={`Logged in as ${topNavigationRoleBadge.label}`}
+                className={`gap-1 border px-2.5 py-1 text-xs font-semibold shadow-sm ${topNavigationRoleBadge.className}`}
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                <span>Logged in: {topNavigationRoleBadge.label}</span>
+              </Badge>
               <ViewSwitcher currentView={currentView} onViewChange={setCurrentView} />
               <NotificationsBell />
             </div>

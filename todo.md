@@ -902,3 +902,10 @@ Fixed Client Dashboard button navigation:
 - [x] Verify each account authenticates and receives the intended least-privilege role access - local login succeeds for admin, manager, and technician; client portal token is 64 characters and bound to the dedicated job
 - [x] Document account purpose, temporary credential handling, and walkthrough sequence
 - [x] Save a role-based walkthrough account checkpoint - completed as `219625eb`
+
+## Phase 128: Walkthrough Role Badge and Client Portal Data (In Progress)
+- [x] Inspect authenticated navigation and client-portal walkthrough data relationships
+- [x] Add a visible, accessible top-navigation role indicator for the logged-in test account
+- [x] Provision isolated sample walkthrough job cards, pricing records, and invoices for the test client portal
+- [x] Verify role badge behavior, portal summary data, and test-account access boundaries - visual desktop indicator confirmed; public portal shows four jobs, two invoice summaries, invoices, and safely disabled PayFast action
+- [ ] Save a walkthrough UI and data checkpoint
