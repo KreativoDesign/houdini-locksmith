@@ -894,4 +894,4 @@ Fixed Client Dashboard button navigation:
 - [x] Exercise the invoice publication and client-portal checkout readiness path - portal invoice/PDF regression coverage passes and unconfigured checkout remains safely disabled
 - [x] Run full regression, type, build, dependency, and runtime-log validation - 182 tests pass, TypeScript and build are clean, dependency audit is clean, no reviewed production exception
 - [x] Generate a consolidated pre-launch readiness checklist report
-- [ ] Save a checkout and job-card PDF verification checkpoint
+- [x] Save a checkout and job-card PDF verification checkpoint - completed as `d6d60a47`
