@@ -878,3 +878,12 @@ Fixed Client Dashboard button navigation:
 - [x] Remediate confirmed launch-critical findings and add regression coverage - security headers, simple query parsing, Express/Streamdown/Resend/tRPC alignment, and 182 tests passing
 - [x] Produce a go-live readiness assessment with external launch blockers called out
 - [x] Save a go-live readiness checkpoint - completed as `5d50b77b`
+
+## Phase 125: External Launch-Gate Verification (In Progress)
+- [x] Verify the published domain serves the latest security-hardened release and required HTTPS headers
+- [ ] Verify Resend sender-domain status and complete a controlled delivery test when domain access is available
+- [ ] Complete Resend custom-domain verification later, as requested by the user; automated email delivery remains unavailable until then
+- [ ] Verify PayFast merchant configuration and complete sandbox callback acceptance tests when credentials are available
+- [ ] Complete a role-based production smoke pass for administrator, manager, technician, and client portal flows
+- [x] Publish a final launch-gate checklist with a clear deployment decision and outstanding user actions
+- [ ] Save an external launch-gate verification checkpoint
