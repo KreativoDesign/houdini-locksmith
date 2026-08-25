@@ -870,3 +870,11 @@ Fixed Client Dashboard button navigation:
 - [x] Refine item, photo, and signature sections with the Houdini brand palette and reliable pagination
 - [x] Add regression coverage and verify tests, type checking, and generated PDF output - 181 tests passing, clean TypeScript, successful production build, and visual validation confirms a one-page long-field PDF
 - [x] Save a refined job-card PDF checkpoint - completed as `783c5838`
+
+## Phase 124: Go-Live Security and Workflow Readiness (In Progress)
+- [x] Review authentication, authorization, data exposure, upload, and configuration safeguards
+- [x] Exercise critical operational workflows and failure states through the automated regression suite and runtime/log checks
+- [x] Audit dependencies, build output, production logs, and deployment configuration
+- [x] Remediate confirmed launch-critical findings and add regression coverage - security headers, simple query parsing, Express/Streamdown/Resend/tRPC alignment, and 182 tests passing
+- [x] Produce a go-live readiness assessment with external launch blockers called out
+- [ ] Save a go-live readiness checkpoint

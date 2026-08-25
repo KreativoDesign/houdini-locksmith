@@ -1,8 +1,8 @@
 # Houdini Locksmith Deployment Readiness
 
-## Current Release Checkpoint
+## Current Release State
 
-The current audited project checkpoint is `d7f35616`. The project has a running development server, clean TypeScript compilation, a successful production build, and 170 passing automated tests.
+Before each release, validate the latest saved checkpoint rather than relying on a historical version identifier. The current readiness baseline is a running development server, clean TypeScript compilation, a successful production build, a clean production dependency audit, and 182 passing automated tests.
 
 ## Publish Workflow
 
@@ -31,7 +31,7 @@ Secret values must be entered through the managed project secrets interface and 
 | `EMAIL_FROM` | Configured | Use a sender address on the verified domain. |
 | PayFast merchant credentials | Missing | Add `PAYFAST_MERCHANT_ID`, `PAYFAST_MERCHANT_KEY`, and the related passphrase/configuration before enabling live payment flows. |
 | PayFast mode | Not live-validated | Use sandbox credentials for acceptance testing, then switch to production credentials only after callback verification. |
-| `VITE_FRONTEND_URL` | Optional fallback currently exists | Set it explicitly to the final public domain for stable generated links. |
+| Public portal origin | Browser-provided | Portal links are generated from the current browser origin, so the canonical public domain must be used when sharing links. |
 
 ## Verification Checklist
 
@@ -43,7 +43,7 @@ pnpm check
 pnpm build
 ```
 
-The expected baseline is 170 passing tests, zero TypeScript errors, and a successful client/server production build. The build currently emits a Vite warning for a client chunk larger than 500 kB; route-level code splitting is a future performance improvement rather than a current build failure.
+The expected baseline is 182 passing tests, zero TypeScript errors, a successful client/server production build, and `pnpm audit --prod` reporting no known vulnerabilities. The build currently emits a Vite warning for a client chunk larger than 500 kB; route-level code splitting is a future performance improvement rather than a current build failure.
 
 ## External-Service Acceptance Tests
 
@@ -51,12 +51,12 @@ After the required credentials and domain verification are available, perform a 
 
 ## Security Notes
 
-Production error boundaries suppress internal stack traces. Request-body limits and document/signature upload validation are hardened. Do not paste API keys into source files, issue comments, screenshots, or support tickets. Rotate credentials if they are ever exposed.
+Production error boundaries suppress internal stack traces. Request-body limits and document/signature upload validation are hardened. Security response headers prevent MIME sniffing and framing, constrain sensitive browser capabilities, and enforce HTTPS on secure deployments. Do not paste API keys into source files, issue comments, screenshots, or support tickets. Rotate credentials if they are ever exposed.
 
 
 ## Customer Portal Administration
 
-Managers and administrators can generate a portal link from a job card. The generated token is 64 hexadecimal characters and the public route is `/portal/<token>`. When the frontend supplies its origin, the returned URL is a complete link such as `https://your-public-domain.example/portal/<64-character-token>`.
+Managers and administrators can generate a portal link from a job card. The generated token is 64 hexadecimal characters and the canonical public route is `/client-portal/<token>`. Existing legacy `/portal/<token>` links remain supported. When the frontend supplies its origin, the returned URL is a complete link such as `https://your-public-domain.example/client-portal/<64-character-token>`.
 
 The `generateLink` procedure accepts an optional expiry of 7, 14, or 30 days. Omitting the expiry leaves the link without an expiry date. A regenerated link reuses the stored token for that job card while updating the expiry setting. If the linked client has an email address, the application attempts to send the portal URL automatically.
 

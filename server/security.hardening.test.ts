@@ -18,6 +18,15 @@ describe("security hardening regression guards", () => {
     expect(serverEntry).toContain('express.urlencoded({ limit: "1mb", extended: true })');
   });
 
+  it("keeps transport, browser isolation, and parser hardening headers enabled", () => {
+    expect(serverEntry).toContain('app.disable("x-powered-by")');
+    expect(serverEntry).toContain('app.set("query parser", "simple")');
+    expect(serverEntry).toContain('"X-Content-Type-Options", "nosniff"');
+    expect(serverEntry).toContain('"X-Frame-Options", "DENY"');
+    expect(serverEntry).toContain('"Referrer-Policy", "strict-origin-when-cross-origin"');
+    expect(serverEntry).toContain('"Strict-Transport-Security", "max-age=31536000; includeSubDomains"');
+  });
+
   it("does not render production error stacks", () => {
     expect(errorBoundary).toContain("import.meta.env.DEV ?");
     expect(errorBoundary).toContain("Please try again. If the problem continues");
