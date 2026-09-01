@@ -923,4 +923,17 @@ Fixed Client Dashboard button navigation:
 - [x] Show Locks selected by default in a single dynamic service content panel
 - [x] Update the panel content, icon background, and transition when another service button is selected
 - [x] Add interaction regression coverage and verify desktop/mobile rendering - 192 tests pass, TypeScript is clean, production build succeeds, and public preview verified Locks default plus CCTV switching
-- [ ] Save a selectable services-section checkpoint
+- [x] Save a selectable services-section checkpoint - completed as `fe8815e6`
+
+## Phase 131: Locks Brochure Content and Supplier Logos (In Progress)
+- [x] Prepare the supplied supplier-logo artwork for managed web delivery
+- [x] Simplify the Locks brochure into a concise paragraph and key service points
+- [x] Add the supplier-logo strip above the Locks panel CTA with accessible alternative text
+- [x] Add regression coverage and verify the Locks panel content and artwork across layouts - 193 tests pass, TypeScript is clean, production build succeeds, and public preview confirms the supplier artwork renders
+- [x] Save a Locks content and supplier-logo checkpoint - pending checkpoint save
+
+## Phase 132: Supplier Logo Asset Rendering Fix (In Progress)
+- [x] Replace the broken supplier-logo asset reference with a browser-loadable managed URL
+- [x] Verify the logo strip renders in the Locks panel without a broken-image fallback
+- [x] Re-run relevant regression checks and save a corrected checkpoint - focused test, full regression, TypeScript, and production build pass
+

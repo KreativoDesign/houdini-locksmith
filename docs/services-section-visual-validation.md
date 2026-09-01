@@ -1,3 +1,7 @@
 # Selectable Services Section Visual Validation
 
 The public homepage preview was opened at the restored development URL. The services section rendered six compact service buttons in a single desktop row: Locks, CCTV, Safes, Intercoms, Electric Fencing, and Keys. Locks is selected on initial render. Selecting CCTV changed the active styling, service icon, panel background image, heading, description, feature tags, and action label to CCTV without navigation or page reload. The panel remains readable against the dark overlay and uses the Houdini lime/near-black palette. The button group and panel use responsive grid/flex wrapping classes for smaller screens.
+
+After the initial visual check exposed that the `/manus-storage/` path was being served as the SPA HTML fallback, the artwork was re-uploaded through the public asset flow. The browser-loadable CDN URL is `https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/NGWsHRvauXOHqtDm.png`. A fresh public homepage load now exposes the supplier-logo image with this CDN URL and the Locks panel shows the supplier range between the key points and Discuss Locks CTA.
+
+Final visual verification on 1 September 2026: the public preview now renders the supplier-logo strip correctly inside its white rounded container, with no broken-image icon. It appears after the four Locks capability points and before the Discuss Locks CTA. The artwork is readable and visually consistent with the dark/lime service panel.

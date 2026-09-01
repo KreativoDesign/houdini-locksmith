@@ -324,7 +324,7 @@ Please follow up with this lead as soon as possible.
 
           {(() => {
             const services = [
-              { title: "Locks", service: "locks", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", Icon: LockKeyhole, description: "Reliable access protection for homes, businesses, and urgent call-outs.", points: ["Residential and commercial locks", "Emergency call-out support"] },
+              { title: "Locks", service: "locks", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", Icon: LockKeyhole, description: "Houdini supplies, installs, opens, and repairs dependable mechanical locking solutions for homes, businesses, and new-build projects. We focus on quality products matched to the right application, helping protect the people and places that matter most.", points: ["Padlocks, mortice locks, latches, deadbolts, and cylinders", "Master-key and restricted-keyway systems", "Panic exit devices, door closers, hinges, and ironmongery", "Supply, installation, opening, and repair support"], logoImage: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/NGWsHRvauXOHqtDm.png", logoAlt: "Supplier logos: Yale, Viro, Master Lock, Kwikset, Mul-T-Lock, ABUS, CISA, ASSA ABLOY, BBQ, Jaguar, and Trellidor" },
               { title: "CCTV", service: "cctv", image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png", Icon: Camera, description: "Tailored surveillance systems from standalone cameras to integrated monitoring.", points: ["System design and installation", "On-site or remote monitoring"] },
               { title: "Safes", service: "safes", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe.png", Icon: ShieldCheck, description: "Protection for valuables with solutions matched to your security requirements.", points: ["Wall and floor safes", "SABS and insurance-approved options"] },
               { title: "Intercoms", service: "intercoms", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe-1.png", Icon: Radio, description: "Connected entry communication for homes, offices, and controlled-access sites.", points: ["Application-specific systems", "Clearer visitor management"] },
@@ -372,6 +372,14 @@ Please follow up with this lead as soon as possible.
                       <div className="mt-6 flex flex-wrap gap-2">
                         {activeService.points.map((point) => <span key={point} className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-xs text-slate-200 backdrop-blur-sm">{point}</span>)}
                       </div>
+                      {activeService.logoImage && (
+                        <div className="mt-7 max-w-xl">
+                          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-lime-300/80">Trusted supplier range</p>
+                          <div className="overflow-hidden rounded-xl border border-white/10 bg-white/95 p-2 shadow-xl shadow-black/20">
+                            <img src={activeService.logoImage} alt={activeService.logoAlt} className="h-auto max-h-20 w-full object-contain" loading="lazy" />
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="mt-8 flex flex-wrap items-center gap-4">
                       <Button type="button" className="bg-lime-300 font-semibold text-slate-950 shadow-lg shadow-lime-400/20 hover:bg-lime-200" onClick={() => handleServiceSelect(activeService.service)}>Discuss {activeService.title} <ArrowRight className="ml-2 h-4 w-4" /></Button>
