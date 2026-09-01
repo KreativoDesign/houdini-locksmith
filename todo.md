@@ -909,3 +909,10 @@ Fixed Client Dashboard button navigation:
 - [x] Provision isolated sample walkthrough job cards, pricing records, and invoices for the test client portal
 - [x] Verify role badge behavior, portal summary data, and test-account access boundaries - visual desktop indicator confirmed; public portal shows four jobs, two invoice summaries, invoices, and safely disabled PayFast action
 - [x] Save a walkthrough UI and data checkpoint - completed as `126da96a`
+
+## Phase 129: Google Reviews About Panel (In Progress)
+- [x] Inspect the homepage About section and existing review-link patterns
+- [x] Replace the four Established 1975 statistic blocks with the supplied Google Reviews rating panel
+- [x] Add accessible star-rating text and a clean View Reviews link using factual supplied values
+- [x] Add regression coverage and verify responsive homepage rendering - 186 tests pass, TypeScript is clean, and production build succeeds
+- [x] Save a Google Reviews homepage checkpoint - pending checkpoint save

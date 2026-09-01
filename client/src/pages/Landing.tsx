@@ -255,19 +255,33 @@ Please follow up with this lead as soon as possible.
                 </div>
                 <p className="max-w-sm text-3xl font-bold leading-tight text-white sm:text-4xl">Securing tomorrow, today.</p>
                 <p className="mt-5 max-w-md text-base leading-7 text-slate-300">Smart security solutions and expert locksmith services, thoughtfully combined to help secure the places that matter most.</p>
-                <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4">
-                  {[
-                    ["50+", "Years of experience"],
-                    ["2,300+", "Projects completed"],
-                    ["1,560+", "Satisfied customers"],
-                    ["120", "Professionals"],
-                  ].map(([value, label]) => (
-                    <div key={label} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center transition duration-300 hover:border-lime-300/30 hover:bg-lime-300/[0.05]">
-                      <p className="text-2xl font-bold tracking-tight text-white sm:text-3xl">{value}</p>
-                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-lime-300/90 sm:text-xs">{label}</p>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=Houdini+Locksmith+Port+Elizabeth"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group mt-10 block rounded-2xl border border-lime-300/25 bg-gradient-to-br from-lime-300/[0.12] via-white/[0.04] to-transparent p-5 transition duration-300 hover:-translate-y-0.5 hover:border-lime-300/60 hover:bg-lime-300/[0.16] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 sm:p-6"
+                  aria-label="View Houdini Locksmith Google reviews, rated 4.5 out of 5 from 115 reviews"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex min-w-0 items-start gap-4">
+                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-lime-300/30 bg-lime-300 text-xl font-black text-slate-950 shadow-lg shadow-lime-400/20" aria-hidden="true">G</span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-lime-300">Google Reviews</p>
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                          <span className="text-3xl font-bold tracking-tight text-white">4.5</span>
+                          <span className="sr-only">Rated 4.5 out of 5 stars</span>
+                          <span className="relative inline-flex text-xl leading-none" aria-hidden="true">
+                            <span className="text-slate-700">★★★★★</span>
+                            <span className="absolute inset-y-0 left-0 w-[90%] overflow-hidden text-lime-300">★★★★★</span>
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm text-slate-300">115 Google reviews</p>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                    <span className="mt-1 shrink-0 text-lime-300 transition duration-300 group-hover:translate-x-1" aria-hidden="true"><ArrowRight className="h-5 w-5" /></span>
+                  </div>
+                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white transition group-hover:text-lime-200">View Reviews <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+                </a>
               </div>
             </div>
           </div>
