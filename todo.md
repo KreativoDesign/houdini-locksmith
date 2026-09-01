@@ -915,4 +915,12 @@ Fixed Client Dashboard button navigation:
 - [x] Replace the four Established 1975 statistic blocks with the supplied Google Reviews rating panel
 - [x] Add accessible star-rating text and a clean View Reviews link using factual supplied values
 - [x] Add regression coverage and verify responsive homepage rendering - 186 tests pass, TypeScript is clean, and production build succeeds
-- [x] Save a Google Reviews homepage checkpoint - pending checkpoint save
+- [x] Save a Google Reviews homepage checkpoint - completed as `802f5b6c`
+
+## Phase 130: Selectable Services Section Redesign (In Progress)
+- [x] Inspect the current services section and available service icons/assets
+- [x] Replace the service-card grid with horizontal service-name buttons on desktop and an accessible responsive layout
+- [x] Show Locks selected by default in a single dynamic service content panel
+- [x] Update the panel content, icon background, and transition when another service button is selected
+- [x] Add interaction regression coverage and verify desktop/mobile rendering - 192 tests pass, TypeScript is clean, production build succeeds, and public preview verified Locks default plus CCTV switching
+- [ ] Save a selectable services-section checkpoint

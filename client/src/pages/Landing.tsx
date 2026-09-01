@@ -322,40 +322,66 @@ Please follow up with this lead as soon as possible.
             <p className="mt-5 text-lg leading-8 text-slate-400">From everyday access to advanced perimeter protection, every service is delivered with care, precision, and a response-first mindset.</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { title: "Locks", service: "locks", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", description: "Reliable lock solutions for homes, businesses, and urgent call-outs.", points: ["Residential and commercial locks", "Emergency call-out support"] },
-              { title: "CCTV", service: "cctv", image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png", description: "Tailored surveillance systems from standalone cameras to integrated monitoring.", points: ["System design and installation", "On-site or remote monitoring"] },
-              { title: "Safes", service: "safes", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe.png", description: "Protection for valuables with solutions matched to your security requirements.", points: ["Wall and floor safes", "SABS and insurance-approved options"] },
-              { title: "Intercoms", service: "intercoms", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe-1.png", description: "Connected entry communication for homes, offices, and controlled-access sites.", points: ["Application-specific systems", "Clearer visitor management"] },
-              { title: "Electric Fencing", service: "electric-fencing", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence.png", description: "A strong perimeter layer designed to deter intrusion before it reaches your property.", points: ["Perimeter security planning", "Electric fencing and detection"] },
-              { title: "Keys", service: "keys", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png", description: "Key cutting and access solutions from everyday keys to restricted systems.", points: ["Cylinder and vehicle keys", "Master-keyed and restricted keyways"] },
-            ].map((item) => (
-              <button
-                key={item.service}
-                type="button"
-                onClick={() => handleServiceSelect(item.service)}
-                className="group relative min-h-[360px] overflow-hidden rounded-2xl border border-white/10 bg-slate-900 text-left shadow-2xl shadow-black/20 transition duration-500 hover:-translate-y-1 hover:border-lime-400/70 hover:shadow-lime-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-              >
-                <div className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105" style={{ backgroundImage: `url(${item.image})` }} aria-hidden="true" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/30 transition duration-500 group-hover:via-slate-950/70" aria-hidden="true" />
-                <div className="absolute inset-0 bg-lime-400/0 transition duration-500 group-hover:bg-lime-400/5" aria-hidden="true" />
-                <div className="relative flex min-h-[360px] flex-col justify-end p-6 sm:p-7">
-                  <div className="mb-auto flex items-start justify-between">
-                    <span className="rounded-full border border-lime-300/30 bg-slate-950/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-lime-300 backdrop-blur-sm">{item.service.replace("-", " ")}</span>
-                    <ArrowRight className="h-5 w-5 text-lime-300 opacity-70 transition duration-300 group-hover:translate-x-1 group-hover:opacity-100" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-white sm:text-3xl">{item.title}</h3>
-                    <p className="mt-3 max-w-sm text-sm leading-6 text-slate-200">{item.description}</p>
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {item.points.map((point) => <span key={point} className="rounded-full border border-white/15 bg-black/20 px-3 py-1 text-xs text-slate-200 backdrop-blur-sm">{point}</span>)}
+          {(() => {
+            const services = [
+              { title: "Locks", service: "locks", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", Icon: LockKeyhole, description: "Reliable access protection for homes, businesses, and urgent call-outs.", points: ["Residential and commercial locks", "Emergency call-out support"] },
+              { title: "CCTV", service: "cctv", image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png", Icon: Camera, description: "Tailored surveillance systems from standalone cameras to integrated monitoring.", points: ["System design and installation", "On-site or remote monitoring"] },
+              { title: "Safes", service: "safes", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe.png", Icon: ShieldCheck, description: "Protection for valuables with solutions matched to your security requirements.", points: ["Wall and floor safes", "SABS and insurance-approved options"] },
+              { title: "Intercoms", service: "intercoms", image: "https://houdini.co.za/wp-content/uploads/2024/01/safe-1.png", Icon: Radio, description: "Connected entry communication for homes, offices, and controlled-access sites.", points: ["Application-specific systems", "Clearer visitor management"] },
+              { title: "Electric Fencing", service: "electric-fencing", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence.png", Icon: Zap, description: "A strong perimeter layer designed to deter intrusion before it reaches your property.", points: ["Perimeter security planning", "Electric fencing and detection"] },
+              { title: "Keys", service: "keys", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png", Icon: KeyRound, description: "Key cutting and access solutions from everyday keys to restricted systems.", points: ["Cylinder and vehicle keys", "Master-keyed and restricted keyways"] },
+            ];
+            const activeService = services.find((service) => service.service === formData.service) ?? services[0];
+            const ActiveIcon = activeService.Icon;
+            return (
+              <div className="mx-auto max-w-6xl">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6" role="tablist" aria-label="Security services">
+                  {services.map((service) => {
+                    const ServiceIcon = service.Icon;
+                    const isActive = service.service === activeService.service;
+                    return (
+                      <button
+                        key={service.service}
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        aria-controls="service-detail-panel"
+                        onClick={() => setFormData((previous) => ({ ...previous, service: service.service }))}
+                        className={`group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.12em] transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:text-sm ${isActive ? "border-lime-300 bg-lime-300 text-slate-950 shadow-lg shadow-lime-400/20" : "border-white/10 bg-white/[0.04] text-slate-300 hover:-translate-y-0.5 hover:border-lime-300/50 hover:bg-lime-300/10 hover:text-lime-200"}`}
+                      >
+                        <ServiceIcon className={`h-4 w-4 shrink-0 transition duration-300 ${isActive ? "text-slate-950" : "text-lime-300 group-hover:scale-110"}`} aria-hidden="true" />
+                        <span>{service.title}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div id="service-detail-panel" role="tabpanel" aria-live="polite" aria-label={`${activeService.title} service details`} className="group relative mt-5 min-h-[360px] overflow-hidden rounded-[1.75rem] border border-lime-300/25 bg-slate-900 shadow-2xl shadow-black/30 sm:min-h-[390px]">
+                  <div className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-[1.02]" style={{ backgroundImage: `url(${activeService.image})` }} aria-hidden="true" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/35" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(163,230,53,0.16),transparent_28%)]" aria-hidden="true" />
+                  <ActiveIcon className="absolute -right-8 -top-8 h-64 w-64 text-lime-300/[0.09] transition duration-700 group-hover:rotate-6 group-hover:scale-105" strokeWidth={1} aria-hidden="true" />
+                  <div className="relative flex min-h-[360px] flex-col justify-between p-7 sm:min-h-[390px] sm:p-10 lg:max-w-2xl">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-lime-300/30 bg-lime-300/15 text-lime-300 shadow-lg shadow-lime-500/15"><ActiveIcon className="h-6 w-6" aria-hidden="true" /></span>
+                      <div><p className="text-xs font-semibold uppercase tracking-[0.28em] text-lime-300">Service focus</p><p className="mt-1 text-sm text-slate-400">Solutions shaped around your site</p></div>
+                    </div>
+                    <div className="mt-10">
+                      <h3 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">{activeService.title}</h3>
+                      <p className="mt-4 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">{activeService.description}</p>
+                      <div className="mt-6 flex flex-wrap gap-2">
+                        {activeService.points.map((point) => <span key={point} className="rounded-full border border-white/15 bg-black/25 px-3 py-1.5 text-xs text-slate-200 backdrop-blur-sm">{point}</span>)}
+                      </div>
+                    </div>
+                    <div className="mt-8 flex flex-wrap items-center gap-4">
+                      <Button type="button" className="bg-lime-300 font-semibold text-slate-950 shadow-lg shadow-lime-400/20 hover:bg-lime-200" onClick={() => handleServiceSelect(activeService.service)}>Discuss {activeService.title} <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Professional service • 24/7 response</span>
                     </div>
                   </div>
                 </div>
-              </button>
-            ))}
-          </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
 

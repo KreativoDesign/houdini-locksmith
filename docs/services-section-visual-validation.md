@@ -1,0 +1,3 @@
+# Selectable Services Section Visual Validation
+
+The public homepage preview was opened at the restored development URL. The services section rendered six compact service buttons in a single desktop row: Locks, CCTV, Safes, Intercoms, Electric Fencing, and Keys. Locks is selected on initial render. Selecting CCTV changed the active styling, service icon, panel background image, heading, description, feature tags, and action label to CCTV without navigation or page reload. The panel remains readable against the dark overlay and uses the Houdini lime/near-black palette. The button group and panel use responsive grid/flex wrapping classes for smaller screens.
