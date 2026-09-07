@@ -943,4 +943,11 @@ Fixed Client Dashboard button navigation:
 - [x] Simplify the CCTV brochure into a concise paragraph and key capability points
 - [x] Add the CCTV content to the dynamic panel while preserving its visual treatment and CTA
 - [x] Add CCTV regression coverage and verify switching from Locks to CCTV - 194 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the CCTV tab and updated panel
-- [ ] Save a CCTV service-content checkpoint
+- [x] Save a CCTV service-content checkpoint - completed as `d4ad3a6b`
+
+## Phase 134: Safes Brochure Content (In Progress)
+- [x] Inspect the current Safes panel data and existing brochure-derived service patterns
+- [x] Simplify the Safes brochure into a concise paragraph and key capability points
+- [x] Add the Safes content to the dynamic panel while preserving its visual treatment and CTA
+- [x] Add Safes regression coverage and verify switching from CCTV or Locks to Safes - 195 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the Safes tab and updated panel
+- [ ] Save a Safes service-content checkpoint

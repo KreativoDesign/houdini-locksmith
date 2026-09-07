@@ -41,6 +41,15 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("License plate recognition integration");
   });
 
+  it("keeps the Safes copy concise and protects its brochure-derived capabilities", () => {
+    expect(landingSource).toContain("From compact domestic safes to strongroom and vault protection");
+    expect(landingSource).toContain("Domestic digital, firearm, and valuables safes");
+    expect(landingSource).toContain("Categorized and insurance-rated safes");
+    expect(landingSource).toContain("Vehicle, handgun, and rifle safes");
+    expect(landingSource).toContain("Strongroom and vault doors");
+    expect(landingSource).toContain("Anti-bandit doors and bullet-resistant pay windows");
+  });
+
   it("keeps the panel imagery and service icon tied to the active service", () => {
     expect(landingSource).toContain("activeService.image");
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");
