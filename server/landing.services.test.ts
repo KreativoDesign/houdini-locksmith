@@ -75,6 +75,14 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Replacement door, boot, ignition locks, locksets, housings, and electric switches");
   });
 
+  it("uses full-width descriptions and inline capability pills across the shared panel", () => {
+    expect(landingSource).toContain('w-full max-w-none text-base leading-7 text-slate-200 sm:text-lg sm:leading-8');
+    expect(landingSource).toContain('flex w-full flex-wrap items-center gap-2.5');
+    expect(landingSource).toContain('aria-label={`${activeService.title} key capabilities`}');
+    expect(landingSource).toContain('inline-flex max-w-full items-center rounded-full');
+    expect(landingSource).not.toContain('lg:max-w-2xl');
+  });
+
   it("keeps the panel imagery and service icon tied to the active service", () => {
     expect(landingSource).toContain("activeService.image");
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");

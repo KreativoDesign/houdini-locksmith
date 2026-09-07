@@ -985,4 +985,12 @@ Fixed Client Dashboard button navigation:
 - [x] Replace the camera overlay with a subtle Key icon in the same visual position
 - [x] Add regression coverage confirming the camera is absent and Key is present
 - [x] Verify desktop and mobile hero rendering - 200 tests pass, TypeScript is clean, production build succeeds, and the development preview confirms the Key icon replaces the camera
-- [ ] Save a Key-overlay hero checkpoint
+- [x] Save a Key-overlay hero checkpoint - completed as `0aa319e7`
+
+## Phase 140: Service Panel Layout Refinement (In Progress)
+- [x] Inspect the shared service-panel markup and responsive styles
+- [x] Expand each service paragraph to the full panel content width
+- [x] Reflow feature pills inline beneath each paragraph with safe wrapping
+- [x] Refine shared service-panel spacing and hierarchy across all six services
+- [x] Add layout regression coverage and verify desktop/mobile rendering - 201 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the full-width paragraph and inline pills on the shared panel
+- [ ] Save a service-panel refinement checkpoint
