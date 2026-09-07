@@ -164,7 +164,7 @@ Please follow up with this lead as soon as possible.
             <circle className="hero-security-node" style={{ animationDelay: "-3.6s" }} cx="380" cy="430" r="4" fill="rgba(52,211,153,0.48)" />
           </svg>
           <ShieldCheck className="absolute right-[11%] top-[14%] h-24 w-24 text-lime-300/[0.07] sm:h-32 sm:w-32" />
-          <Camera className="absolute right-[4%] top-[54%] h-16 w-16 text-emerald-300/[0.06] sm:h-20 sm:w-20" />
+          <KeyRound className="absolute right-[4%] top-[54%] h-16 w-16 text-emerald-300/[0.06] sm:h-20 sm:w-20" />
         </div>
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">

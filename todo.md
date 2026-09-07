@@ -978,4 +978,11 @@ Fixed Client Dashboard button navigation:
 - [x] Remove only the requested background overlay graphic while preserving the other two graphics and mascot
 - [x] Add regression coverage for the intended hero graphic set
 - [x] Verify desktop and mobile hero rendering - 199 tests pass, TypeScript is clean, production build succeeds, and the preview confirms the shield/camera graphics and mascot remain
-- [ ] Save a hero overlay-removal checkpoint
+- [x] Save a hero overlay-removal checkpoint - completed as `6f22bb0a`
+
+## Phase 139: Hero Camera-to-Key Overlay Replacement (In Progress)
+- [x] Inspect hero icon imports and current overlay markup
+- [x] Replace the camera overlay with a subtle Key icon in the same visual position
+- [x] Add regression coverage confirming the camera is absent and Key is present
+- [x] Verify desktop and mobile hero rendering - 200 tests pass, TypeScript is clean, production build succeeds, and the development preview confirms the Key icon replaces the camera
+- [ ] Save a Key-overlay hero checkpoint
