@@ -971,4 +971,11 @@ Fixed Client Dashboard button navigation:
 - [x] Simplify the Keys brochure into a concise paragraph and key capability points
 - [x] Add the Keys content to the dynamic panel while preserving its visual treatment and CTA
 - [x] Add Keys regression coverage and verify switching from Electric Fencing or Intercoms to Keys - 198 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the Keys tab and updated panel
-- [ ] Save a Keys service-content checkpoint
+- [x] Save a Keys service-content checkpoint - completed as `35a85d5b`
+
+## Phase 138: Hero Overlay Graphic Removal (In Progress)
+- [x] Inspect the hero background graphics and identify the overlay matching the supplied screenshot
+- [x] Remove only the requested background overlay graphic while preserving the other two graphics and mascot
+- [x] Add regression coverage for the intended hero graphic set
+- [x] Verify desktop and mobile hero rendering - 199 tests pass, TypeScript is clean, production build succeeds, and the preview confirms the shield/camera graphics and mascot remain
+- [ ] Save a hero overlay-removal checkpoint
