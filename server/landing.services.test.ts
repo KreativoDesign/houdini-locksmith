@@ -66,6 +66,15 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Close-perimeter detection and target hardening");
   });
 
+  it("keeps the Keys copy concise and protects its brochure-derived capabilities", () => {
+    expect(landingSource).toContain("modern diagnostic equipment to support transponder technology");
+    expect(landingSource).toContain("Transponder key diagnostics and programming");
+    expect(landingSource).toContain("Remote key programming and cloning");
+    expect(landingSource).toContain("Lost-key origination and replacement");
+    expect(landingSource).toContain("Vehicle lock repair, servicing, and replacement");
+    expect(landingSource).toContain("Replacement door, boot, ignition locks, locksets, housings, and electric switches");
+  });
+
   it("keeps the panel imagery and service icon tied to the active service", () => {
     expect(landingSource).toContain("activeService.image");
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");

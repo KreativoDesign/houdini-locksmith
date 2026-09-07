@@ -964,4 +964,11 @@ Fixed Client Dashboard button navigation:
 - [x] Simplify the Electric Fencing brochure into a concise paragraph and key capability points
 - [x] Add the Electric Fencing content to the dynamic panel while preserving its visual treatment and CTA
 - [x] Add Electric Fencing regression coverage and verify switching from Intercoms or Safes to Electric Fencing - 197 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the Electric Fencing tab and updated panel
-- [ ] Save an Electric Fencing service-content checkpoint
+- [x] Save an Electric Fencing service-content checkpoint - completed as `830268b6`
+
+## Phase 137: Keys Brochure Content (In Progress)
+- [x] Inspect the current Keys panel data and existing brochure-derived service patterns
+- [x] Simplify the Keys brochure into a concise paragraph and key capability points
+- [x] Add the Keys content to the dynamic panel while preserving its visual treatment and CTA
+- [x] Add Keys regression coverage and verify switching from Electric Fencing or Intercoms to Keys - 198 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the Keys tab and updated panel
+- [ ] Save a Keys service-content checkpoint
