@@ -50,6 +50,14 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Anti-bandit doors and bullet-resistant pay windows");
   });
 
+  it("keeps the Intercoms copy concise and protects its brochure-derived options", () => {
+    expect(landingSource).toContain("Intercoms provide a safe, cost-effective way to verify who is at the door");
+    expect(landingSource).toContain("Audio intercoms for clear two-way communication");
+    expect(landingSource).toContain("Video intercoms for visual visitor verification");
+    expect(landingSource).toContain("GSM multi-tenant devices for shared entrances");
+    expect(landingSource).toContain("Video and CCTV-integrated app systems");
+  });
+
   it("keeps the panel imagery and service icon tied to the active service", () => {
     expect(landingSource).toContain("activeService.image");
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");
