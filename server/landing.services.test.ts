@@ -32,6 +32,15 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Supplier logos: Yale, Viro, Master Lock, Kwikset, Mul-T-Lock, ABUS, CISA, ASSA ABLOY, BBQ, Jaguar, and Trellidor");
   });
 
+  it("keeps the CCTV copy concise and protects its brochure-derived capabilities", () => {
+    expect(landingSource).toContain("CCTV turns uncertainty into real-time visibility");
+    expect(landingSource).toContain("Digital and network video recorders");
+    expect(landingSource).toContain("HD bullet, dome, and turret cameras");
+    expect(landingSource).toContain("Intrusion and line-crossing detection");
+    expect(landingSource).toContain("Mobile, remote, and off-site monitoring");
+    expect(landingSource).toContain("License plate recognition integration");
+  });
+
   it("keeps the panel imagery and service icon tied to the active service", () => {
     expect(landingSource).toContain("activeService.image");
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");

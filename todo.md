@@ -930,10 +930,17 @@ Fixed Client Dashboard button navigation:
 - [x] Simplify the Locks brochure into a concise paragraph and key service points
 - [x] Add the supplier-logo strip above the Locks panel CTA with accessible alternative text
 - [x] Add regression coverage and verify the Locks panel content and artwork across layouts - 193 tests pass, TypeScript is clean, production build succeeds, and public preview confirms the supplier artwork renders
-- [x] Save a Locks content and supplier-logo checkpoint - pending checkpoint save
+- [x] Save a Locks content and supplier-logo checkpoint - completed as `96b728e2`
 
 ## Phase 132: Supplier Logo Asset Rendering Fix (In Progress)
 - [x] Replace the broken supplier-logo asset reference with a browser-loadable managed URL
 - [x] Verify the logo strip renders in the Locks panel without a broken-image fallback
 - [x] Re-run relevant regression checks and save a corrected checkpoint - focused test, full regression, TypeScript, and production build pass
 
+
+## Phase 133: CCTV Brochure Content (In Progress)
+- [x] Inspect the current CCTV panel data and existing Locks content pattern
+- [x] Simplify the CCTV brochure into a concise paragraph and key capability points
+- [x] Add the CCTV content to the dynamic panel while preserving its visual treatment and CTA
+- [x] Add CCTV regression coverage and verify switching from Locks to CCTV - 194 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the CCTV tab and updated panel
+- [ ] Save a CCTV service-content checkpoint
