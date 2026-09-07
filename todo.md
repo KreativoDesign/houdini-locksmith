@@ -957,4 +957,11 @@ Fixed Client Dashboard button navigation:
 - [x] Simplify the Intercoms brochure into a concise paragraph and key capability points
 - [x] Add the Intercoms content to the dynamic panel while preserving its visual treatment and CTA
 - [x] Add Intercoms regression coverage and verify switching from Safes or CCTV to Intercoms - 196 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the Intercoms tab and updated panel
-- [ ] Save an Intercoms service-content checkpoint
+- [x] Save an Intercoms service-content checkpoint - completed as `74ba4e31`
+
+## Phase 136: Electric Fencing Brochure Content (In Progress)
+- [x] Inspect the current Electric Fencing panel data and existing brochure-derived service patterns
+- [x] Simplify the Electric Fencing brochure into a concise paragraph and key capability points
+- [x] Add the Electric Fencing content to the dynamic panel while preserving its visual treatment and CTA
+- [x] Add Electric Fencing regression coverage and verify switching from Intercoms or Safes to Electric Fencing - 197 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the Electric Fencing tab and updated panel
+- [ ] Save an Electric Fencing service-content checkpoint

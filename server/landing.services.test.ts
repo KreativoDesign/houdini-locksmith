@@ -58,6 +58,14 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Video and CCTV-integrated app systems");
   });
 
+  it("keeps the Electric Fencing copy concise and protects its brochure-derived capabilities", () => {
+    expect(landingSource).toContain("Effective perimeter security starts outside the property");
+    expect(landingSource).toContain("Electric fencing for overt perimeter deterrence");
+    expect(landingSource).toContain("Point-to-point outdoor detection");
+    expect(landingSource).toContain("Environmental outdoor detection");
+    expect(landingSource).toContain("Close-perimeter detection and target hardening");
+  });
+
   it("keeps the panel imagery and service icon tied to the active service", () => {
     expect(landingSource).toContain("activeService.image");
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");
