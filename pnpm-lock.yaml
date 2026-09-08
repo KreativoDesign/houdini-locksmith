@@ -268,8 +268,8 @@ importers:
         specifier: ^0.25.12
         version: 0.25.12
       pnpm:
-        specifier: ^10.28.2
-        version: 10.28.2
+        specifier: ^10.34.5
+        version: 10.34.5
       postcss:
         specifier: ^8.5.10
         version: 8.5.10
@@ -3343,8 +3343,8 @@ packages:
   png-js@1.0.0:
     resolution: {integrity: sha512-k+YsbhpA9e+EFfKjTCH3VW6aoKlyNYI6NYdTfDL4CIvFnvsuO84ttonmZE7rc+v23SLTH8XX+5w/Ak9v0xGY4g==}
 
-  pnpm@10.28.2:
-    resolution: {integrity: sha512-QYcvA3rSL3NI47Heu69+hnz9RI8nJtnPdMCPGVB8MdLI56EVJbmD/rwt9kC1Q43uYCPrsfhO1DzC1lTSvDJiZA==}
+  pnpm@10.34.5:
+    resolution: {integrity: sha512-pO4F8vc2WCVb1qiYWcBlpFwopX2u+uLIk6Fo7itzFow3uR6D5X6mdlStA/AwMXRkMOi84442LgQmBfuKvIAZLg==}
     engines: {node: '>=18.12'}
     hasBin: true
 
@@ -7039,7 +7039,7 @@ snapshots:
 
   png-js@1.0.0: {}
 
-  pnpm@10.28.2: {}
+  pnpm@10.34.5: {}
 
   postal-mime@2.7.5: {}
 
