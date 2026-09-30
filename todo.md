@@ -1001,4 +1001,4 @@ Fixed Client Dashboard button navigation:
 - [x] Add the service to the consultation dropdown and footer quick links
 - [x] Extend regression coverage - focused service suite passes 11/11
 - [x] Validate TypeScript and production build successfully
-- [ ] Save the Security & Self Defence checkpoint
+- [x] Save the Security & Self Defence checkpoint - completed as `b92ef8c7`
