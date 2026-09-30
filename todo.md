@@ -1011,3 +1011,12 @@ Fixed Client Dashboard button navigation:
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the selected tab and dynamic panel in the public browser preview
 - [x] Save the Remote Transmitters & Receivers checkpoint - completed as `fad25158`
+
+## Phase 143: Access Control Homepage Service
+- [x] Add Access Control as the ninth selectable service tab
+- [x] Add concise brochure copy and all seven supplied offerings
+- [x] Add the service to the consultation dropdown and footer quick links
+- [x] Extend regression coverage - focused service suite passes 13/13
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the selected tab and dynamic panel in the public browser preview
+- [ ] Save the Access Control checkpoint

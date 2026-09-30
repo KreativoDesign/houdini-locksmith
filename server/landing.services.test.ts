@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 const landingSource = readFileSync(new URL("../client/src/pages/Landing.tsx", import.meta.url), "utf8");
 
 describe("homepage selectable services section", () => {
-  it("defines all eight service choices and defaults to Locks", () => {
+  it("defines all nine service choices and defaults to Locks", () => {
     expect(landingSource).toContain('service: "locks"');
     expect(landingSource).toContain('service: "cctv"');
     expect(landingSource).toContain('service: "safes"');
@@ -13,6 +13,7 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('service: "keys"');
     expect(landingSource).toContain('service: "security-self-defence"');
     expect(landingSource).toContain('service: "remote-transmitters-receivers"');
+    expect(landingSource).toContain('service: "access-control"');
     expect(landingSource).toContain('formData.service) ?? services[0]');
   });
 
@@ -94,6 +95,17 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("403, 434, and 868 MHz");
     expect(landingSource).toContain("Single-, 2-, 3-, and 4-channel receivers");
     expect(landingSource).toContain("Complex multi-tenant receivers");
+  });
+
+  it("keeps the Access Control copy concise and protects its supplied offerings", () => {
+    expect(landingSource).toContain("Access control has evolved from standalone proximity readers to connected smart locks");
+    expect(landingSource).toContain("Coin-operated locks");
+    expect(landingSource).toContain("Indoor and outdoor keypads");
+    expect(landingSource).toContain("Standalone proximity tag systems");
+    expect(landingSource).toContain("Online networked proximity tag systems");
+    expect(landingSource).toContain("Biometric fingerprint readers");
+    expect(landingSource).toContain("Biometric facial readers");
+    expect(landingSource).toContain("Bluetooth app-based smart locks");
   });
 
   it("uses full-width descriptions and inline capability pills across the shared panel", () => {

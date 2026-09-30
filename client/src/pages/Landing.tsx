@@ -331,12 +331,13 @@ Please follow up with this lead as soon as possible.
               { title: "Keys", service: "keys", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png", Icon: KeyRound, description: "Houdini’s technicians use modern diagnostic equipment to support transponder technology, vehicle key programming, and lost-key origination. From cloning and remote-key programming to vehicle lock repairs and replacement, we provide practical access solutions for a wide range of vehicles.", points: ["Transponder key diagnostics and programming", "Remote key programming and cloning", "Lost-key origination and replacement", "Vehicle lock repair, servicing, and replacement", "Replacement door, boot, ignition locks, locksets, housings, and electric switches"] },
               { title: "Security & Self Defence", service: "security-self-defence", image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png", Icon: ShieldCheck, description: "Houdini stocks and supplies a wide range of practical equipment for the guarding industry and personal self-defence. Speak with our Sales Team to discuss the right equipment for your people, patrols, and protection needs.", points: ["Convex and vehicle search mirrors", "Metal detectors", "Batons and handcuffs", "Pepper sprays", "Telescopic batons", "Stun guns", "Alcohol test kits"] },
               { title: "Remote Transmitters & Receivers", service: "remote-transmitters-receivers", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png", Icon: Radio, description: "The pace of life can leave you feeling as if you have lost control, but Houdini helps you regain it. We supply and install remotes and receivers for almost everything that opens and shuts, from automated sky roofs to specialist automotive glass-curing ovens.", points: ["Binary, trinary, French, and rolling-code encryption", "403, 434, and 868 MHz", "Single-, 2-, 3-, and 4-channel receivers", "Complex multi-tenant receivers"] },
+              { title: "Access Control", service: "access-control", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", Icon: LockKeyhole, description: "Access control has evolved from standalone proximity readers to connected smart locks, networked biometric readers, and app-based credentials. Houdini advises on the right solution for your site, helping regulate movement, limit unauthorized access, and integrate access with modern business needs.", points: ["Coin-operated locks", "Indoor and outdoor keypads", "Standalone proximity tag systems", "Online networked proximity tag systems", "Biometric fingerprint readers", "Biometric facial readers", "Bluetooth app-based smart locks"] },
             ];
             const activeService = services.find((service) => service.service === formData.service) ?? services[0];
             const ActiveIcon = activeService.Icon;
             return (
               <div className="mx-auto max-w-6xl">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-8" role="tablist" aria-label="Security services">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-9" role="tablist" aria-label="Security services">
                   {services.map((service) => {
                     const ServiceIcon = service.Icon;
                     const isActive = service.service === activeService.service;
@@ -444,6 +445,7 @@ Please follow up with this lead as soon as possible.
                   <option value="keys">Keys</option>
                   <option value="security-self-defence">Security &amp; Self Defence</option>
                   <option value="remote-transmitters-receivers">Remote Transmitters &amp; Receivers</option>
+                  <option value="access-control">Access Control</option>
                 </select>
               </div>
 
@@ -491,7 +493,7 @@ Please follow up with this lead as soon as possible.
                 <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:max-w-md">
                   {[
                     { label: "Locks", service: "locks", Icon: LockKeyhole }, { label: "CCTV", service: "cctv", Icon: Camera }, { label: "Safes", service: "safes", Icon: ShieldCheck },
-                    { label: "Intercoms", service: "intercoms", Icon: Radio }, { label: "Electric Fencing", service: "electric-fencing", Icon: Zap }, { label: "Keys", service: "keys", Icon: KeyRound }, { label: "Security & Self Defence", service: "security-self-defence", Icon: ShieldCheck }, { label: "Remote Transmitters & Receivers", service: "remote-transmitters-receivers", Icon: Radio },
+                    { label: "Intercoms", service: "intercoms", Icon: Radio }, { label: "Electric Fencing", service: "electric-fencing", Icon: Zap }, { label: "Keys", service: "keys", Icon: KeyRound }, { label: "Security & Self Defence", service: "security-self-defence", Icon: ShieldCheck }, { label: "Remote Transmitters & Receivers", service: "remote-transmitters-receivers", Icon: Radio }, { label: "Access Control", service: "access-control", Icon: LockKeyhole },
                   ].map(({ label, service, Icon }) => (
                     <button key={service} type="button" onClick={() => handleServiceSelect(service)} className="group flex items-center gap-2.5 border-b border-white/10 pb-2 text-left text-sm text-slate-300 transition hover:border-lime-300/50 hover:text-lime-200">
                       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-lime-200/40 bg-gradient-to-br from-lime-100 via-lime-300 to-emerald-500 text-slate-950 shadow-[inset_0_1px_1px_rgba(255,255,255,0.85),0_3px_0_rgba(20,83,45,0.9),0_6px_10px_rgba(132,204,22,0.18)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_4px_0_rgba(20,83,45,0.9),0_8px_14px_rgba(132,204,22,0.3)]"><Icon className="h-3.5 w-3.5 stroke-[2.5]" /></span>
