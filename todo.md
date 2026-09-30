@@ -1002,3 +1002,12 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused service suite passes 11/11
 - [x] Validate TypeScript and production build successfully
 - [x] Save the Security & Self Defence checkpoint - completed as `b92ef8c7`
+
+## Phase 142: Remote Transmitters & Receivers Homepage Service
+- [x] Add Remote Transmitters & Receivers as the eighth selectable service tab
+- [x] Add concise brochure copy and all four supplied capability pills
+- [x] Add the service to the consultation dropdown and footer quick links
+- [x] Extend regression coverage - focused service suite passes 12/12
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the selected tab and dynamic panel in the public browser preview
+- [ ] Save the Remote Transmitters & Receivers checkpoint
