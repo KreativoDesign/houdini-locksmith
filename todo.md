@@ -1010,4 +1010,4 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused service suite passes 12/12
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the selected tab and dynamic panel in the public browser preview
-- [ ] Save the Remote Transmitters & Receivers checkpoint
+- [x] Save the Remote Transmitters & Receivers checkpoint - completed as `fad25158`
