@@ -1019,4 +1019,4 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused service suite passes 13/13
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the selected tab and dynamic panel in the public browser preview
-- [ ] Save the Access Control checkpoint
+- [x] Save the Access Control checkpoint - completed as `ed1c90a5`
