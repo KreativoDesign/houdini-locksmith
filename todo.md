@@ -993,4 +993,12 @@ Fixed Client Dashboard button navigation:
 - [x] Reflow feature pills inline beneath each paragraph with safe wrapping
 - [x] Refine shared service-panel spacing and hierarchy across all six services
 - [x] Add layout regression coverage and verify desktop/mobile rendering - 201 tests pass, TypeScript is clean, production build succeeds, and development preview confirms the full-width paragraph and inline pills on the shared panel
-- [ ] Save a service-panel refinement checkpoint
+- [x] Save a service-panel refinement checkpoint - completed as `5792a9f2`
+
+## Phase 141: Security & Self Defence Homepage Service
+- [x] Add Security & Self Defence as the seventh selectable service tab
+- [x] Add concise brochure copy and all seven supplied capability pills
+- [x] Add the service to the consultation dropdown and footer quick links
+- [x] Extend regression coverage - focused service suite passes 11/11
+- [x] Validate TypeScript and production build successfully
+- [ ] Save the Security & Self Defence checkpoint

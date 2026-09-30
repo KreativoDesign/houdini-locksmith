@@ -4,13 +4,14 @@ import { describe, expect, it } from "vitest";
 const landingSource = readFileSync(new URL("../client/src/pages/Landing.tsx", import.meta.url), "utf8");
 
 describe("homepage selectable services section", () => {
-  it("defines all six service choices and defaults to Locks", () => {
+  it("defines all seven service choices and defaults to Locks", () => {
     expect(landingSource).toContain('service: "locks"');
     expect(landingSource).toContain('service: "cctv"');
     expect(landingSource).toContain('service: "safes"');
     expect(landingSource).toContain('service: "intercoms"');
     expect(landingSource).toContain('service: "electric-fencing"');
     expect(landingSource).toContain('service: "keys"');
+    expect(landingSource).toContain('service: "security-self-defence"');
     expect(landingSource).toContain('formData.service) ?? services[0]');
   });
 
@@ -73,6 +74,17 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Lost-key origination and replacement");
     expect(landingSource).toContain("Vehicle lock repair, servicing, and replacement");
     expect(landingSource).toContain("Replacement door, boot, ignition locks, locksets, housings, and electric switches");
+  });
+
+  it("keeps the Security & Self Defence copy concise and protects its supplied capabilities", () => {
+    expect(landingSource).toContain("wide range of practical equipment for the guarding industry and personal self-defence");
+    expect(landingSource).toContain("Convex and vehicle search mirrors");
+    expect(landingSource).toContain("Metal detectors");
+    expect(landingSource).toContain("Batons and handcuffs");
+    expect(landingSource).toContain("Pepper sprays");
+    expect(landingSource).toContain("Telescopic batons");
+    expect(landingSource).toContain("Stun guns");
+    expect(landingSource).toContain("Alcohol test kits");
   });
 
   it("uses full-width descriptions and inline capability pills across the shared panel", () => {
