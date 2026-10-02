@@ -1038,4 +1038,4 @@ Fixed Client Dashboard button navigation:
 - [x] Add spacing regression coverage - focused homepage suite passes 16/16
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the homepage composition in the public browser preview
-- [ ] Save the homepage spacing optimization checkpoint
+- [x] Save the homepage spacing optimization checkpoint - completed as `d5afad6c`
