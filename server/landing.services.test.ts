@@ -125,6 +125,15 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('max-w-[13ch]');
   });
 
+  it("uses a consistent responsive spacing rhythm across homepage sections", () => {
+    expect(landingSource).toContain('scroll-mt-24');
+    expect(landingSource).toContain('py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-28');
+    expect(landingSource).toContain('py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28');
+    expect(landingSource).toContain('bg-slate-950/45 px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28');
+    expect(landingSource).toContain('bg-slate-950 px-4 py-14 sm:px-6 sm:py-20 lg:px-8');
+    expect(landingSource).toContain('grid grid-cols-1 items-center gap-12 sm:gap-14 lg:grid-cols-2 lg:gap-20');
+  });
+
   it("uses full-width descriptions and inline capability pills across the shared panel", () => {
     expect(landingSource).toContain('w-full max-w-none text-base leading-7 text-slate-200 sm:text-lg sm:leading-8');
     expect(landingSource).toContain('flex w-full flex-wrap items-center gap-2.5');

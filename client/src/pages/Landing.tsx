@@ -93,7 +93,7 @@ Please follow up with this lead as soon as possible.
 
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-lime-500/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
           <div className="flex items-center gap-3">
             <img 
               src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png" 
@@ -152,7 +152,7 @@ Please follow up with this lead as soon as possible.
       </nav>
 
       {/* Hero Section */}
-      <section className="hero-section-reveal relative isolate overflow-hidden py-12 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8">
+      <section className="hero-section-reveal relative isolate overflow-hidden scroll-mt-24 px-4 py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="hero-background-drift absolute inset-0 bg-[radial-gradient(circle_at_74%_44%,rgba(132,204,22,0.16),transparent_25%),radial-gradient(circle_at_25%_82%,rgba(16,185,129,0.08),transparent_30%)]" />
           <svg className="absolute inset-0 h-full w-full opacity-40" viewBox="0 0 1440 760" fill="none" preserveAspectRatio="xMidYMid slice">
@@ -167,7 +167,7 @@ Please follow up with this lead as soon as possible.
           <KeyRound className="absolute right-[4%] top-[54%] h-16 w-16 text-emerald-300/[0.06] sm:h-20 sm:w-20" />
         </div>
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="grid grid-cols-1 items-center gap-12 sm:gap-14 lg:grid-cols-2 lg:gap-20">
             {/* Left side - Text content */}
             <div className="relative z-10 text-center hero-content-entrance lg:text-left">
               <div className="mb-8">
@@ -235,18 +235,18 @@ Please follow up with this lead as soon as possible.
       </section>
 
       {/* About Houdini */}
-      <section id="about" className="relative isolate overflow-hidden border-t border-lime-500/20 bg-slate-950/55 py-24 px-4 sm:px-6 lg:px-8">
+      <section id="about" className="relative isolate overflow-hidden scroll-mt-24 border-t border-lime-500/20 bg-slate-950/55 px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute -left-28 top-16 h-72 w-72 rounded-full bg-lime-400/10 blur-3xl" />
           <div className="absolute right-0 top-0 h-full w-1/3 bg-[linear-gradient(135deg,transparent_0%,rgba(132,204,22,0.04)_50%,transparent_100%)]" />
         </div>
-        <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <div className="relative mx-auto w-full max-w-xl">
             <div className="absolute inset-4 rounded-[2rem] border border-lime-300/15 bg-lime-400/[0.03]" aria-hidden="true" />
             <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 p-7 shadow-2xl shadow-black/30 sm:p-10">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(163,230,53,0.2),transparent_26%)]" aria-hidden="true" />
               <div className="relative">
-                <div className="mb-12 flex items-center justify-between">
+                <div className="mb-10 flex items-center justify-between sm:mb-12">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-lime-300/25 bg-lime-300/10 text-lime-300 shadow-lg shadow-lime-500/10">
                     <ShieldCheck className="h-7 w-7" />
                   </div>
@@ -258,7 +258,7 @@ Please follow up with this lead as soon as possible.
                   href="https://www.google.com/maps/search/?api=1&query=Houdini+Locksmith+Port+Elizabeth"
                   target="_blank"
                   rel="noreferrer"
-                  className="group mt-10 block rounded-2xl border border-lime-300/25 bg-gradient-to-br from-lime-300/[0.12] via-white/[0.04] to-transparent p-5 transition duration-300 hover:-translate-y-0.5 hover:border-lime-300/60 hover:bg-lime-300/[0.16] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 sm:p-6"
+                  className="group mt-8 block rounded-2xl border border-lime-300/25 bg-gradient-to-br from-lime-300/[0.12] via-white/[0.04] to-transparent p-5 transition duration-300 hover:-translate-y-0.5 hover:border-lime-300/60 hover:bg-lime-300/[0.16] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 sm:mt-10 sm:p-6"
                   aria-label="View Houdini Locksmith Google reviews, rated 4.5 out of 5 from 115 reviews"
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -310,10 +310,10 @@ Please follow up with this lead as soon as possible.
       </section>
 
       {/* Premium Services Section */}
-      <section id="services" className="relative border-t border-lime-500/20 bg-slate-950/70 py-24 px-4 sm:px-6 lg:px-8">
+      <section id="services" className="relative scroll-mt-24 border-t border-lime-500/20 bg-slate-950/70 px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-lime-400/70 to-transparent" />
         <div className="max-w-7xl mx-auto">
-          <div className="mx-auto mb-14 max-w-3xl text-center">
+          <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-14">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-lime-400">Houdini expertise</p>
             <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
               Complete Security <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-lime-400 to-emerald-400">Solutions</span>
@@ -404,7 +404,7 @@ Please follow up with this lead as soon as possible.
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="relative overflow-hidden border-t border-lime-500/20 bg-slate-950/45 py-24 px-4 sm:px-6 lg:px-8">
+      <section id="contact" className="relative scroll-mt-24 overflow-hidden border-t border-lime-500/20 bg-slate-950/45 px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_15%,rgba(132,204,22,0.11),transparent_32%)]" aria-hidden="true" />
         <div className="relative max-w-3xl mx-auto">
           <div className="mx-auto mb-12 max-w-2xl text-center">
@@ -474,7 +474,7 @@ Please follow up with this lead as soon as possible.
       </section>
 
       {/* Footer */}
-      <footer className="relative isolate overflow-hidden border-t border-lime-500/20 bg-slate-950 px-4 py-16 sm:px-6 lg:px-8">
+      <footer className="relative isolate overflow-hidden border-t border-lime-500/20 bg-slate-950 px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
           <div className="absolute -bottom-40 -right-24 h-96 w-96 rounded-full bg-lime-400/[0.07] blur-3xl" />
           <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-lime-300/70 to-transparent" />
