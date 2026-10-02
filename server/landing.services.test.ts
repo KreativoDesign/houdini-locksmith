@@ -121,8 +121,17 @@ describe("homepage selectable services section", () => {
 
   it("uses a balanced two-row service selector with wrapped labels", () => {
     expect(landingSource).toContain('grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5');
-    expect(landingSource).toContain('min-h-16 items-center justify-center');
+    expect(landingSource).toContain('min-h-16');
+    expect(landingSource).toContain('items-center justify-center');
     expect(landingSource).toContain('max-w-[13ch]');
+  });
+
+  it("adds subtle, reduced-motion-safe hover transitions to service buttons", () => {
+    expect(landingSource).toContain('transform-gpu items-center justify-center');
+    expect(landingSource).toContain('transition-[transform,background-color,border-color,box-shadow,color] duration-300 ease-out');
+    expect(landingSource).toContain('hover:shadow-lg hover:shadow-lime-400/10');
+    expect(landingSource).toContain('group-hover:-translate-y-0.5 group-hover:rotate-3 group-hover:scale-110');
+    expect(landingSource).toContain('motion-reduce:transition-none');
   });
 
   it("uses a consistent responsive spacing rhythm across homepage sections", () => {

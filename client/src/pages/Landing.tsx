@@ -349,10 +349,10 @@ Please follow up with this lead as soon as possible.
                         aria-selected={isActive}
                         aria-controls="service-detail-panel"
                         onClick={() => setFormData((previous) => ({ ...previous, service: service.service }))}
-                        className={`group inline-flex min-h-16 items-center justify-center gap-2 rounded-xl border px-2.5 py-3 text-center text-[11px] font-bold uppercase leading-[1.1] tracking-[0.1em] transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-3 sm:text-sm ${isActive ? "border-lime-300 bg-lime-300 text-slate-950 shadow-lg shadow-lime-400/20" : "border-white/10 bg-white/[0.04] text-slate-300 hover:-translate-y-0.5 hover:border-lime-300/50 hover:bg-lime-300/10 hover:text-lime-200"}`}
+                        className={`group inline-flex min-h-16 transform-gpu items-center justify-center gap-2 rounded-xl border px-2.5 py-3 text-center text-[11px] font-bold uppercase leading-[1.1] tracking-[0.1em] transition-[transform,background-color,border-color,box-shadow,color] duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-3 sm:text-sm ${isActive ? "border-lime-300 bg-lime-300 text-slate-950 shadow-lg shadow-lime-400/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-lime-400/30" : "border-white/10 bg-white/[0.04] text-slate-300 hover:-translate-y-0.5 hover:border-lime-300/50 hover:bg-lime-300/10 hover:text-lime-200 hover:shadow-lg hover:shadow-lime-400/10"}`}
                       >
-                        <ServiceIcon className={`h-4 w-4 shrink-0 transition duration-300 ${isActive ? "text-slate-950" : "text-lime-300 group-hover:scale-110"}`} aria-hidden="true" />
-                        <span className="max-w-[13ch]">{service.title}</span>
+                        <ServiceIcon className={`h-4 w-4 shrink-0 origin-center transition duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none ${isActive ? "text-slate-950 group-hover:rotate-3" : "text-lime-300 group-hover:-translate-y-0.5 group-hover:rotate-3 group-hover:scale-110"}`} aria-hidden="true" />
+                        <span className="max-w-[13ch] transition-[letter-spacing] duration-300 ease-out motion-reduce:transition-none group-hover:tracking-[0.12em]">{service.title}</span>
                       </button>
                     );
                   })}

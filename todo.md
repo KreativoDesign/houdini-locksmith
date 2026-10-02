@@ -1039,3 +1039,12 @@ Fixed Client Dashboard button navigation:
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the homepage composition in the public browser preview
 - [x] Save the homepage spacing optimization checkpoint - completed as `d5afad6c`
+
+## Phase 146: Service Button Hover Micro-interactions
+- [x] Add subtle lift and glow transitions to active and inactive service buttons
+- [x] Add icon scale, tilt, and vertical motion on hover
+- [x] Preserve clear keyboard focus rings and add reduced-motion-safe behavior
+- [x] Add regression coverage - focused homepage suite passes 17/17
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the updated service selector in the public browser preview
+- [ ] Save the service-button hover checkpoint
