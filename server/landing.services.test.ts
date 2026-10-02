@@ -108,6 +108,23 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Bluetooth app-based smart locks");
   });
 
+  it("adds technology-specific Access Control icon cards", () => {
+    expect(landingSource).toContain("Access Control technology options");
+    expect(landingSource).toContain("Coin locks");
+    expect(landingSource).toContain("Indoor and outdoor PIN access");
+    expect(landingSource).toContain("Standalone tag readers");
+    expect(landingSource).toContain("Multi-door online control");
+    expect(landingSource).toContain("Biometric identity access");
+    expect(landingSource).toContain("Fast visual verification");
+    expect(landingSource).toContain("Bluetooth app-based access");
+  });
+
+  it("uses a balanced two-row service selector with wrapped labels", () => {
+    expect(landingSource).toContain('grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5');
+    expect(landingSource).toContain('min-h-16 items-center justify-center');
+    expect(landingSource).toContain('max-w-[13ch]');
+  });
+
   it("uses full-width descriptions and inline capability pills across the shared panel", () => {
     expect(landingSource).toContain('w-full max-w-none text-base leading-7 text-slate-200 sm:text-lg sm:leading-8');
     expect(landingSource).toContain('flex w-full flex-wrap items-center gap-2.5');

@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound, CircleDollarSign, Grid2X2, RadioTower, Network, Fingerprint, ScanFace, Bluetooth } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { MapView } from "@/components/Map";
 
@@ -331,13 +331,13 @@ Please follow up with this lead as soon as possible.
               { title: "Keys", service: "keys", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png", Icon: KeyRound, description: "Houdini’s technicians use modern diagnostic equipment to support transponder technology, vehicle key programming, and lost-key origination. From cloning and remote-key programming to vehicle lock repairs and replacement, we provide practical access solutions for a wide range of vehicles.", points: ["Transponder key diagnostics and programming", "Remote key programming and cloning", "Lost-key origination and replacement", "Vehicle lock repair, servicing, and replacement", "Replacement door, boot, ignition locks, locksets, housings, and electric switches"] },
               { title: "Security & Self Defence", service: "security-self-defence", image: "https://houdini.co.za/wp-content/uploads/2024/01/cctv-3.png", Icon: ShieldCheck, description: "Houdini stocks and supplies a wide range of practical equipment for the guarding industry and personal self-defence. Speak with our Sales Team to discuss the right equipment for your people, patrols, and protection needs.", points: ["Convex and vehicle search mirrors", "Metal detectors", "Batons and handcuffs", "Pepper sprays", "Telescopic batons", "Stun guns", "Alcohol test kits"] },
               { title: "Remote Transmitters & Receivers", service: "remote-transmitters-receivers", image: "https://houdini.co.za/wp-content/uploads/2024/01/fence-2.png", Icon: Radio, description: "The pace of life can leave you feeling as if you have lost control, but Houdini helps you regain it. We supply and install remotes and receivers for almost everything that opens and shuts, from automated sky roofs to specialist automotive glass-curing ovens.", points: ["Binary, trinary, French, and rolling-code encryption", "403, 434, and 868 MHz", "Single-, 2-, 3-, and 4-channel receivers", "Complex multi-tenant receivers"] },
-              { title: "Access Control", service: "access-control", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", Icon: LockKeyhole, description: "Access control has evolved from standalone proximity readers to connected smart locks, networked biometric readers, and app-based credentials. Houdini advises on the right solution for your site, helping regulate movement, limit unauthorized access, and integrate access with modern business needs.", points: ["Coin-operated locks", "Indoor and outdoor keypads", "Standalone proximity tag systems", "Online networked proximity tag systems", "Biometric fingerprint readers", "Biometric facial readers", "Bluetooth app-based smart locks"] },
+              { title: "Access Control", service: "access-control", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png", Icon: LockKeyhole, description: "Access control has evolved from standalone proximity readers to connected smart locks, networked biometric readers, and app-based credentials. Houdini advises on the right solution for your site, helping regulate movement, limit unauthorized access, and integrate access with modern business needs.", points: ["Coin-operated locks", "Indoor and outdoor keypads", "Standalone proximity tag systems", "Online networked proximity tag systems", "Biometric fingerprint readers", "Biometric facial readers", "Bluetooth app-based smart locks"], accessTech: [{ label: "Coin locks", detail: "Controlled pay-per-use entry", Icon: CircleDollarSign }, { label: "Keypads", detail: "Indoor and outdoor PIN access", Icon: Grid2X2 }, { label: "Proximity", detail: "Standalone tag readers", Icon: RadioTower }, { label: "Networked", detail: "Multi-door online control", Icon: Network }, { label: "Fingerprint", detail: "Biometric identity access", Icon: Fingerprint }, { label: "Facial biometric", detail: "Fast visual verification", Icon: ScanFace }, { label: "Smart locks", detail: "Bluetooth app-based access", Icon: Bluetooth }] },
             ];
             const activeService = services.find((service) => service.service === formData.service) ?? services[0];
             const ActiveIcon = activeService.Icon;
             return (
               <div className="mx-auto max-w-6xl">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-9" role="tablist" aria-label="Security services">
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" role="tablist" aria-label="Security services">
                   {services.map((service) => {
                     const ServiceIcon = service.Icon;
                     const isActive = service.service === activeService.service;
@@ -349,10 +349,10 @@ Please follow up with this lead as soon as possible.
                         aria-selected={isActive}
                         aria-controls="service-detail-panel"
                         onClick={() => setFormData((previous) => ({ ...previous, service: service.service }))}
-                        className={`group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border px-3 py-3 text-center text-xs font-bold uppercase tracking-[0.12em] transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:text-sm ${isActive ? "border-lime-300 bg-lime-300 text-slate-950 shadow-lg shadow-lime-400/20" : "border-white/10 bg-white/[0.04] text-slate-300 hover:-translate-y-0.5 hover:border-lime-300/50 hover:bg-lime-300/10 hover:text-lime-200"}`}
+                        className={`group inline-flex min-h-16 items-center justify-center gap-2 rounded-xl border px-2.5 py-3 text-center text-[11px] font-bold uppercase leading-[1.1] tracking-[0.1em] transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-3 sm:text-sm ${isActive ? "border-lime-300 bg-lime-300 text-slate-950 shadow-lg shadow-lime-400/20" : "border-white/10 bg-white/[0.04] text-slate-300 hover:-translate-y-0.5 hover:border-lime-300/50 hover:bg-lime-300/10 hover:text-lime-200"}`}
                       >
                         <ServiceIcon className={`h-4 w-4 shrink-0 transition duration-300 ${isActive ? "text-slate-950" : "text-lime-300 group-hover:scale-110"}`} aria-hidden="true" />
-                        <span>{service.title}</span>
+                        <span className="max-w-[13ch]">{service.title}</span>
                       </button>
                     );
                   })}
@@ -374,6 +374,14 @@ Please follow up with this lead as soon as possible.
                       <div className="mt-6 flex w-full flex-wrap items-center gap-2.5" aria-label={`${activeService.title} key capabilities`}>
                         {activeService.points.map((point) => <span key={point} className="inline-flex max-w-full items-center rounded-full border border-white/15 bg-black/25 px-3.5 py-2 text-xs leading-5 text-slate-200 backdrop-blur-sm transition-colors hover:border-lime-300/35 hover:bg-lime-300/10 hover:text-white">{point}</span>)}
                       </div>
+                      {activeService.accessTech && (
+                        <div className="mt-7 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4" aria-label="Access Control technology options">
+                          {activeService.accessTech.map((technology) => {
+                            const TechnologyIcon = technology.Icon;
+                            return <div key={technology.label} className="flex min-h-[82px] items-center gap-3 rounded-2xl border border-lime-300/15 bg-slate-950/45 px-3 py-3 backdrop-blur-sm transition hover:border-lime-300/40 hover:bg-lime-300/10"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-lime-300/25 bg-lime-300/10 text-lime-300"><TechnologyIcon className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="block text-xs font-semibold uppercase tracking-[0.08em] text-slate-100">{technology.label}</span><span className="mt-1 block text-[11px] leading-4 text-slate-400">{technology.detail}</span></span></div>;
+                          })}
+                        </div>
+                      )}
                       {activeService.logoImage && (
                         <div className="mt-7 w-full max-w-2xl">
                           <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-lime-300/80">Trusted supplier range</p>

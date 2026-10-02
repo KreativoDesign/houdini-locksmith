@@ -1020,3 +1020,13 @@ Fixed Client Dashboard button navigation:
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the selected tab and dynamic panel in the public browser preview
 - [x] Save the Access Control checkpoint - completed as `ed1c90a5`
+
+## Phase 144: Service Navigation and Access Control UI Refinement
+- [x] Preserve the existing Remote Transmitters & Receivers service without duplicating it
+- [x] Reflow the nine-service selector into two balanced desktop rows
+- [x] Add wrapping, minimum-height, and constrained label styles to prevent overlap
+- [x] Add custom technology cards and icons for Access Control offerings
+- [x] Extend regression coverage - focused service suite passes 15/15
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the two-row selector and Access Control icon cards in the public browser preview
+- [ ] Save the service navigation and Access Control refinement checkpoint
