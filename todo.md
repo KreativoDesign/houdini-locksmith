@@ -1047,4 +1047,15 @@ Fixed Client Dashboard button navigation:
 - [x] Add regression coverage - focused homepage suite passes 17/17
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the updated service selector in the public browser preview
-- [ ] Save the service-button hover checkpoint
+- [x] Save the service-button hover checkpoint - completed as `ad26e8ea`
+
+## Phase 147: Garage and Alarm Systems Homepage Services
+- [x] Replace Remote Transmitters & Receivers with Garage & Garage Motors
+- [x] Add concise Garage & Garage Motors copy and capability pills
+- [x] Add Alarm Systems as the tenth selectable service
+- [x] Add Alarm Systems copy and capability pills
+- [x] Update consultation choices and footer quick links for both services
+- [x] Extend regression coverage - focused homepage suite passes 18/18
+- [x] Validate TypeScript and production build successfully
+- [x] Verify Garage & Garage Motors and Alarm Systems in the public browser preview
+- [ ] Save the Garage and Alarm Systems checkpoint
