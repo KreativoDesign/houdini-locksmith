@@ -1058,4 +1058,14 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 18/18
 - [x] Validate TypeScript and production build successfully
 - [x] Verify Garage & Garage Motors and Alarm Systems in the public browser preview
-- [ ] Save the Garage and Alarm Systems checkpoint
+- [x] Save the Garage and Alarm Systems checkpoint - completed as `a7642f0e`
+
+## Phase 148: Gate & Garage Motors Correction
+- [x] Correct the service name from Garage & Garage Motors to Gate & Garage Motors
+- [x] Update the service description to focus on gate and garage-door automation
+- [x] Add sliding/swing gate motors, garage motors, remotes, receivers, controls, and support capabilities
+- [x] Update consultation and footer labels and service slugs
+- [x] Extend regression coverage - focused homepage suite passes 18/18
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the corrected tab and dynamic panel in the public browser preview
+- [ ] Save the Gate & Garage Motors correction checkpoint

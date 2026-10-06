@@ -12,7 +12,7 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('service: "electric-fencing"');
     expect(landingSource).toContain('service: "keys"');
     expect(landingSource).toContain('service: "security-self-defence"');
-    expect(landingSource).toContain('service: "garage-garage-motors"');
+    expect(landingSource).toContain('service: "gate-garage-motors"');
     expect(landingSource).toContain('service: "access-control"');
     expect(landingSource).toContain('service: "alarm-systems"');
     expect(landingSource).toContain('formData.service) ?? services[0]');
@@ -90,11 +90,12 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Alcohol test kits");
   });
 
-  it("keeps the Garage & Garage Motors copy concise and protects its capabilities", () => {
-    expect(landingSource).toContain("dependable garage doors, motors, remotes, and receivers");
+  it("keeps the Gate & Garage Motors copy concise and protects its capabilities", () => {
+    expect(landingSource).toContain("practical automation for gates and garage doors");
+    expect(landingSource).toContain("Sliding and swing gate motor automation");
     expect(landingSource).toContain("Garage door motors and automation");
     expect(landingSource).toContain("Replacement remotes and receivers");
-    expect(landingSource).toContain("Rolling-code and secure access options");
+    expect(landingSource).toContain("Rolling-code and secure access controls");
     expect(landingSource).toContain("Installation, setup, and troubleshooting support");
   });
 
