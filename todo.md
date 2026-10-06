@@ -1078,4 +1078,14 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 19/19
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the Alarm Systems panel, detailed bullets, and CTA in the public browser preview
-- [ ] Save the Alarm and Gate panel enhancement checkpoint
+- [x] Save the Alarm and Gate panel enhancement checkpoint - completed as `fc96bb79`
+
+## Phase 150: Access Automation Homepage Service
+- [x] Add Access Automation as the eleventh selectable service
+- [x] Add the supplied choke-point risk-reduction description
+- [x] Add all seven supplied capabilities: gates, garages, booms, bollards, road spikes, turnstiles, and man trap doors
+- [x] Add a relevant Construction icon and wire the consultation and footer links
+- [x] Extend regression coverage - focused homepage suite passes 20/20
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the Access Automation tab and panel in the public browser preview
+- [ ] Save the Access Automation checkpoint

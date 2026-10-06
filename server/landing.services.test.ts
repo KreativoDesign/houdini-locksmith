@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 const landingSource = readFileSync(new URL("../client/src/pages/Landing.tsx", import.meta.url), "utf8");
 
 describe("homepage selectable services section", () => {
-  it("defines all ten service choices and defaults to Locks", () => {
+  it("defines all eleven service choices and defaults to Locks", () => {
     expect(landingSource).toContain('service: "locks"');
     expect(landingSource).toContain('service: "cctv"');
     expect(landingSource).toContain('service: "safes"');
@@ -15,6 +15,7 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('service: "gate-garage-motors"');
     expect(landingSource).toContain('service: "access-control"');
     expect(landingSource).toContain('service: "alarm-systems"');
+    expect(landingSource).toContain('service: "access-automation"');
     expect(landingSource).toContain('formData.service) ?? services[0]');
   });
 
@@ -112,6 +113,18 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Icon: DoorOpen");
     expect(landingSource).toContain("Icon: BellRing");
     expect(landingSource).toContain("Request a Quote <ArrowRight");
+  });
+
+  it("keeps the Access Automation copy concise and protects its supplied capabilities", () => {
+    expect(landingSource).toContain("Access Automation helps reduce risk at natural entry choke-points");
+    expect(landingSource).toContain("commercial retail spaces, office parks, industrial zones");
+    expect(landingSource).toContain("Gate automation");
+    expect(landingSource).toContain("Garage automation");
+    expect(landingSource).toContain("Access booms");
+    expect(landingSource).toContain("Parking bollards");
+    expect(landingSource).toContain("Automated road spikes");
+    expect(landingSource).toContain("Turnstiles");
+    expect(landingSource).toContain("Man trap doors");
   });
 
   it("keeps the Access Control copy concise and protects its supplied offerings", () => {
