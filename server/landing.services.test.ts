@@ -100,11 +100,18 @@ describe("homepage selectable services section", () => {
   });
 
   it("keeps the Alarm Systems copy concise and protects its capabilities", () => {
-    expect(landingSource).toContain("Alarm systems add an active layer of protection");
-    expect(landingSource).toContain("Intrusion detection for doors, windows, and key areas");
-    expect(landingSource).toContain("Motion detection and perimeter protection");
-    expect(landingSource).toContain("Remote notifications and armed-response integration");
-    expect(landingSource).toContain("System upgrades, testing, and support");
+    expect(landingSource).toContain("A well-planned alarm system creates an active response layer");
+    expect(landingSource).toContain("Wired and wireless alarm system options");
+    expect(landingSource).toContain("Magnetic contacts for doors, windows, and access points");
+    expect(landingSource).toContain("Outdoor beams and perimeter detection");
+    expect(landingSource).toContain("GSM, IP, and app-based remote notifications");
+    expect(landingSource).toContain("System upgrades, testing, servicing, and fault finding");
+  });
+
+  it("uses dedicated Gate and Alarm icons and a Request a Quote panel CTA", () => {
+    expect(landingSource).toContain("Icon: DoorOpen");
+    expect(landingSource).toContain("Icon: BellRing");
+    expect(landingSource).toContain("Request a Quote <ArrowRight");
   });
 
   it("keeps the Access Control copy concise and protects its supplied offerings", () => {
