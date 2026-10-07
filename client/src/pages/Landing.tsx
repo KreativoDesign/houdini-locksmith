@@ -9,12 +9,26 @@ import { trpc } from "@/lib/trpc";
 import { MapView } from "@/components/Map";
 
 export default function Landing() {
+  const serviceLabels: Record<string, string> = {
+    locks: "Locks",
+    cctv: "CCTV",
+    safes: "Safes",
+    intercoms: "Intercoms",
+    "electric-fencing": "Electric Fencing",
+    keys: "Keys",
+    "security-self-defence": "Security & Self Defence",
+    "gate-garage-motors": "Gate & Garage Motors",
+    "access-control": "Access Control",
+    "alarm-systems": "Alarm Systems",
+    "access-automation": "Access Automation",
+  };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     service: "locks",
+    subject: "Quote request — Locks",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +44,7 @@ export default function Landing() {
         title: `New Sales Inquiry: ${formData.name}`,
         content: `
 Service Interest: ${formData.service}
+Subject: ${formData.subject}
 Name: ${formData.name}
 Email: ${formData.email}
 Phone: ${formData.phone}
@@ -49,6 +64,7 @@ Please follow up with this lead as soon as possible.
         email: "",
         phone: "",
         service: "locks",
+        subject: "Quote request — Locks",
         message: "",
       });
     } catch (error) {
@@ -58,8 +74,13 @@ Please follow up with this lead as soon as possible.
     }
   };
 
+  const handleServiceChange = (service: string) => {
+    const label = serviceLabels[service] ?? service;
+    setFormData((previous) => ({ ...previous, service, subject: `Quote request — ${label}` }));
+  };
+
   const handleServiceSelect = (service: string) => {
-    setFormData((previous) => ({ ...previous, service }));
+    handleServiceChange(service);
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -350,7 +371,7 @@ Please follow up with this lead as soon as possible.
                         role="tab"
                         aria-selected={isActive}
                         aria-controls="service-detail-panel"
-                        onClick={() => setFormData((previous) => ({ ...previous, service: service.service }))}
+                        onClick={() => handleServiceChange(service.service)}
                         className={`group inline-flex min-h-16 transform-gpu items-center justify-center gap-2 rounded-xl border px-2.5 py-3 text-center text-[11px] font-bold uppercase leading-[1.1] tracking-[0.1em] transition-[transform,background-color,border-color,box-shadow,color] duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-3 sm:text-sm ${isActive ? "border-lime-300 bg-lime-300 text-slate-950 shadow-lg shadow-lime-400/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-lime-400/30" : "border-white/10 bg-white/[0.04] text-slate-300 hover:-translate-y-0.5 hover:border-lime-300/50 hover:bg-lime-300/10 hover:text-lime-200 hover:shadow-lg hover:shadow-lime-400/10"}`}
                       >
                         <ServiceIcon className={`h-4 w-4 shrink-0 origin-center transition duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none ${isActive ? "text-slate-950 group-hover:rotate-3" : "text-lime-300 group-hover:-translate-y-0.5 group-hover:rotate-3 group-hover:scale-110"}`} aria-hidden="true" />
@@ -446,7 +467,7 @@ Please follow up with this lead as soon as possible.
 
               <div className="space-y-2">
                 <label htmlFor="consultation-service" className="text-sm font-medium text-slate-200">What can we help secure? <span className="text-lime-300">*</span></label>
-                <select id="consultation-service" value={formData.service} onChange={(e) => setFormData({ ...formData, service: e.target.value })} className="h-12 w-full rounded-md border border-lime-500/25 bg-slate-950/55 px-4 text-white transition focus:border-lime-300 focus:outline-none focus:ring-2 focus:ring-lime-300/30">
+                <select id="consultation-service" value={formData.service} onChange={(e) => handleServiceChange(e.target.value)} className="h-12 w-full rounded-md border border-lime-500/25 bg-slate-950/55 px-4 text-white transition focus:border-lime-300 focus:outline-none focus:ring-2 focus:ring-lime-300/30">
                   <option value="locks">Locks</option>
                   <option value="cctv">CCTV</option>
                   <option value="safes">Safes</option>
@@ -459,6 +480,12 @@ Please follow up with this lead as soon as possible.
                   <option value="alarm-systems">Alarm Systems</option>
                   <option value="access-automation">Access Automation</option>
                 </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="consultation-subject" className="text-sm font-medium text-slate-200">Subject <span className="text-lime-300">*</span></label>
+                <Input id="consultation-subject" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} className="h-12 border-lime-500/25 bg-slate-950/55 text-white placeholder:text-slate-500 focus-visible:border-lime-300 focus-visible:ring-lime-300/30" required />
+                <p className="text-xs text-slate-500">Pre-filled from the selected service; you can edit it if needed.</p>
               </div>
 
               <div className="space-y-2">

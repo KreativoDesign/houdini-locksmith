@@ -1088,4 +1088,14 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 20/20
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the Access Automation tab and panel in the public browser preview
-- [ ] Save the Access Automation checkpoint
+- [x] Save the Access Automation checkpoint - completed as `39cbe995`
+
+## Phase 151: Service Quote CTA and Subject Prefill
+- [x] Link the shared Request a Quote CTA to the contact form
+- [x] Synchronize the selected service when a service tab or consultation option changes
+- [x] Pre-fill the editable subject field as `Quote request — {selected service}`
+- [x] Include the subject in the sales inquiry notification payload
+- [x] Extend regression coverage - focused homepage suite passes 21/21
+- [x] Validate TypeScript and production build successfully
+- [x] Verify Access Automation selection and subject prefill in the browser preview
+- [ ] Save the quote CTA and subject prefill checkpoint

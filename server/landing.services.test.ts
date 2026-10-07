@@ -25,7 +25,7 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('aria-selected={isActive}');
     expect(landingSource).toContain('role="tabpanel"');
     expect(landingSource).toContain('id="service-detail-panel"');
-    expect(landingSource).toContain('onClick={() => setFormData((previous) => ({ ...previous, service: service.service }))}');
+    expect(landingSource).toContain('onClick={() => handleServiceChange(service.service)}');
   });
 
   it("keeps the Locks copy concise and displays supplier artwork before the CTA", () => {
@@ -186,5 +186,13 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");
     expect(landingSource).toContain("<ActiveIcon");
     expect(landingSource).not.toContain("min-h-[360px] overflow-hidden rounded-2xl border border-white/10 bg-slate-900 text-left");
+  });
+
+  it("routes quote requests to contact and pre-fills the subject from the selected service", () => {
+    expect(landingSource).toContain('document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" })');
+    expect(landingSource).toContain('subject: `Quote request — ${label}`');
+    expect(landingSource).toContain('id="consultation-subject"');
+    expect(landingSource).toContain('Subject: ${formData.subject}');
+    expect(landingSource).toContain('onChange={(e) => handleServiceChange(e.target.value)}');
   });
 });
