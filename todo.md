@@ -1106,4 +1106,15 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 22/22
 - [x] Validate TypeScript and production build successfully
 - [x] Verify Alarm Systems produces `Quote request — Alarm Systems` in the contact form
-- [ ] Save the all-service quote CTA checkpoint
+- [x] Save the all-service quote CTA checkpoint - completed as `e46be33f`
+
+## Phase 153: 24/7 Support Contact Modal
+- [x] Replace the 24/7 support link with a modal trigger
+- [x] Add WhatsApp action for `+27 83 459 1573`
+- [x] Add phone-call action for `041 365 7565`
+- [x] Add accessible close button, Escape-key handling, and backdrop dismissal
+- [x] Optimize the modal for mobile with bottom-sheet behavior and responsive action cards
+- [x] Extend regression coverage - focused homepage suite passes 23/23
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the modal and both contact choices in the browser preview
+- [ ] Save the support contact modal checkpoint

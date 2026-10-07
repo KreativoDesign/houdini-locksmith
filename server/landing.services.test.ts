@@ -210,4 +210,16 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('"access-automation": "Access Automation"');
     expect(landingSource).toContain('onClick={() => handleServiceSelect(activeService.service)}');
   });
+
+  it("opens an accessible 24/7 support modal with WhatsApp and call options", () => {
+    expect(landingSource).toContain('supportModalOpen');
+    expect(landingSource).toContain('aria-label="Open 24/7 support contact options"');
+    expect(landingSource).toContain('role="dialog" aria-modal="true"');
+    expect(landingSource).toContain('https://wa.me/27834591573');
+    expect(landingSource).toContain('WhatsApp');
+    expect(landingSource).toContain('href="tel:0413657565"');
+    expect(landingSource).toContain('Call Houdini');
+    expect(landingSource).toContain('event.key === "Escape"');
+    expect(landingSource).toContain('aria-label="Close support contact options"');
+  });
 });

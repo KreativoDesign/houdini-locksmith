@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound, CircleDollarSign, Grid2X2, RadioTower, Network, Fingerprint, ScanFace, Bluetooth, DoorOpen, BellRing, Construction } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound, CircleDollarSign, Grid2X2, RadioTower, Network, Fingerprint, ScanFace, Bluetooth, DoorOpen, BellRing, Construction, MessageCircle, PhoneCall } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { MapView } from "@/components/Map";
 
@@ -23,6 +23,7 @@ export default function Landing() {
     "access-automation": "Access Automation",
   };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,6 +33,15 @@ export default function Landing() {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!supportModalOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSupportModalOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [supportModalOpen]);
 
   const contactMutation = trpc.system.notifyOwner.useMutation();
 
@@ -223,7 +233,7 @@ Please follow up with this lead as soon as possible.
                 </Button>
               </div>
 
-              <a href="tel:0413657565" className="hero-support-reveal hero-support-badge group inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime-300/50 bg-slate-950/75 px-4 py-3 text-left shadow-xl shadow-lime-500/15 backdrop-blur-md transition hover:border-lime-200 hover:bg-lime-300/10 sm:px-5" aria-label="Call Houdini for 24/7 support">
+              <button type="button" onClick={() => setSupportModalOpen(true)} className="hero-support-reveal hero-support-badge group inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime-300/50 bg-slate-950/75 px-4 py-3 text-left shadow-xl shadow-lime-500/15 backdrop-blur-md transition hover:border-lime-200 hover:bg-lime-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-5" aria-label="Open 24/7 support contact options">
                 <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime-400 text-slate-950 shadow-lg shadow-lime-400/30">
                   <span className="hero-support-ping absolute inset-0 rounded-xl bg-lime-300" aria-hidden="true" />
                   <Radio className="relative h-5 w-5" />
@@ -233,7 +243,7 @@ Please follow up with this lead as soon as possible.
                   <span className="mt-0.5 block text-sm text-slate-300">Emergency security assistance, whenever you need it.</span>
                 </span>
                 <ArrowRight className="ml-1 h-5 w-5 shrink-0 text-lime-300 transition group-hover:translate-x-1" />
-              </a>
+              </button>
             </div>
 
             {/* Right side - Lockbro mascot */}
@@ -254,6 +264,33 @@ Please follow up with this lead as soon as possible.
           </div>
         </div>
       </section>
+
+      {supportModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-slate-950/75 p-4 backdrop-blur-sm sm:items-center" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSupportModalOpen(false); }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="support-modal-title" className="w-full max-w-md rounded-3xl border border-lime-300/25 bg-slate-900 p-5 shadow-2xl shadow-black/50 sm:p-7">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-lime-300">24/7 Support</p>
+                <h2 id="support-modal-title" className="mt-2 text-2xl font-bold text-white">How would you like to reach us?</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-400">Choose WhatsApp for a message or call our team directly.</p>
+              </div>
+              <button type="button" onClick={() => setSupportModalOpen(false)} className="rounded-xl p-2 text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300" aria-label="Close support contact options">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <a href="https://wa.me/27834591573?text=Hello%20Houdini%2C%20I%20need%2024%2F7%20security%20support." target="_blank" rel="noreferrer" className="group flex min-h-24 items-center gap-3 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 p-4 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-400 text-slate-950"><MessageCircle className="h-6 w-6" /></span>
+                <span><span className="block text-sm font-bold text-white">WhatsApp</span><span className="mt-1 block text-xs text-emerald-200">+27 83 459 1573</span></span>
+              </a>
+              <a href="tel:0413657565" className="group flex min-h-24 items-center gap-3 rounded-2xl border border-lime-300/30 bg-lime-300/10 p-4 transition hover:-translate-y-0.5 hover:border-lime-200 hover:bg-lime-300/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-lime-300 text-slate-950"><PhoneCall className="h-6 w-6" /></span>
+                <span><span className="block text-sm font-bold text-white">Call Houdini</span><span className="mt-1 block text-xs text-lime-200">041 365 7565</span></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* About Houdini */}
       <section id="about" className="relative isolate overflow-hidden scroll-mt-24 border-t border-lime-500/20 bg-slate-950/55 px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
