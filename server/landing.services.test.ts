@@ -195,4 +195,19 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('Subject: ${formData.subject}');
     expect(landingSource).toContain('onChange={(e) => handleServiceChange(e.target.value)}');
   });
+
+  it("maps every service to its own quote subject through the shared panel CTA", () => {
+    expect(landingSource).toContain('locks: "Locks"');
+    expect(landingSource).toContain('cctv: "CCTV"');
+    expect(landingSource).toContain('safes: "Safes"');
+    expect(landingSource).toContain('intercoms: "Intercoms"');
+    expect(landingSource).toContain('"electric-fencing": "Electric Fencing"');
+    expect(landingSource).toContain('keys: "Keys"');
+    expect(landingSource).toContain('"security-self-defence": "Security & Self Defence"');
+    expect(landingSource).toContain('"gate-garage-motors": "Gate & Garage Motors"');
+    expect(landingSource).toContain('"access-control": "Access Control"');
+    expect(landingSource).toContain('"alarm-systems": "Alarm Systems"');
+    expect(landingSource).toContain('"access-automation": "Access Automation"');
+    expect(landingSource).toContain('onClick={() => handleServiceSelect(activeService.service)}');
+  });
 });

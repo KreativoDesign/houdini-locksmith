@@ -1098,4 +1098,12 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 21/21
 - [x] Validate TypeScript and production build successfully
 - [x] Verify Access Automation selection and subject prefill in the browser preview
-- [ ] Save the quote CTA and subject prefill checkpoint
+- [x] Save the quote CTA and subject prefill checkpoint - completed as `7971db51`
+
+## Phase 152: All-Service Quote CTA Verification
+- [x] Confirm all service panels use the shared Request a Quote contact-form handler
+- [x] Confirm every service maps to its own pre-filled quote subject
+- [x] Extend regression coverage - focused homepage suite passes 22/22
+- [x] Validate TypeScript and production build successfully
+- [x] Verify Alarm Systems produces `Quote request — Alarm Systems` in the contact form
+- [ ] Save the all-service quote CTA checkpoint
