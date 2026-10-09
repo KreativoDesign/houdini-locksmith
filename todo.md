@@ -1117,4 +1117,13 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 23/23
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the modal and both contact choices in the browser preview
-- [ ] Save the support contact modal checkpoint
+- [x] Save the support contact modal checkpoint - completed as `9f783b0f`
+
+## Phase 154: Locks Panel Artwork Removal
+- [x] Remove the Locks panel background image
+- [x] Remove the oversized decorative lock icon from the Locks panel
+- [x] Preserve the small service icon, supplier-logo strip, content, and CTA
+- [x] Extend regression coverage - focused homepage suite passes 24/24
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the clean Locks panel in the browser preview
+- [ ] Save the Locks panel artwork removal checkpoint

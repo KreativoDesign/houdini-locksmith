@@ -37,6 +37,13 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Supplier logos: Yale, Viro, Master Lock, Kwikset, Mul-T-Lock, ABUS, CISA, ASSA ABLOY, BBQ, Jaguar, and Trellidor");
   });
 
+  it("removes the background artwork from the Locks detail panel", () => {
+    expect(landingSource).toContain('{ title: "Locks", service: "locks", image: ""');
+    expect(landingSource).toContain('{activeService.image && <div className="absolute inset-0 bg-cover bg-center');
+    expect(landingSource).toContain('{activeService.service !== "locks" && <ActiveIcon className="absolute -right-8 -top-8');
+    expect(landingSource).not.toContain('service: "locks", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png"');
+  });
+
   it("keeps the CCTV copy concise and protects its brochure-derived capabilities", () => {
     expect(landingSource).toContain("CCTV turns uncertainty into real-time visibility");
     expect(landingSource).toContain("Digital and network video recorders");
