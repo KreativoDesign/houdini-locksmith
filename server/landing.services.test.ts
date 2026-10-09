@@ -28,13 +28,12 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('onClick={() => handleServiceChange(service.service)}');
   });
 
-  it("keeps the Locks copy concise and displays supplier artwork before the CTA", () => {
+  it("keeps the Locks copy concise without partner-logo artwork", () => {
     expect(landingSource).toContain("Houdini supplies, installs, opens, and repairs dependable mechanical locking solutions");
     expect(landingSource).toContain("Master-key and restricted-keyway systems");
     expect(landingSource).toContain("Panic exit devices, door closers, hinges, and ironmongery");
-    expect(landingSource).toContain("https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/NGWsHRvauXOHqtDm.png");
-    expect(landingSource).toContain("Trusted supplier range");
-    expect(landingSource).toContain("Supplier logos: Yale, Viro, Master Lock, Kwikset, Mul-T-Lock, ABUS, CISA, ASSA ABLOY, BBQ, Jaguar, and Trellidor");
+    expect(landingSource).not.toContain("https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/NGWsHRvauXOHqtDm.png");
+    expect(landingSource).not.toContain("Trusted supplier range");
   });
 
   it("removes the background artwork from the Locks detail panel", () => {

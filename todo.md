@@ -1126,4 +1126,13 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 24/24
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the clean Locks panel in the browser preview
-- [ ] Save the Locks panel artwork removal checkpoint
+- [x] Save the Locks panel artwork removal checkpoint - completed as `fd3a3b80`
+
+## Phase 155: Locks Partner Logo Removal
+- [x] Remove the Locks partner/supplier logo image
+- [x] Remove the associated Trusted Supplier Range block
+- [x] Preserve the Locks description, capability pills, and Request a Quote CTA
+- [x] Update regression coverage - focused homepage suite passes 24/24
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the clean Locks panel in the browser preview
+- [ ] Save the Locks partner-logo removal checkpoint
