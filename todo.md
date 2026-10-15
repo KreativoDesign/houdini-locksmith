@@ -1159,4 +1159,13 @@ Fixed Client Dashboard button navigation:
 - [x] Add regression coverage - focused homepage suite passes 26/26
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the homepage header and scroll composition in the browser preview
-- [ ] Save the floating desktop header checkpoint
+- [x] Save the floating desktop header checkpoint - completed as `9a97a8ef`
+
+## Phase 158: Support Prompt and Mobile CTA Order
+- [x] Replace the 24/7 support subtext with “Need assistance? Ask Houdini”
+- [x] Increase the support subtext size and weight while retaining responsive sizing
+- [x] Place the Request a Quote button below the 24/7 Support button on mobile
+- [x] Preserve the desktop full-width support block and quote-button order
+- [x] Add regression coverage - focused homepage suite passes 27/27
+- [x] Validate TypeScript and production build successfully
+- [ ] Save the support prompt and mobile CTA checkpoint

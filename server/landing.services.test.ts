@@ -240,10 +240,17 @@ describe("homepage selectable services section", () => {
 
   it("uses a desktop-only full-width support CTA with the quote action underneath", () => {
     expect(landingSource).toContain('lg:flex-col lg:items-start lg:gap-4');
-    expect(landingSource).toContain('order-1 bg-lime-500');
+    expect(landingSource).toContain('order-2 bg-lime-500');
     expect(landingSource).toContain('lg:order-2');
     expect(landingSource).toContain('lg:order-1 lg:w-full lg:px-6 lg:py-5');
     expect(landingSource).toContain('lg:text-[18px]');
     expect(landingSource).not.toContain('041 365 7565</Button>');
+  });
+
+  it("uses the concise support prompt and places the quote CTA below it on mobile", () => {
+    expect(landingSource).toContain("Need assistance? Ask Houdini");
+    expect(landingSource).toContain('text-base font-medium text-slate-200 lg:text-[18px] lg:font-semibold');
+    expect(landingSource).toContain('order-1 inline-flex max-w-full');
+    expect(landingSource).toContain('order-2 bg-lime-500');
   });
 });
