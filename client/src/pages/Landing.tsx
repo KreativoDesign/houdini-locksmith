@@ -213,37 +213,26 @@ Please follow up with this lead as soon as possible.
                 </p>
               </div>
 
-              <div className="hero-actions-reveal mb-10 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:gap-4 lg:justify-start">
+              <div className="hero-actions-reveal mb-10 flex flex-col gap-3 sm:mb-12 sm:flex-row sm:gap-4 lg:mt-[-0.35rem] lg:flex-col lg:items-start lg:gap-4">
                 <Button
                   size="lg"
-                  className="bg-lime-500 hover:bg-lime-600 text-black font-semibold shadow-lg shadow-lime-500/50 text-base"
+                  className="order-1 bg-lime-500 hover:bg-lime-600 text-black font-semibold shadow-lg shadow-lime-500/50 text-base lg:order-2"
                   onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   Request a Quote <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  className="text-lime-400 border-lime-500/50 hover:bg-lime-500/10 text-base"
-                  onClick={() => { window.location.href = "tel:0413657565"; }}
-                >
-                  <Phone className="mr-2 w-5 h-5" />
-                  041 365 7565
-                </Button>
+                <button type="button" onClick={() => setSupportModalOpen(true)} className="hero-support-reveal hero-support-badge group order-2 inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime-300/50 bg-slate-950/75 px-4 py-3 text-left shadow-xl shadow-lime-500/15 backdrop-blur-md transition hover:border-lime-200 hover:bg-lime-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-5 lg:order-1 lg:w-full lg:px-6 lg:py-5" aria-label="Open 24/7 support contact options">
+                  <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime-400 text-slate-950 shadow-lg shadow-lime-400/30 lg:h-14 lg:w-14">
+                    <span className="hero-support-ping absolute inset-0 rounded-xl bg-lime-300" aria-hidden="true" />
+                    <Radio className="relative h-5 w-5 lg:h-7 lg:w-7" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-bold uppercase tracking-[0.16em] text-lime-300 lg:text-[18px]">24/7 Support</span>
+                    <span className="mt-0.5 block text-sm text-slate-300 lg:text-[18px]">Emergency security assistance, whenever you need it.</span>
+                  </span>
+                  <ArrowRight className="ml-1 h-5 w-5 shrink-0 text-lime-300 transition group-hover:translate-x-1 lg:ml-auto lg:h-7 lg:w-7" />
+                </button>
               </div>
-
-              <button type="button" onClick={() => setSupportModalOpen(true)} className="hero-support-reveal hero-support-badge group inline-flex max-w-full items-center gap-3 rounded-2xl border border-lime-300/50 bg-slate-950/75 px-4 py-3 text-left shadow-xl shadow-lime-500/15 backdrop-blur-md transition hover:border-lime-200 hover:bg-lime-300/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-5" aria-label="Open 24/7 support contact options">
-                <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-lime-400 text-slate-950 shadow-lg shadow-lime-400/30">
-                  <span className="hero-support-ping absolute inset-0 rounded-xl bg-lime-300" aria-hidden="true" />
-                  <Radio className="relative h-5 w-5" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-bold uppercase tracking-[0.16em] text-lime-300">24/7 Support</span>
-                  <span className="mt-0.5 block text-sm text-slate-300">Emergency security assistance, whenever you need it.</span>
-                </span>
-                <ArrowRight className="ml-1 h-5 w-5 shrink-0 text-lime-300 transition group-hover:translate-x-1" />
-              </button>
             </div>
 
             {/* Right side - Lockbro mascot */}

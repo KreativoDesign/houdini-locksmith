@@ -1135,4 +1135,16 @@ Fixed Client Dashboard button navigation:
 - [x] Update regression coverage - focused homepage suite passes 24/24
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the clean Locks panel in the browser preview
-- [ ] Save the Locks partner-logo removal checkpoint
+- [x] Save the Locks partner-logo removal checkpoint - completed as `7e82245d`
+
+## Phase 156: Desktop Hero Support CTA Refinement
+- [x] Remove the standalone hero telephone-number link
+- [x] Place Request a Quote below the 24/7 Support block on desktop
+- [x] Make the 24/7 Support block full-width at the desktop breakpoint and above
+- [x] Increase desktop support typography by approximately 30% while preserving mobile sizing
+- [x] Move the support block closer to the hero subtext on desktop
+- [x] Preserve the existing mobile CTA order and sizing
+- [x] Add regression coverage - focused homepage suite passes 25/25
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the updated hero CTA composition in the browser preview
+- [ ] Save the desktop hero CTA refinement checkpoint

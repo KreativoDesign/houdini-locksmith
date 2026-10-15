@@ -228,4 +228,13 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('event.key === "Escape"');
     expect(landingSource).toContain('aria-label="Close support contact options"');
   });
+
+  it("uses a desktop-only full-width support CTA with the quote action underneath", () => {
+    expect(landingSource).toContain('lg:flex-col lg:items-start lg:gap-4');
+    expect(landingSource).toContain('order-1 bg-lime-500');
+    expect(landingSource).toContain('lg:order-2');
+    expect(landingSource).toContain('lg:order-1 lg:w-full lg:px-6 lg:py-5');
+    expect(landingSource).toContain('lg:text-[18px]');
+    expect(landingSource).not.toContain('041 365 7565</Button>');
+  });
 });
