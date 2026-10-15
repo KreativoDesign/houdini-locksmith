@@ -123,7 +123,7 @@ Please follow up with this lead as soon as possible.
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-96 h-96 bg-lime-500/10 rounded-full blur-3xl"></div>
@@ -137,7 +137,7 @@ Please follow up with this lead as soon as possible.
             <img 
               src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png" 
               alt="Houdini Logo" 
-              className={`w-auto max-w-[220px] object-contain transition-all duration-300 ${headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-24"}`} loading="eager"
+              className={`w-auto max-w-[220px] object-contain transition-all duration-300 ${headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-[7.2rem]"}`} loading="eager"
             />
           </div>
           <div className="hidden md:flex items-center gap-5">

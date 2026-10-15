@@ -1168,4 +1168,14 @@ Fixed Client Dashboard button navigation:
 - [x] Preserve the desktop full-width support block and quote-button order
 - [x] Add regression coverage - focused homepage suite passes 27/27
 - [x] Validate TypeScript and production build successfully
-- [ ] Save the support prompt and mobile CTA checkpoint
+- [x] Save the support prompt and mobile CTA checkpoint - completed as `02dda67b`
+
+## Phase 159: Sticky Header Correction
+- [x] Remove the root overflow constraint that prevented vertical sticky positioning
+- [x] Keep the desktop navigation sticky at the top during page scroll
+- [x] Increase the transparent desktop logo state by an additional 20%
+- [x] Preserve the minimized scrolled logo size and dark floating state
+- [x] Add regression coverage - focused homepage suite passes 28/28
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the header remains present during browser scrolling
+- [ ] Save the sticky header correction checkpoint

@@ -184,8 +184,14 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('window.addEventListener("scroll", handleScroll, { passive: true })');
     expect(landingSource).toContain('lg:max-w-6xl lg:rounded-3xl');
     expect(landingSource).toContain('lg:bg-black/70 lg:py-2 lg:shadow-2xl');
-    expect(landingSource).toContain('headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-24"');
+    expect(landingSource).toContain('headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-[7.2rem]"');
     expect(landingSource).toContain('lg:bg-transparent lg:py-3');
+  });
+
+  it("keeps the header sticky and enlarges only the transparent desktop logo state", () => {
+    expect(landingSource).toContain('className="sticky top-0 z-50 px-0 pt-0');
+    expect(landingSource).toContain('overflow-x-hidden bg-gradient-to-b');
+    expect(landingSource).toContain('headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-[7.2rem]"');
   });
 
   it("uses full-width descriptions and inline capability pills across the shared panel", () => {
