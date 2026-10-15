@@ -179,6 +179,15 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('grid grid-cols-1 items-center gap-12 sm:gap-14 lg:grid-cols-2 lg:gap-20');
   });
 
+  it("uses a centered floating desktop header with a compact dark scroll state", () => {
+    expect(landingSource).toContain('const [headerScrolled, setHeaderScrolled] = useState(false)');
+    expect(landingSource).toContain('window.addEventListener("scroll", handleScroll, { passive: true })');
+    expect(landingSource).toContain('lg:max-w-6xl lg:rounded-3xl');
+    expect(landingSource).toContain('lg:bg-black/70 lg:py-2 lg:shadow-2xl');
+    expect(landingSource).toContain('headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-24"');
+    expect(landingSource).toContain('lg:bg-transparent lg:py-3');
+  });
+
   it("uses full-width descriptions and inline capability pills across the shared panel", () => {
     expect(landingSource).toContain('w-full max-w-none text-base leading-7 text-slate-200 sm:text-lg sm:leading-8');
     expect(landingSource).toContain('flex w-full flex-wrap items-center gap-2.5');

@@ -1147,4 +1147,16 @@ Fixed Client Dashboard button navigation:
 - [x] Add regression coverage - focused homepage suite passes 25/25
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the updated hero CTA composition in the browser preview
-- [ ] Save the desktop hero CTA refinement checkpoint
+- [x] Save the desktop hero CTA refinement checkpoint - completed as `d47c91dc`
+
+## Phase 157: Floating Desktop Header Redesign
+- [x] Make the desktop header transparent in its initial top-of-page state
+- [x] Increase the desktop logo size substantially in the initial state
+- [x] Constrain the header to a centered, non-full-width floating shell
+- [x] Add rounded corners, shadow, and backdrop treatment to the desktop shell
+- [x] Add a scroll state that minimizes the logo and applies a dark black 70%-opacity background
+- [x] Preserve the existing mobile header behavior and menu layout
+- [x] Add regression coverage - focused homepage suite passes 26/26
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the homepage header and scroll composition in the browser preview
+- [ ] Save the floating desktop header checkpoint

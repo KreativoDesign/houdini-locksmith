@@ -24,6 +24,7 @@ export default function Landing() {
   };
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
+  const [headerScrolled, setHeaderScrolled] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,6 +43,13 @@ export default function Landing() {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [supportModalOpen]);
+
+  useEffect(() => {
+    const handleScroll = () => setHeaderScrolled(window.scrollY > 28);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const contactMutation = trpc.system.notifyOwner.useMutation();
 
@@ -123,13 +131,13 @@ Please follow up with this lead as soon as possible.
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-lime-500/20">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+      <nav className="sticky top-0 z-50 px-0 pt-0 transition-all duration-300 lg:px-6 lg:pt-4">
+        <div className={`mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8 lg:transition-all lg:duration-300 ${headerScrolled ? "lg:max-w-6xl lg:rounded-3xl lg:border lg:border-lime-500/25 lg:bg-black/70 lg:py-2 lg:shadow-2xl lg:shadow-black/35 lg:backdrop-blur-xl" : "lg:bg-transparent lg:py-3"}`}>
           <div className="flex items-center gap-3">
             <img 
               src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663346956907/FvsJQLgDSLrAGayZ.png" 
               alt="Houdini Logo" 
-              className="h-12 sm:h-14 w-auto max-w-[180px] object-contain" loading="eager"
+              className={`w-auto max-w-[220px] object-contain transition-all duration-300 ${headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-24"}`} loading="eager"
             />
           </div>
           <div className="hidden md:flex items-center gap-5">
