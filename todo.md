@@ -1178,4 +1178,4 @@ Fixed Client Dashboard button navigation:
 - [x] Add regression coverage - focused homepage suite passes 28/28
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the header remains present during browser scrolling
-- [ ] Save the sticky header correction checkpoint
+- [x] Save the sticky header correction checkpoint - completed as `91652f0d`
