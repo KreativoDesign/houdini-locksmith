@@ -1190,4 +1190,4 @@ Fixed Client Dashboard button navigation:
 - [x] Extend regression coverage - focused homepage suite passes 28/28
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the public desktop composition and service switching in the browser preview
-- [ ] Save the featured services showcase checkpoint
+- [x] Save the featured services showcase checkpoint - completed as `de470b88`
