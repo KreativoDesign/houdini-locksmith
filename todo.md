@@ -1179,3 +1179,15 @@ Fixed Client Dashboard button navigation:
 - [x] Validate TypeScript and production build successfully
 - [x] Verify the header remains present during browser scrolling
 - [x] Save the sticky header correction checkpoint - completed as `91652f0d`
+
+## Phase 160: Featured Services Showcase Redesign
+- [x] Replace the single horizontal service-tab row with a featured-service composition inspired by the supplied mockup
+- [x] Render the selected service as a large left-hand featured card with image, description, capability checklist, and Request a Quote CTA
+- [x] Render the remaining services as compact, clickable cards in a responsive grid
+- [x] Add the Fast & Reliable Service, Quality Products, Experienced Team, and Ongoing Support benefits strip
+- [x] Preserve all eleven service definitions, quote subject prefills, Access Control technology cards, and accessible tab/panel semantics
+- [x] Optimize the composition for mobile stacking and touch-sized cards
+- [x] Extend regression coverage - focused homepage suite passes 28/28
+- [x] Validate TypeScript and production build successfully
+- [x] Verify the public desktop composition and service switching in the browser preview
+- [ ] Save the featured services showcase checkpoint

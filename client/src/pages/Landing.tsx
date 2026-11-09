@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound, CircleDollarSign, Grid2X2, RadioTower, Network, Fingerprint, ScanFace, Bluetooth, DoorOpen, BellRing, Construction, MessageCircle, PhoneCall } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Menu, X, LockKeyhole, Camera, ShieldCheck, Radio, Zap, KeyRound, CircleDollarSign, Grid2X2, RadioTower, Network, Fingerprint, ScanFace, Bluetooth, DoorOpen, BellRing, Construction, MessageCircle, PhoneCall, Timer, UsersRound, Headphones } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { MapView } from "@/components/Map";
 
@@ -394,57 +394,42 @@ Please follow up with this lead as soon as possible.
             const ActiveIcon = activeService.Icon;
             return (
               <div className="mx-auto max-w-6xl">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" role="tablist" aria-label="Security services">
-                  {services.map((service) => {
-                    const ServiceIcon = service.Icon;
-                    const isActive = service.service === activeService.service;
-                    return (
-                      <button
-                        key={service.service}
-                        type="button"
-                        role="tab"
-                        aria-selected={isActive}
-                        aria-controls="service-detail-panel"
-                        onClick={() => handleServiceChange(service.service)}
-                        className={`group inline-flex min-h-16 transform-gpu items-center justify-center gap-2 rounded-xl border px-2.5 py-3 text-center text-[11px] font-bold uppercase leading-[1.1] tracking-[0.1em] transition-[transform,background-color,border-color,box-shadow,color] duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 sm:px-3 sm:text-sm ${isActive ? "border-lime-300 bg-lime-300 text-slate-950 shadow-lg shadow-lime-400/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-lime-400/30" : "border-white/10 bg-white/[0.04] text-slate-300 hover:-translate-y-0.5 hover:border-lime-300/50 hover:bg-lime-300/10 hover:text-lime-200 hover:shadow-lg hover:shadow-lime-400/10"}`}
-                      >
-                        <ServiceIcon className={`h-4 w-4 shrink-0 origin-center transition duration-300 ease-out motion-reduce:transform-none motion-reduce:transition-none ${isActive ? "text-slate-950 group-hover:rotate-3" : "text-lime-300 group-hover:-translate-y-0.5 group-hover:rotate-3 group-hover:scale-110"}`} aria-hidden="true" />
-                        <span className="max-w-[13ch] transition-[letter-spacing] duration-300 ease-out motion-reduce:transition-none group-hover:tracking-[0.12em]">{service.title}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div id="service-detail-panel" role="tabpanel" aria-live="polite" aria-label={`${activeService.title} service details`} className="group relative mt-5 min-h-[360px] overflow-hidden rounded-[1.75rem] border border-lime-300/25 bg-slate-900 shadow-2xl shadow-black/30 sm:min-h-[390px]">
-                  {activeService.image && <div className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-[1.02]" style={{ backgroundImage: `url(${activeService.image})` }} aria-hidden="true" />}
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/35" aria-hidden="true" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(163,230,53,0.16),transparent_28%)]" aria-hidden="true" />
-                  {activeService.service !== "locks" && <ActiveIcon className="absolute -right-8 -top-8 h-64 w-64 text-lime-300/[0.09] transition duration-700 group-hover:rotate-6 group-hover:scale-105" strokeWidth={1} aria-hidden="true" />}
-                  <div className="relative flex min-h-[360px] flex-col justify-between p-7 sm:min-h-[390px] sm:p-10">
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-lime-300/30 bg-lime-300/15 text-lime-300 shadow-lg shadow-lime-500/15"><ActiveIcon className="h-6 w-6" aria-hidden="true" /></span>
-                      <div><p className="text-xs font-semibold uppercase tracking-[0.28em] text-lime-300">Service focus</p><p className="mt-1 text-sm text-slate-400">Solutions shaped around your site</p></div>
-                    </div>
-                    <div className="mt-10">
-                      <h3 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">{activeService.title}</h3>
-                      <p className="mt-4 w-full max-w-none text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">{activeService.description}</p>
-                      <div className="mt-6 flex w-full flex-wrap items-center gap-2.5" aria-label={`${activeService.title} key capabilities`}>
-                        {activeService.points.map((point) => <span key={point} className="inline-flex max-w-full items-center rounded-full border border-white/15 bg-black/25 px-3.5 py-2 text-xs leading-5 text-slate-200 backdrop-blur-sm transition-colors hover:border-lime-300/35 hover:bg-lime-300/10 hover:text-white">{point}</span>)}
+                <div className="grid gap-5 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1.22fr)] lg:items-stretch" role="tablist" aria-label="Security services">
+                  <div id="service-detail-panel" role="tabpanel" aria-live="polite" aria-label={`${activeService.title} service details`} className="group relative min-h-[520px] overflow-hidden rounded-[2rem] border border-lime-300/35 bg-slate-900 shadow-2xl shadow-black/35 sm:min-h-[560px] lg:min-h-[620px]">
+                    {activeService.image && <div className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-[1.02]" style={{ backgroundImage: `url(${activeService.image})` }} aria-hidden="true" />}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-950/88 to-slate-950/35" aria-hidden="true" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(163,230,53,0.2),transparent_28%),linear-gradient(135deg,transparent_54%,rgba(163,230,53,0.08))]" aria-hidden="true" />
+                    {activeService.service !== "locks" && <ActiveIcon className="absolute -right-14 -top-14 h-72 w-72 text-lime-300/[0.08] transition duration-700 group-hover:rotate-6 group-hover:scale-105" strokeWidth={1} aria-hidden="true" />}
+                    <div className="relative flex min-h-[520px] flex-col justify-between p-6 sm:min-h-[560px] sm:p-9 lg:min-h-[620px] lg:p-10">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-lime-300/40 bg-lime-300/10 text-lime-300 shadow-lg shadow-lime-500/15"><ActiveIcon className="h-6 w-6" aria-hidden="true" /></span>
+                        <div><p className="text-xs font-semibold uppercase tracking-[0.28em] text-lime-300">Featured service</p><p className="mt-1 text-sm text-slate-300">Solutions shaped around your site</p></div>
                       </div>
-                      {activeService.accessTech && (
-                        <div className="mt-7 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4" aria-label="Access Control technology options">
-                          {activeService.accessTech.map((technology) => {
-                            const TechnologyIcon = technology.Icon;
-                            return <div key={technology.label} className="flex min-h-[82px] items-center gap-3 rounded-2xl border border-lime-300/15 bg-slate-950/45 px-3 py-3 backdrop-blur-sm transition hover:border-lime-300/40 hover:bg-lime-300/10"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-lime-300/25 bg-lime-300/10 text-lime-300"><TechnologyIcon className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="block text-xs font-semibold uppercase tracking-[0.08em] text-slate-100">{technology.label}</span><span className="mt-1 block text-[11px] leading-4 text-slate-400">{technology.detail}</span></span></div>;
-                          })}
+                      <div className="mt-12">
+                        <h3 className="max-w-xl text-4xl font-black uppercase leading-[0.95] tracking-[-0.03em] text-white sm:text-6xl">{activeService.title}</h3>
+                        <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8">{activeService.description}</p>
+                        <div className="mt-6 space-y-2.5" aria-label={`${activeService.title} key capabilities`}>
+                          {activeService.points.slice(0, 5).map((point) => <div key={point} className="flex items-start gap-2.5 text-sm leading-6 text-white sm:text-base"><span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lime-300 text-slate-950"><ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" /></span><span>{point}</span></div>)}
                         </div>
-                      )}
-                    </div>
-                    <div className="mt-8 flex flex-wrap items-center gap-4">
-                      <Button type="button" className="bg-lime-300 font-semibold text-slate-950 shadow-lg shadow-lime-400/20 hover:bg-lime-200" onClick={() => handleServiceSelect(activeService.service)}>Request a Quote <ArrowRight className="ml-2 h-4 w-4" /></Button>
-                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Professional service • 24/7 response</span>
+                        {activeService.accessTech && <div className="mt-5 grid grid-cols-2 gap-2" aria-label="Access Control technology options">{activeService.accessTech.slice(0, 4).map((technology) => { const TechnologyIcon = technology.Icon; return <div key={technology.label} className="flex items-center gap-2 rounded-xl border border-lime-300/15 bg-slate-950/45 px-2.5 py-2 text-xs text-slate-200"><TechnologyIcon className="h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" /><span>{technology.label}</span></div>; })}</div>}
+                      </div>
+                      <div className="mt-8 flex flex-wrap items-center gap-4">
+                        <Button type="button" className="bg-lime-300 font-semibold text-slate-950 shadow-lg shadow-lime-400/25 hover:bg-lime-200" onClick={() => handleServiceSelect(activeService.service)}>Request a Quote <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">Professional service <span className="text-lime-300">•</span> 24/7 response</span>
+                      </div>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3">
+                    {services.filter((service) => service.service !== activeService.service).map((service) => {
+                      const ServiceIcon = service.Icon;
+                      return <button key={service.service} type="button" role="tab" aria-selected={false} aria-controls="service-detail-panel" onClick={() => handleServiceChange(service.service)} className="group flex min-h-[132px] flex-col items-start justify-between rounded-2xl border border-white/15 bg-slate-900/75 p-4 text-left shadow-lg shadow-black/10 backdrop-blur-sm transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:border-lime-300/55 hover:bg-lime-300/[0.08] hover:shadow-lime-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 motion-reduce:transform-none motion-reduce:transition-none sm:min-h-[148px] sm:p-5"><ServiceIcon className="h-8 w-8 text-lime-300 transition duration-300 group-hover:scale-110 group-hover:-rotate-3 motion-reduce:transition-none" aria-hidden="true" /><span className="mt-4 block max-w-[13ch] text-sm font-black uppercase leading-[1.05] tracking-tight text-white sm:text-base">{service.title}</span><span className="mt-2 line-clamp-2 text-xs leading-5 text-slate-400">{service.description.split('.')[0]}.</span></button>;
+                    })}
+                  </div>
+                </div>
+
+                <div className="mt-5 grid grid-cols-2 overflow-hidden rounded-2xl border border-white/10 bg-slate-900/70 sm:grid-cols-4">
+                  {[{ Icon: Timer, title: "Fast & reliable", detail: "Service" }, { Icon: ShieldCheck, title: "Quality", detail: "Products" }, { Icon: UsersRound, title: "Experienced", detail: "Team" }, { Icon: Headphones, title: "Ongoing", detail: "Support" }].map(({ Icon, title, detail }) => <div key={title} className="flex items-center gap-3 border-white/10 px-4 py-4 sm:justify-center sm:border-r sm:px-5 sm:py-5 sm:last:border-r-0"><Icon className="h-7 w-7 shrink-0 text-lime-300" aria-hidden="true" /><span className="text-xs font-black uppercase leading-tight tracking-[0.08em] text-white sm:text-sm">{title}<br /><span className="text-lime-300">{detail}</span></span></div>)}
                 </div>
               </div>
             );

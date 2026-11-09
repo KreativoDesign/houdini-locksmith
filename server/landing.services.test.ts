@@ -22,7 +22,7 @@ describe("homepage selectable services section", () => {
   it("uses an accessible tablist and a single dynamic panel", () => {
     expect(landingSource).toContain('role="tablist"');
     expect(landingSource).toContain('role="tab"');
-    expect(landingSource).toContain('aria-selected={isActive}');
+    expect(landingSource).toContain('aria-selected={false}');
     expect(landingSource).toContain('role="tabpanel"');
     expect(landingSource).toContain('id="service-detail-panel"');
     expect(landingSource).toContain('onClick={() => handleServiceChange(service.service)}');
@@ -39,7 +39,7 @@ describe("homepage selectable services section", () => {
   it("removes the background artwork from the Locks detail panel", () => {
     expect(landingSource).toContain('{ title: "Locks", service: "locks", image: ""');
     expect(landingSource).toContain('{activeService.image && <div className="absolute inset-0 bg-cover bg-center');
-    expect(landingSource).toContain('{activeService.service !== "locks" && <ActiveIcon className="absolute -right-8 -top-8');
+    expect(landingSource).toContain('{activeService.service !== "locks" && <ActiveIcon className="absolute -right-14 -top-14');
     expect(landingSource).not.toContain('service: "locks", image: "https://houdini.co.za/wp-content/uploads/2024/01/locks-1.png"');
   });
 
@@ -155,18 +155,18 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain("Bluetooth app-based access");
   });
 
-  it("uses a balanced two-row service selector with wrapped labels", () => {
-    expect(landingSource).toContain('grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5');
-    expect(landingSource).toContain('min-h-16');
-    expect(landingSource).toContain('items-center justify-center');
-    expect(landingSource).toContain('max-w-[13ch]');
+  it("uses a featured service card with a responsive compact service grid", () => {
+    expect(landingSource).toContain('grid gap-5 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1.22fr)]');
+    expect(landingSource).toContain('min-h-[520px]');
+    expect(landingSource).toContain('grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3');
+    expect(landingSource).toContain('services.filter((service) => service.service !== activeService.service)');
+    expect(landingSource).toContain('Featured service');
   });
 
-  it("adds subtle, reduced-motion-safe hover transitions to service buttons", () => {
-    expect(landingSource).toContain('transform-gpu items-center justify-center');
-    expect(landingSource).toContain('transition-[transform,background-color,border-color,box-shadow,color] duration-300 ease-out');
-    expect(landingSource).toContain('hover:shadow-lg hover:shadow-lime-400/10');
-    expect(landingSource).toContain('group-hover:-translate-y-0.5 group-hover:rotate-3 group-hover:scale-110');
+  it("adds subtle, reduced-motion-safe hover transitions to service cards", () => {
+    expect(landingSource).toContain('transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out');
+    expect(landingSource).toContain('hover:-translate-y-1 hover:border-lime-300/55');
+    expect(landingSource).toContain('group-hover:scale-110 group-hover:-rotate-3');
     expect(landingSource).toContain('motion-reduce:transition-none');
   });
 
@@ -194,19 +194,22 @@ describe("homepage selectable services section", () => {
     expect(landingSource).toContain('headerScrolled ? "h-12 sm:h-14 lg:h-14" : "h-12 sm:h-14 lg:h-[7.2rem]"');
   });
 
-  it("uses full-width descriptions and inline capability pills across the shared panel", () => {
-    expect(landingSource).toContain('w-full max-w-none text-base leading-7 text-slate-200 sm:text-lg sm:leading-8');
-    expect(landingSource).toContain('flex w-full flex-wrap items-center gap-2.5');
+  it("uses a featured description, capability checklist, and benefits strip", () => {
+    expect(landingSource).toContain('max-w-xl text-base leading-7 text-slate-200 sm:text-lg sm:leading-8');
+    expect(landingSource).toContain('activeService.points.slice(0, 5)');
     expect(landingSource).toContain('aria-label={`${activeService.title} key capabilities`}');
-    expect(landingSource).toContain('inline-flex max-w-full items-center rounded-full');
-    expect(landingSource).not.toContain('lg:max-w-2xl');
+    expect(landingSource).toContain('Fast & reliable');
+    expect(landingSource).toContain('Quality');
+    expect(landingSource).toContain('Experienced');
+    expect(landingSource).toContain('Ongoing');
   });
 
   it("keeps the panel imagery and service icon tied to the active service", () => {
     expect(landingSource).toContain("activeService.image");
     expect(landingSource).toContain("const ActiveIcon = activeService.Icon");
     expect(landingSource).toContain("<ActiveIcon");
-    expect(landingSource).not.toContain("min-h-[360px] overflow-hidden rounded-2xl border border-white/10 bg-slate-900 text-left");
+    expect(landingSource).toContain('id="service-detail-panel" role="tabpanel"');
+    expect(landingSource).toContain('rounded-[2rem] border border-lime-300/35 bg-slate-900');
   });
 
   it("routes quote requests to contact and pre-fills the subject from the selected service", () => {
